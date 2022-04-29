@@ -29,9 +29,40 @@
 
 // TODO: Where is non-zero page? Is this just starting at zero page?
 
+// Structs.
+//
+
+typedef struct anim_info
+{
+	// index into sprite_anims array.
+	unsigned char anim_current;
+	unsigned char anim_queued;
+
+	// how many ticks have passed since the last frame change.
+	unsigned char anim_ticks;
+
+	// the currently displaying frame of the current anim.
+	unsigned char anim_frame;
+} anim_info;
+
+
+// RAM
+//
 
 extern unsigned char tick_count;
 extern unsigned char pad_all;
 extern unsigned char pad_all_new;
+
+// Used by the anim functions to avoid passing in a parameter.
+extern anim_info* global_working_anim;
+
+extern anim_info player_anim;
+
+// Functions
+//
+
+void queue_next_anim(unsigned char next_anim_index);
+void commit_next_anim();
+unsigned char update_anim();
 
 #endif // ONCE_MAIN_H
