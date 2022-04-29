@@ -31,5 +31,7 @@
 
 
 extern unsigned char tick_count;
+extern unsigned char pad_all;
+extern unsigned char pad_all_new;
 
 #endif // ONCE_MAIN_H
