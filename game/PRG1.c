@@ -7,3 +7,8 @@
 
 #pragma rodata-name ("BANK1")
 #pragma code-name ("BANK1")
+
+void bank1_test()
+{
+
+}

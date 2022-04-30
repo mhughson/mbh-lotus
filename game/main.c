@@ -7,6 +7,8 @@
 
 #include "main.h"
 #include "PRG0.h"
+#include "PRG1.h"
+#include "PRG2.h"
 
 #pragma rodata-name ("CODE")
 #pragma code-name ("CODE")
@@ -105,7 +107,7 @@ void main (void)
 	pal_bright(4);
 
 	// Horizontal scrolling...
-	set_mirror_mode(2);
+	set_mirror_mode(MIRROR_MODE_VERT);
 
 	// infinite loop
 	while (1)
@@ -113,6 +115,8 @@ void main (void)
 		++tick_count;
 
 		ppu_wait_nmi(); // wait till beginning of the frame
+
+		banked_call(0, bank0_test);
 
 		oam_clear();
 
@@ -125,7 +129,7 @@ void main (void)
 		if(pad_all & PAD_RIGHT || cur_col < 256)
 		{
 			//multi_vram_buffer_vert(&level_data[(cur_col >> 3) * 30 ], 30, get_ppu_addr(high_byte(cur_col), low_byte(cur_col), 0));
-			cur_col += 1;
+			cur_col += 2;
 			// multi_vram_buffer_vert(&level_data[(cur_col >> 3) * 30 ], 30, get_ppu_addr(high_byte(cur_col), low_byte(cur_col), 0));
 			// cur_col += 1;
 		}
@@ -133,7 +137,7 @@ void main (void)
 		{
 			if (cur_col % 256 != 0)
 			{
-				cur_col -= 1;
+				cur_col -= 2;
 			}
 		}
 

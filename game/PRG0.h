@@ -5,4 +5,6 @@
 // Non constant (RAM) variables go in common header.
 // Constant (ROM) variables go in this c file, so that they are no accessed by accident by other files.
 
+void bank0_test();
+
 #endif /* D12B32D3_39DD_4865_9236_3AEDEF9ACEDE */

@@ -7,6 +7,14 @@
 
 #define MAX_BANK_DEPTH 10
 
+// NOTE: Only the right most 2 bits are for mirroring. The other bits
+//       need to match was your game uses and was set during reset in
+//       crt.s (see "Mapper reset")
+#define MIRROR_MODE_1_SCREEN_LOWER 0x2c
+#define MIRROR_MODE_1_SCREEN_UPPER 0x2d
+#define MIRROR_MODE_VERT 0x2e
+#define MIRROR_MODE_HORZ 0x2f
+
 extern unsigned char bankLevel;
 extern unsigned char bankBuffer[MAX_BANK_DEPTH];
 
@@ -51,9 +59,9 @@ void __fastcall__ set_nmi_chr_tile_bank(unsigned char bank);
 // Don't change the chr bank at the top of the screen.
 void __fastcall__ unset_nmi_chr_tile_bank(void);
 
+// Change the current mirror mode.
+// See: MIRROR_MODE_* at top of this file for "mode" params.
 void __fastcall__ set_mirror_mode(unsigned char mode);
-
-
 
 // some things deleted
 
