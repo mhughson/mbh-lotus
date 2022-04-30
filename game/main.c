@@ -12,7 +12,7 @@
 #pragma code-name ("CODE")
 
 #include "NES_ST/meta_player.h"
-#include "NES_ST/screen_temp.h"
+#include "meta_tiles_temp.h"
 
 const unsigned char palette[16]={ 0x0f,0x05,0x23,0x37,0x0f,0x01,0x21,0x31,0x0f,0x06,0x16,0x26,0x0f,0x09,0x19,0x29 };
 
@@ -42,12 +42,37 @@ const struct anim_def* sprite_anims[] =
 	&jump_right,
 };
 
+const unsigned char level_data[] = 
+{
+	5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	1, 2, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5,
+};
+
 // Initalized RAM variables
 //
 
 unsigned char tick_count;
 unsigned char pad_all;
 unsigned char pad_all_new;
+unsigned int cur_col;
+unsigned int index16;
+unsigned char x;
+unsigned char y;
+unsigned char index;
+unsigned char i;
 
 anim_info* global_working_anim;
 anim_info player_anim;
@@ -71,11 +96,16 @@ void main (void)
 	pal_bg(palette);
 	pal_spr(palette);
 
-	vram_unrle(screen_temp);
+	load_current_map(NAMETABLE_A, NULL);
+
+	cur_col = 256;
 
 	ppu_on_all(); // turn on screen
 
 	pal_bright(4);
+
+	// Horizontal scrolling...
+	set_mirror_mode(2);
 
 	// infinite loop
 	while (1)
@@ -92,7 +122,23 @@ void main (void)
 		clear_vram_buffer(); // do at the beginning of each frame
 
 
+		if(pad_all & PAD_RIGHT || cur_col < 256)
+		{
+			//multi_vram_buffer_vert(&level_data[(cur_col >> 3) * 30 ], 30, get_ppu_addr(high_byte(cur_col), low_byte(cur_col), 0));
+			cur_col += 1;
+			// multi_vram_buffer_vert(&level_data[(cur_col >> 3) * 30 ], 30, get_ppu_addr(high_byte(cur_col), low_byte(cur_col), 0));
+			// cur_col += 1;
+		}
+		else if (pad_all & PAD_LEFT)
+		{
+			if (cur_col % 256 != 0)
+			{
+				cur_col -= 1;
+			}
+		}
+
 		global_working_anim = &player_anim;
+
 		if (pad_all & PAD_A)
 		{
 			//oam_meta_spr(128, 127, meta_player_list[3]);
@@ -125,6 +171,10 @@ void main (void)
 			128 - 1,
 			meta_player_list[sprite_anims[player_anim.anim_current]->frames[player_anim.anim_frame]]);
 
+		// cur_col is the last column to be loaded, aka the right
+		// hand side of the screen. The scroll amount is relative to the 
+		// left hand side of the screen, so offset by 256.
+		set_scroll_x(cur_col - 256);
 	}
 }
 
@@ -166,4 +216,59 @@ unsigned char update_anim()
 		}
 	}
 	return 0;
+}
+
+void load_current_map(unsigned int nt, unsigned char* _current_room)
+{
+	// "const_cast"
+	_current_room = (unsigned char*)(level_data);
+	
+	//shake_remaining = 0;
+
+	//banked_call(BANK_5, copy_and_process_map_data);
+
+	for (y = 0; y < 15; ++y)
+	{
+		for (x = 0; x < 16; ++x)
+		{
+			index16 = (y * 16) + (x);
+			index16 = _current_room[index16] * META_TILE_NUM_BYTES;
+			vram_adr(NTADR(nt,x*2,y*2));	
+			vram_write(&metatiles_temp[index16], 2);
+			vram_adr(NTADR(nt,x*2,(y*2)+1));	
+			vram_write(&metatiles_temp[index16+2], 2);
+		}
+	}
+
+	index = 0;
+	for (y = 0; y < 15; y+=2)
+	{
+		for (x = 0; x < 16; x+=2)
+		{
+			i = 0;
+
+			// room index.
+			index16 = (y * 16) + (x);
+			// meta tile palette index.
+			index16 = (_current_room[index16] * META_TILE_NUM_BYTES) + 4;
+			// bit shift amount
+			i |= (metatiles_temp[index16]);
+
+			index16 = (y * 16) + (x + 1);
+			index16 = (_current_room[index16] * META_TILE_NUM_BYTES) + 4;
+			i |= (metatiles_temp[index16]) << 2;
+
+			index16 = ((y + 1) * 16) + (x);
+			index16 = (_current_room[index16] * META_TILE_NUM_BYTES) + 4;
+			i |= (metatiles_temp[index16]) << 4;
+
+			index16 = ((y + 1) * 16) + (x + 1);
+			index16 = (_current_room[index16] * META_TILE_NUM_BYTES) + 4;
+			i |= (metatiles_temp[index16]) << 6;	
+
+			vram_adr(nt + 960 + index);	
+			vram_write(&i, 1);
+			++index;
+		}
+	}
 }

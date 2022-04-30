@@ -12,11 +12,26 @@
 
 .export _set_prg_bank, _get_prg_bank, _set_chr_bank_0
 .export _set_nmi_chr_tile_bank, _unset_nmi_chr_tile_bank
+.export _set_mirror_mode
 
 A53_REG_SELECT	= $5000
 A53_REG_VALUE	= $8000
 A53_SELECT_CHR	= $00
 A53_SELECT_PRG	= $01
+A53_SELECT_MODE = $80
+
+_set_mirror_mode:
+
+    ; push the param onto the stack.
+    pha
+    ; tell the mapper that we are going to write to the "mode" register.
+    lda #A53_SELECT_MODE
+    sta A53_REG_SELECT
+
+    pla
+    sta A53_REG_VALUE
+
+    rts
 
 _set_prg_bank:
 

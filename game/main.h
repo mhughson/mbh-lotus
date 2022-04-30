@@ -23,6 +23,8 @@
 #define PROF_B 0x9f // blue + grey
 #define PROF_W 0x1f // white + grey
 
+#define META_TILE_NUM_BYTES (8)
+
 
 #pragma bss-name(push, "ZEROPAGE")
 #pragma bss-name(pop)
@@ -52,6 +54,12 @@ typedef struct anim_info
 extern unsigned char tick_count;
 extern unsigned char pad_all;
 extern unsigned char pad_all_new;
+extern unsigned int cur_col;
+extern unsigned int index16;
+extern unsigned char x;
+extern unsigned char y;
+extern unsigned char index;
+extern unsigned char i;
 
 // Used by the anim functions to avoid passing in a parameter.
 extern anim_info* global_working_anim;
@@ -64,5 +72,6 @@ extern anim_info player_anim;
 void queue_next_anim(unsigned char next_anim_index);
 void commit_next_anim();
 unsigned char update_anim();
+void load_current_map(unsigned int nt, unsigned char* _current_room);
 
 #endif // ONCE_MAIN_H

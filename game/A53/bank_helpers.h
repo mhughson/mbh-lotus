@@ -51,6 +51,8 @@ void __fastcall__ set_nmi_chr_tile_bank(unsigned char bank);
 // Don't change the chr bank at the top of the screen.
 void __fastcall__ unset_nmi_chr_tile_bank(void);
 
+void __fastcall__ set_mirror_mode(unsigned char mode);
+
 
 
 // some things deleted

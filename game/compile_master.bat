@@ -32,8 +32,8 @@ IF DEFINED gfx (
 )
 
 IF DEFINED maps (
-	python NES_ST/meta.py test_meta_tiles.nam ..\maps\nametable.json
-	python MAPS\generate_maps_header.py
+	py NES_ST/meta.py tiles_temp.nam ..\maps\nametable_temp.json temp
+	py MAPS\generate_maps_header.py
 )
 
 IF DEFINED code (
