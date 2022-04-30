@@ -7,6 +7,10 @@
 
 #define MAX_BANK_DEPTH 10
 
+#define BANK_0 0
+#define BANK_1 1
+#define BANK_2 2
+
 // NOTE: Only the right most 2 bits are for mirroring. The other bits
 //       need to match was your game uses and was set during reset in
 //       crt.s (see "Mapper reset")

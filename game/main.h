@@ -71,7 +71,5 @@ extern anim_info player_anim;
 
 void queue_next_anim(unsigned char next_anim_index);
 void commit_next_anim();
-unsigned char update_anim();
-void load_current_map(unsigned int nt, unsigned char* _current_room);
 
 #endif // ONCE_MAIN_H
