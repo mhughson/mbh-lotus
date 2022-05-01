@@ -24,7 +24,7 @@ unpack.o:
 PRG0.o:
     BSS               Offs=000086  Size=000012  Align=00001  Fill=0000
     DATA              Offs=000000  Size=000006  Align=00001  Fill=0000
-    BANK0             Offs=000000  Size=001599  Align=00001  Fill=0000
+    BANK0             Offs=000000  Size=0015EC  Align=00001  Fill=0000
 PRG1.o:
     BANK1             Offs=00166F  Size=000001  Align=00001  Fill=0000
 PRG2.o:
@@ -83,7 +83,7 @@ HEADER                000000  00000F  000010  00001
 ZEROPAGE              000000  0000E5  0000E6  00001
 DATA                  000300  000305  000006  00001
 BSS                   000306  00039D  000098  00001
-BANK0                 008000  009598  001599  00001
+BANK0                 008000  0095EB  0015EC  00001
 BANK1                 008000  00966F  001670  00001
 BANK2                 008000  00A4B5  0024B6  00001
 STARTUP               00C000  00C0F2  0000F3  00001
@@ -306,22 +306,22 @@ addysp (addysp.o):
 addysp1 (addysp.o):
     or.o                      runtime/or.s(9)
 aslax2 (aslax2.o):
-    PRG0.o                    PRG0.s(4844)
-    PRG0.o                    PRG0.s(4844)
+    PRG0.o                    PRG0.s(4883)
+    PRG0.o                    PRG0.s(4883)
 aslax4 (aslax4.o):
-    PRG0.o                    PRG0.s(4844)
-    PRG0.o                    PRG0.s(4844)
+    PRG0.o                    PRG0.s(4883)
+    PRG0.o                    PRG0.s(4883)
 callax (call.o):
     bank_helpers.o            A53\bank_helpers.s(175)
 copydata (copydata.o):
     crt0.o                    crt0.s(29)
 decsp2 (decsp2.o):
-    PRG0.o                    PRG0.s(4844)
-    PRG0.o                    PRG0.s(4844)
-    PRG0.o                    PRG0.s(4844)
+    PRG0.o                    PRG0.s(4883)
+    PRG0.o                    PRG0.s(4883)
+    PRG0.o                    PRG0.s(4883)
 decsp3 (decsp3.o):
-    PRG0.o                    PRG0.s(4844)
-    PRG0.o                    PRG0.s(4844)
+    PRG0.o                    PRG0.s(4883)
+    PRG0.o                    PRG0.s(4883)
 donut_block_buffer (donut.o):
     unpack.o                  unpack.s(3)
 donut_block_count (donut.o):
@@ -334,12 +334,12 @@ incsp1 (incsp1.o):
     bank_helpers.o            A53\bank_helpers.s(175)
     main.o                    main.s(243)
 incsp2 (incsp2.o):
-    PRG0.o                    PRG0.s(4844)
-    PRG0.o                    PRG0.s(4844)
+    PRG0.o                    PRG0.s(4883)
+    PRG0.o                    PRG0.s(4883)
 incsp3 (incsp3.o):
     bank_helpers.o            A53\bank_helpers.s(175)
 incsp4 (incsp4.o):
-    PRG0.o                    PRG0.s(4844)
+    PRG0.o                    PRG0.s(4883)
 popa (popa.o):
     crt0.o                    crt0.s(29)
 popax (incsp2.o):
@@ -353,38 +353,38 @@ ptr1 (zeropage.o):
 ptr2 (zeropage.o):
     copydata.o                common/copydata.s(9)
 pusha (pusha.o):
-    PRG0.o                    PRG0.s(4844)
-    PRG0.o                    PRG0.s(4844)
+    PRG0.o                    PRG0.s(4883)
+    PRG0.o                    PRG0.s(4883)
     bank_helpers.o            A53\bank_helpers.s(175)
     main.o                    main.s(243)
     main.o                    main.s(243)
 pushax (pushax.o):
-    PRG0.o                    PRG0.s(4844)
-    PRG0.o                    PRG0.s(4844)
-    PRG0.o                    PRG0.s(4844)
-    PRG0.o                    PRG0.s(4844)
+    PRG0.o                    PRG0.s(4883)
+    PRG0.o                    PRG0.s(4883)
+    PRG0.o                    PRG0.s(4883)
+    PRG0.o                    PRG0.s(4883)
     bank_helpers.o            A53\bank_helpers.s(175)
 shlax2 (aslax2.o):
-    PRG0.o                    PRG0.s(4844)
-    PRG0.o                    PRG0.s(4844)
-    PRG0.o                    PRG0.s(4844)
+    PRG0.o                    PRG0.s(4883)
+    PRG0.o                    PRG0.s(4883)
+    PRG0.o                    PRG0.s(4883)
 shlax3 (aslax3.o):
-    PRG0.o                    PRG0.s(4844)
-    PRG0.o                    PRG0.s(4844)
-    PRG0.o                    PRG0.s(4844)
+    PRG0.o                    PRG0.s(4883)
+    PRG0.o                    PRG0.s(4883)
+    PRG0.o                    PRG0.s(4883)
 shlax4 (aslax4.o):
-    PRG0.o                    PRG0.s(4844)
-    PRG0.o                    PRG0.s(4844)
-    PRG0.o                    PRG0.s(4844)
+    PRG0.o                    PRG0.s(4883)
+    PRG0.o                    PRG0.s(4883)
+    PRG0.o                    PRG0.s(4883)
 shrax1 (shrax1.o):
-    PRG0.o                    PRG0.s(4844)
-    PRG0.o                    PRG0.s(4844)
+    PRG0.o                    PRG0.s(4883)
+    PRG0.o                    PRG0.s(4883)
 shrax3 (shrax3.o):
-    PRG0.o                    PRG0.s(4844)
+    PRG0.o                    PRG0.s(4883)
 shrax4 (shrax4.o):
-    PRG0.o                    PRG0.s(4844)
-    PRG0.o                    PRG0.s(4844)
-    PRG0.o                    PRG0.s(4844)
+    PRG0.o                    PRG0.s(4883)
+    PRG0.o                    PRG0.s(4883)
+    PRG0.o                    PRG0.s(4883)
 sp (zeropage.o):
     addysp.o                  runtime/addysp.s(8)
     staxsp.o                  runtime/staxsp.s(8)
@@ -406,8 +406,8 @@ sreg (zeropage.o):
     PRG0.o                    PRG0.s(10)
     main.o                    main.s(10)
 stax0sp (staxsp.o):
-    PRG0.o                    PRG0.s(4844)
-    PRG0.o                    PRG0.s(4844)
+    PRG0.o                    PRG0.s(4883)
+    PRG0.o                    PRG0.s(4883)
 tmp1 (zeropage.o):
     shrax4.o                  runtime/shrax4.s(8)
     shrax3.o                  runtime/shrax3.s(8)
@@ -419,9 +419,9 @@ tmp1 (zeropage.o):
     aslax2.o                  runtime/aslax2.s(8)
     PRG0.o                    PRG0.s(11)
 tosicmp (icmp.o):
-    PRG0.o                    PRG0.s(4844)
+    PRG0.o                    PRG0.s(4883)
 tosorax (or.o):
-    PRG0.o                    PRG0.s(4844)
+    PRG0.o                    PRG0.s(4883)
 upload_chars (unpack.o):
     crt0.o                    crt0.s(39)
 

@@ -112,19 +112,13 @@ void main_real()
 		// we can detect if it moved by the end of the frame.
 		old_cam_x = cam.pos_x;
 
-		if(pad_all & PAD_RIGHT && ((cam.pos_x + 256) < ROOM_WIDTH_PIXELS))
+		if(pad_all & PAD_RIGHT && (player.pos_x <= ROOM_WIDTH_PIXELS-2))
 		{
-			// TODO: Updated camera based on player at the end of the frame.
-			cam.pos_x += 2;
 			player.pos_x += 2;
 		}
 		else if (pad_all & PAD_LEFT)
 		{
-			if (cam.pos_x % 256 != 0)
-			{
-				cam.pos_x -= 2;
-			}
-			if (player.pos_x >= 2)
+			if (player.pos_x >= ((cam.pos_x / 256) * 256) + 2)
 			{
 				player.pos_x -= 2;
 			}
@@ -152,6 +146,15 @@ void main_real()
 			queue_next_anim(0);
 		}
 
+        // move the camera to the player if needed.
+        if (player.pos_x > cam.pos_x + 128 && cam.pos_x < ROOM_WIDTH_PIXELS-256)
+        {
+            cam.pos_x = player.pos_x - 128;
+        }
+        else if (player.pos_x < cam.pos_x + 64 && cam.pos_x % 256 != 0)
+        {
+            cam.pos_x = player.pos_x - 64;
+        }
 
 		// This should really be >> 4 (every 16 pixels) but that will miss the initial
 		// row loading. Could update "load_map" but the nametable logic is kind of annoying
