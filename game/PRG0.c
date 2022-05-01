@@ -68,6 +68,8 @@ const unsigned char level_data[ROOM_WIDTH_TILES * 15] =
 
 void main_real()
 {
+	unsigned int old_cam_x;
+
     ppu_off(); // screen off
 
 	set_vram_buffer(); // do at least once, sets a pointer to a buffer
@@ -82,14 +84,15 @@ void main_real()
 
 	load_current_map(NAMETABLE_A, NULL);
 
-	cur_col = 256;
-
 	ppu_on_all(); // turn on screen
 
 	pal_bright(4);
 
 	// Horizontal scrolling...
 	set_mirror_mode(MIRROR_MODE_VERT);
+
+	player.pos_x = 128;
+	player.pos_y = 128;
 
 	// infinite loop
 	while (1)
@@ -105,27 +108,29 @@ void main_real()
 
 		clear_vram_buffer(); // do at the beginning of each frame
 
+		// store the camera position at the start of the framem, so that
+		// we can detect if it moved by the end of the frame.
+		old_cam_x = cam.pos_x;
 
-		if(pad_all & PAD_RIGHT && (cur_col < ROOM_WIDTH_PIXELS))
+		if(pad_all & PAD_RIGHT && ((cam.pos_x + 256) < ROOM_WIDTH_PIXELS))
 		{
-			//multi_vram_buffer_vert(&level_data[(cur_col >> 3) * 30 ], 30, get_ppu_addr(high_byte(cur_col), low_byte(cur_col), 0));
-			cur_col += 2;
-			// multi_vram_buffer_vert(&level_data[(cur_col >> 3) * 30 ], 30, get_ppu_addr(high_byte(cur_col), low_byte(cur_col), 0));
-			// cur_col += 1;
-
-            // cur_col is in pixels, so convert that to a tile position.
-            in_x_tile = cur_col / 16;
-            vram_buffer_load_column();
+			// TODO: Updated camera based on player at the end of the frame.
+			cam.pos_x += 2;
+			player.pos_x += 2;
 		}
 		else if (pad_all & PAD_LEFT)
 		{
-			if (cur_col % 256 != 0)
+			if (cam.pos_x % 256 != 0)
 			{
-				cur_col -= 2;
+				cam.pos_x -= 2;
+			}
+			if (player.pos_x >= 2)
+			{
+				player.pos_x -= 2;
 			}
 		}
 
-		global_working_anim = &player_anim;
+		global_working_anim = &player.anim;
 
 		if (pad_all & PAD_A)
 		{
@@ -148,21 +153,30 @@ void main_real()
 		}
 
 
-		global_working_anim = &player_anim;
+		// This should really be >> 4 (every 16 pixels) but that will miss the initial
+		// row loading. Could update "load_map" but the nametable logic is kind of annoying
+		// for the non-vram version. Will dig in more later.
+		if ((old_cam_x >> 3) < (cam.pos_x >> 3))
+		{
+			in_x_tile = (cam.pos_x + 256) / 16;
+			vram_buffer_load_column();
+		}
+
+		global_working_anim = &player.anim;
 		commit_next_anim();
 
-		global_working_anim = &player_anim;
+		global_working_anim = &player.anim;
 		update_anim();
 
 		oam_meta_spr(
-			128, 
-			128 - 1,
-			meta_player_list[sprite_anims[player_anim.anim_current]->frames[player_anim.anim_frame]]);
+			player.pos_x - cam.pos_x, 
+			player.pos_y - 1 - cam.pos_y,
+			meta_player_list[sprite_anims[player.anim.anim_current]->frames[player.anim.anim_frame]]);
 
 		// cur_col is the last column to be loaded, aka the right
 		// hand side of the screen. The scroll amount is relative to the 
 		// left hand side of the screen, so offset by 256.
-		set_scroll_x(cur_col - 256);
+		set_scroll_x(cam.pos_x);
 	}
 }
 

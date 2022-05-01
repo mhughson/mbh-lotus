@@ -32,7 +32,8 @@ unsigned int in_x_tile;
 unsigned int in_y_tile;
 
 anim_info* global_working_anim;
-anim_info player_anim;
+object player;
+camera cam;
 
 #pragma rodata-name ("CODE")
 #pragma code-name ("CODE")
