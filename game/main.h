@@ -23,8 +23,12 @@
 #define PROF_B 0x9f // blue + grey
 #define PROF_W 0x1f // white + grey
 
+#define CELL_SIZE (16)
 #define META_TILE_NUM_BYTES (8)
-
+#define ROOM_WIDTH_PAGES (4)
+#define ROOM_WIDTH_PIXELS (256*ROOM_WIDTH_PAGES)
+#define ROOM_WIDTH_TILES (16*ROOM_WIDTH_PAGES)
+#define GRID_XY_TO_ROOM_INDEX(x,y) (((y) * ROOM_WIDTH_TILES) + (x))
 
 #pragma bss-name(push, "ZEROPAGE")
 #pragma bss-name(pop)
@@ -60,6 +64,11 @@ extern unsigned char x;
 extern unsigned char y;
 extern unsigned char index;
 extern unsigned char i;
+// temp used for working with a single vertical row of tiles.
+extern unsigned char nametable_col[30];
+
+extern unsigned int in_x_tile;
+extern unsigned int in_y_tile;
 
 // Used by the anim functions to avoid passing in a parameter.
 extern anim_info* global_working_anim;

@@ -42,23 +42,23 @@ const struct anim_def* sprite_anims[] =
 	&jump_right,
 };
 
-const unsigned char level_data[] = 
+const unsigned char level_data[ROOM_WIDTH_TILES * 15] = 
 {
-	5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	1, 2, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5,
+	5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5,    5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5,    5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5,   5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	1, 2, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,    1, 2, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,    3, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,   3, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,    0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5,    5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5,    5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5,   5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5,
 };
 
 
@@ -106,12 +106,16 @@ void main_real()
 		clear_vram_buffer(); // do at the beginning of each frame
 
 
-		if(pad_all & PAD_RIGHT || cur_col < 256)
+		if(pad_all & PAD_RIGHT && (cur_col < ROOM_WIDTH_PIXELS))
 		{
 			//multi_vram_buffer_vert(&level_data[(cur_col >> 3) * 30 ], 30, get_ppu_addr(high_byte(cur_col), low_byte(cur_col), 0));
 			cur_col += 2;
 			// multi_vram_buffer_vert(&level_data[(cur_col >> 3) * 30 ], 30, get_ppu_addr(high_byte(cur_col), low_byte(cur_col), 0));
 			// cur_col += 1;
+
+            // cur_col is in pixels, so convert that to a tile position.
+            in_x_tile = cur_col / 16;
+            vram_buffer_load_column();
 		}
 		else if (pad_all & PAD_LEFT)
 		{
@@ -198,7 +202,7 @@ void load_current_map(unsigned int nt, unsigned char* _current_room)
 	{
 		for (x = 0; x < 16; ++x)
 		{
-			index16 = (y * 16) + (x);
+			index16 = GRID_XY_TO_ROOM_INDEX(x, y);
 			index16 = _current_room[index16] * META_TILE_NUM_BYTES;
 			vram_adr(NTADR(nt,x*2,y*2));	
 			vram_write(&metatiles_temp[index16], 2);
@@ -215,21 +219,21 @@ void load_current_map(unsigned int nt, unsigned char* _current_room)
 			i = 0;
 
 			// room index.
-			index16 = (y * 16) + (x);
+			index16 = (y * ROOM_WIDTH_TILES) + (x);
 			// meta tile palette index.
 			index16 = (_current_room[index16] * META_TILE_NUM_BYTES) + 4;
 			// bit shift amount
 			i |= (metatiles_temp[index16]);
 
-			index16 = (y * 16) + (x + 1);
+			index16 = (y * ROOM_WIDTH_TILES) + (x + 1);
 			index16 = (_current_room[index16] * META_TILE_NUM_BYTES) + 4;
 			i |= (metatiles_temp[index16]) << 2;
 
-			index16 = ((y + 1) * 16) + (x);
+			index16 = ((y + 1) * ROOM_WIDTH_TILES) + (x);
 			index16 = (_current_room[index16] * META_TILE_NUM_BYTES) + 4;
 			i |= (metatiles_temp[index16]) << 4;
 
-			index16 = ((y + 1) * 16) + (x + 1);
+			index16 = ((y + 1) * ROOM_WIDTH_TILES) + (x + 1);
 			index16 = (_current_room[index16] * META_TILE_NUM_BYTES) + 4;
 			i |= (metatiles_temp[index16]) << 6;	
 
@@ -238,4 +242,135 @@ void load_current_map(unsigned int nt, unsigned char* _current_room)
 			++index;
 		}
 	}
+}
+
+// LARGELY UNTESTED!
+// ATTRIBUTES LOOKS LIKE THEY WOULD NOT WORK. ASSUMES 16 TILE WIDE LEVELS
+void vram_buffer_load_2x2_metatile()
+{
+	// Function gets called from a lot of places, so not safe to use globals.
+	static unsigned char local_x;
+	static unsigned char local_y;
+	static unsigned char local_i;
+	static unsigned int local_index16;
+	static unsigned int local_att_index16;
+    static unsigned char nametable_index;
+
+    const unsigned char* current_room = level_data;
+
+    nametable_index = (in_x_tile / 16) % 2;
+
+	// TILES
+
+	local_index16 = GRID_XY_TO_ROOM_INDEX(in_x_tile, in_y_tile);
+	local_att_index16 = current_room[local_index16] * META_TILE_NUM_BYTES;
+	multi_vram_buffer_horz(&metatiles_temp[local_att_index16], 2, get_ppu_addr(nametable_index, in_x_tile * CELL_SIZE, in_y_tile * CELL_SIZE));
+	multi_vram_buffer_horz(&metatiles_temp[local_att_index16+2], 2, get_ppu_addr(nametable_index, in_x_tile * CELL_SIZE, (in_y_tile * CELL_SIZE) + 8));
+
+	// ATTRIBUTES
+
+	// Attributes are in 2x2 meta tile chunks, so we need to round down to the nearest,
+	// multiple of 2 (eg. if you pass in index 5, we want to start on 4).
+	local_x = (in_x_tile / 2) * 2;
+	local_y = (in_y_tile / 2) * 2;
+
+	local_i = 0;
+
+    // TODO: DONT ASSUME 16 TILE WIDE LEVELS
+
+	// room index.
+	local_index16 = GRID_XY_TO_ROOM_INDEX(local_x, local_y);
+	// meta tile palette index.
+	local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES) + 4;
+	// bit shift amount
+	local_i |= (metatiles_temp[local_att_index16]);
+
+	local_index16 = local_index16 + 1; //(local_y * 16) + (local_x + 1);
+	local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES) + 4;
+	local_i |= (metatiles_temp[local_att_index16]) << 2;
+
+	local_index16 = local_index16 + 15; //((local_y + 1) * 16) + (local_x);
+	local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES) + 4;
+	local_i |= (metatiles_temp[local_att_index16]) << 4;
+
+	local_index16 = local_index16 + 1; //((local_y + 1) * 16) + (local_x + 1);
+	local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES) + 4;
+	local_i |= (metatiles_temp[local_att_index16]) << 6;	
+
+	one_vram_buffer(local_i, get_at_addr(nametable_index, (local_x) * CELL_SIZE, (local_y) * CELL_SIZE));
+}
+
+void vram_buffer_load_column()
+{
+	static unsigned char local_x;
+	static unsigned char local_y;
+	static unsigned char local_i;
+	static unsigned int local_index16;
+	static unsigned int local_att_index16;
+    static unsigned char nametable_index;
+
+    const unsigned char* current_room = level_data;
+
+    nametable_index = (in_x_tile / 16) % 2;
+
+	// TILES
+
+    // left column
+    for (local_i = 0; local_i < 30; local_i+=2)
+    {
+
+        local_index16 = GRID_XY_TO_ROOM_INDEX(in_x_tile, (local_i / 2));
+        local_att_index16 = current_room[local_index16] * META_TILE_NUM_BYTES;
+        nametable_col[local_i] = metatiles_temp[local_att_index16];
+        nametable_col[local_i + 1] = metatiles_temp[local_att_index16 + 2];
+    }
+
+    multi_vram_buffer_vert(nametable_col, 30, get_ppu_addr(nametable_index, in_x_tile * CELL_SIZE, 0));
+
+    // right column
+    for (local_i = 0; local_i < 30; local_i+=2)
+    {
+
+        local_index16 = GRID_XY_TO_ROOM_INDEX(in_x_tile, (local_i / 2));
+        local_att_index16 = current_room[local_index16] * META_TILE_NUM_BYTES;
+        nametable_col[local_i] = metatiles_temp[local_att_index16 + 1];
+        nametable_col[local_i + 1] = metatiles_temp[local_att_index16 + 3];
+    }
+
+    multi_vram_buffer_vert(nametable_col, 30, get_ppu_addr(nametable_index, (in_x_tile * CELL_SIZE) + 8, 0));
+
+
+	// ATTRIBUTES
+
+	// Attributes are in 2x2 meta tile chunks, so we need to round down to the nearest,
+	// multiple of 2 (eg. if you pass in index 5, we want to start on 4).
+	local_x = (in_x_tile / 2) * 2;
+
+    // TODO: This could potentially be batched into a single 
+    //       vertical vram write.
+    for (local_y = 0; local_y < 15; local_y+=2)
+    {
+        local_i = 0;
+
+        // room index.
+        local_index16 = GRID_XY_TO_ROOM_INDEX(local_x, local_y);
+        // meta tile palette index.
+        local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES) + 4;
+        // bit shift amount
+        local_i |= (metatiles_temp[local_att_index16]);
+
+        local_index16 = local_index16 + 1; //(local_y * 16) + (local_x + 1);
+        local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES) + 4;
+        local_i |= (metatiles_temp[local_att_index16]) << 2;
+
+        local_index16 = local_index16 + ROOM_WIDTH_TILES - 1; //((local_y + 1) * 16) + (local_x);
+        local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES) + 4;
+        local_i |= (metatiles_temp[local_att_index16]) << 4;
+
+        local_index16 = local_index16 + 1; //((local_y + 1) * 16) + (local_x + 1);
+        local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES) + 4;
+        local_i |= (metatiles_temp[local_att_index16]) << 6;	
+
+        one_vram_buffer(local_i, get_at_addr(nametable_index, (local_x) * CELL_SIZE, (local_y) * CELL_SIZE));
+    }
 }

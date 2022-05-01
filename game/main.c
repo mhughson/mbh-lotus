@@ -26,6 +26,10 @@ unsigned char x;
 unsigned char y;
 unsigned char index;
 unsigned char i;
+unsigned char nametable_col[30];
+
+unsigned int in_x_tile;
+unsigned int in_y_tile;
 
 anim_info* global_working_anim;
 anim_info player_anim;
