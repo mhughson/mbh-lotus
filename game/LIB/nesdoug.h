@@ -160,6 +160,8 @@ void gray_line(void);
 #define high_byte(a) *((unsigned char*)&a+1)
 #define low_byte(a) *((unsigned char*)&a)
 // for getting or modifying just 1 byte of an int
+#define high_2byte(a) *((unsigned int*)&a+1)
+#define low_2byte(a) *((unsigned int*)&a)
 
 #define POKE(addr,val)     (*(unsigned char*) (addr) = (val))
 #define PEEK(addr)         (*(unsigned char*) (addr))

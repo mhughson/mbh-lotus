@@ -59,7 +59,7 @@
                 {
                  "name":"flag0",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }, 
                 {
                  "name":"flag1",
@@ -103,7 +103,7 @@
                 {
                  "name":"flag0",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }, 
                 {
                  "name":"flag1",
@@ -147,7 +147,7 @@
                 {
                  "name":"flag0",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }, 
                 {
                  "name":"flag1",
@@ -191,7 +191,7 @@
                 {
                  "name":"flag0",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }, 
                 {
                  "name":"flag1",
@@ -235,7 +235,7 @@
                 {
                  "name":"flag0",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }, 
                 {
                  "name":"flag1",

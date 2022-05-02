@@ -26,13 +26,14 @@ unsigned char x;
 unsigned char y;
 unsigned char index;
 unsigned char i;
+unsigned long temp32;
 unsigned char nametable_col[30];
 
 unsigned int in_x_tile;
 unsigned int in_y_tile;
 
 anim_info* global_working_anim;
-object player;
+game_actor player1;
 camera cam;
 
 #pragma rodata-name ("CODE")

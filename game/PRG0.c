@@ -16,6 +16,11 @@
 
 const unsigned char palette[16]={ 0x0f,0x05,0x23,0x37,0x0f,0x01,0x21,0x31,0x0f,0x06,0x16,0x26,0x0f,0x09,0x19,0x29 };
 
+#define NUM_Y_COLLISION_OFFSETS 3
+const unsigned char y_collision_offsets[NUM_Y_COLLISION_OFFSETS] = { 1, 12, 23 };
+#define NUM_X_COLLISION_OFFSETS 2
+const unsigned char x_collision_offsets[NUM_X_COLLISION_OFFSETS] = { 8, 16 };
+
 typedef struct anim_def
 {
 	// how many frames to hold on each frame of animation.
@@ -32,39 +37,81 @@ typedef struct anim_def
 
 const anim_def idle_right = { 5, 3, { 0, 1, 2 } };
 const anim_def walk_right = { 10, 5, { 5, 6, 7, 8, 9 } };
-const anim_def jump_right = { 60, 2, { 3, 4 } };
+const anim_def jump_right = { 60, 1, { 3 } };
+const anim_def fall_right = { 60, 1, { 4 } };
+const anim_def idle_left = { 5, 3, { 11, 12, 13 } };
+const anim_def walk_left = { 10, 5, { 16, 17, 18, 19, 20 } };
+const anim_def jump_left = { 60, 1, { 14 } };
+const anim_def fall_left = { 60, 1, { 15 } };
+
+
+enum
+{
+	ANIM_PLAYER_IDLE_RIGHT = 0,
+	ANIM_PLAYER_IDLE_LEFT = 1, 
+	ANIM_PLAYER_RUN_RIGHT = 2,
+	ANIM_PLAYER_RUN_LEFT = 3, 
+	ANIM_PLAYER_JUMP_RIGHT = 4,
+	ANIM_PLAYER_JUMP_LEFT = 5, 
+	ANIM_PLAYER_FALL_RIGHT = 6,
+	ANIM_PLAYER_FALL_LEFT = 7, 
+
+	NUM_ANIMS,
+};
 
 const struct anim_def* sprite_anims[] =
 {
 	&idle_right,
+	&idle_left,
+
 	&walk_right,
+	&walk_left,
 
 	&jump_right,
+	&jump_left,
+
+	&fall_right,
+	&fall_left,
 };
 
-const unsigned char level_data[ROOM_WIDTH_TILES * 15] = 
+const unsigned char current_room[ROOM_WIDTH_TILES * 15] = 
 {
 	5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5,    5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5,    5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5,   5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	1, 2, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,    1, 2, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,    3, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,   3, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,    0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	1, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,    3, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,   3, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1,    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1,    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1,    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 	5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5,    5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5,    5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5,   5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5,
 };
 
 
+// TODO: Move to player
+unsigned char anim_index;
+unsigned char grounded;
+unsigned char jump_held_count;
+unsigned char can_jump;
+unsigned char airtime;
+unsigned char ticks_down;
+unsigned char jump_count;
+unsigned char on_ground;
+unsigned char new_jump_btn;
+unsigned int scroll_y;
+
 
 // Functions
 //
+
+void update_player();
+void draw_player();
 
 void main_real()
 {
@@ -91,8 +138,10 @@ void main_real()
 	// Horizontal scrolling...
 	set_mirror_mode(MIRROR_MODE_VERT);
 
-	player.pos_x = 128;
-	player.pos_y = 128;
+	player1.pos_x = FP_WHOLE(128);
+	player1.pos_y = FP_WHOLE(128);
+
+	//music_play(1);
 
 	// infinite loop
 	while (1)
@@ -112,48 +161,16 @@ void main_real()
 		// we can detect if it moved by the end of the frame.
 		old_cam_x = cam.pos_x;
 
-		if(pad_all & PAD_RIGHT && (player.pos_x <= ROOM_WIDTH_PIXELS-2))
-		{
-			player.pos_x += 2;
-		}
-		else if (pad_all & PAD_LEFT)
-		{
-			if (player.pos_x >= ((cam.pos_x / 256) * 256) + 2)
-			{
-				player.pos_x -= 2;
-			}
-		}
-
-		global_working_anim = &player.anim;
-
-		if (pad_all & PAD_A)
-		{
-			//oam_meta_spr(128, 127, meta_player_list[3]);
-			queue_next_anim(2);
-		}		
-		// else if (pad_all & PAD_B)
-		// {
-		// 	oam_meta_spr(128, 127, meta_player_list[4]);
-		// }
-		else if (pad_all & PAD_RIGHT)
-		{
-			//oam_meta_spr(128, 127, meta_player_list[((tick_count >> 3) % 6) + 5]);
-			queue_next_anim(1);
-		}
-		else
-		{
-			//oam_meta_spr(128, 127, meta_player_list[(tick_count >> 3) % 3]);
-			queue_next_anim(0);
-		}
+		update_player();
 
         // move the camera to the player if needed.
-        if (player.pos_x > cam.pos_x + 128 && cam.pos_x < ROOM_WIDTH_PIXELS-256)
+        if (high_2byte(player1.pos_x) > cam.pos_x + 128 && cam.pos_x < ROOM_WIDTH_PIXELS-256)
         {
-            cam.pos_x = player.pos_x - 128;
+            cam.pos_x = high_2byte(player1.pos_x) - 128;
         }
-        else if (player.pos_x < cam.pos_x + 64 && cam.pos_x % 256 != 0)
+        else if (high_2byte(player1.pos_x) < cam.pos_x + 64 && cam.pos_x % 256 != 0)
         {
-            cam.pos_x = player.pos_x - 64;
+            cam.pos_x = high_2byte(player1.pos_x) - 64;
         }
 
 		// This should really be >> 4 (every 16 pixels) but that will miss the initial
@@ -165,16 +182,7 @@ void main_real()
 			vram_buffer_load_column();
 		}
 
-		global_working_anim = &player.anim;
-		commit_next_anim();
-
-		global_working_anim = &player.anim;
-		update_anim();
-
-		oam_meta_spr(
-			player.pos_x - cam.pos_x, 
-			player.pos_y - 1 - cam.pos_y,
-			meta_player_list[sprite_anims[player.anim.anim_current]->frames[player.anim.anim_frame]]);
+		draw_player();
 
 		// cur_col is the last column to be loaded, aka the right
 		// hand side of the screen. The scroll amount is relative to the 
@@ -206,10 +214,251 @@ unsigned char update_anim()
 	return 0;
 }
 
+void draw_player()
+{
+	global_working_anim = &player1.sprite.anim;
+	update_anim();
+
+	//cur_cam_x = high_2byte(player1.pos_x) - 128;
+
+	oam_meta_spr(
+		high_2byte(player1.pos_x) - cam.pos_x, 
+		high_2byte(player1.pos_y) - 1 - cam.pos_y,
+		meta_player_list[sprite_anims[player1.sprite.anim.anim_current]->frames[player1.sprite.anim.anim_frame]]);
+
+
+	// Update animation.
+	//++player1.sprite.anim.anim_ticks;
+
+}
+
+void update_player()
+{
+	if (pad_all & PAD_LEFT)
+	{
+		// move the player left.
+		player1.pos_x -= (unsigned long)WALK_SPEED;// + FP_0_5;
+
+		for (i = 0; i < NUM_Y_COLLISION_OFFSETS; ++i)
+		{
+			// take the player position, offset it a little
+			// so that the arms overlap the wall a bit (+8),
+			// convert to metatile space (16x16) (>>4).
+			// The position is stored using fixed point math, 
+			// where the high byte is the whole part, and the
+			// low byte is the fraction.
+			x = (high_2byte(player1.pos_x)) >> 4;
+
+			// Player is 24 pixels high, so +12 checks middle of them.
+			// >>4 to put the position into metatile-space (16x16 chunks).
+			y = (high_2byte(player1.pos_y) + y_collision_offsets[i]) >> 4;
+
+			// Convert the x,y into an index into the room data array.
+			index16 = GRID_XY_TO_ROOM_INDEX(x, y);
+
+			// Check if that point is in a solid metatile
+			if (GET_META_TILE_FLAGS(index16) & FLAG_SOLID)
+			{
+				// Hit a wall, shift back to the edge of the wall.
+				player1.pos_x = (unsigned long)((x << 4) + 16) << HALF_POS_BIT_COUNT;
+
+				break;
+			}
+		}
+	}
+	if (pad_all & PAD_RIGHT)
+	{
+
+		temp32 = player1.pos_x;
+		player1.pos_x += WALK_SPEED;// + FP_0_5;
+
+		for (i = 0; i < NUM_Y_COLLISION_OFFSETS; ++i)
+		{
+			// take the player position, offset it a little
+			// so that the arms overlap the wall a bit (+16),
+			// convert to metatile space (16x16) (>>4).
+			// The position is stored using fixed point math, 
+			// where the high byte is the whole part, and the
+			// low byte is the fraction.
+			x = (high_2byte(player1.pos_x) + 16) >> 4;
+
+			// Player is 24 pixels high, so +12 checks middle of them.
+			// >>4 to put the position into metatile-space (16x16 chunks).
+			y = (high_2byte(player1.pos_y) + y_collision_offsets[i]) >> 4;
+
+			// Convert the x,y into an index into the room data array.
+			//temp16 = GRID_XY_TO_ROOM_NUMBER(x, y);
+			index16 = GRID_XY_TO_ROOM_INDEX(x, y);
+
+			// Check if that point is in a solid metatile
+			if (GET_META_TILE_FLAGS(index16) & FLAG_SOLID)
+			{
+				// Hit a wall, shift back to the edge of the wall.
+				player1.pos_x = temp32; //(unsigned long)((x << 4) - 17) << HALF_POS_BIT_COUNT;
+
+				break;
+			}
+		}
+	}
+
+	if (pad_all & PAD_A)
+	{
+		++ticks_down;
+
+		//is player on ground recently.
+		//allow for jump right after 
+		//walking off ledge.
+		on_ground = (grounded != 0 || airtime < JUMP_COYOTE_DELAY);
+		//was btn presses recently?
+		//allow for pressing right before
+		//hitting ground.
+		new_jump_btn = ticks_down < 10;
+
+		//is player continuing a jump
+		//or starting a new one?
+		if (jump_held_count > 0)
+		{
+			++jump_held_count;
+			//keep applying jump velocity
+			//until max jump time.
+			if (jump_held_count < JUMP_HOLD_MAX)
+			{
+				player1.vel_y = -(JUMP_VEL);//keep going up while held
+			}
+		}
+		else if ((on_ground && new_jump_btn && jump_count == 0))
+		{
+			++jump_held_count;
+			++jump_count;
+			player1.vel_y = -(JUMP_VEL);
+		}
+		else if (jump_count < 1 && pad_all_new & PAD_A)
+		{
+			++jump_held_count;
+			++jump_count;
+			player1.vel_y = -(JUMP_VEL);
+		}
+	}
+	else
+	{
+		// if (ticks_down > 0 && ticks_down < 5)
+		// {
+		// 	player1.vel_y >>= 2;
+		// }
+		ticks_down = 0;
+		jump_held_count = 0;
+	}
+
+	player1.vel_y += GRAVITY;
+	player1.pos_y += player1.vel_y;
+
+	// Assume not on the ground each frame, until we detect we hit it.
+	grounded = 0;
+
+	// Roof check
+	if (player1.vel_y < 0)
+	{
+		for (i = 0; i < NUM_X_COLLISION_OFFSETS; ++i)
+		{
+			x = (high_2byte(player1.pos_x) + x_collision_offsets[i]) >> 4;
+			y = (high_2byte(player1.pos_y)) >> 4; // head
+			index16 = GRID_XY_TO_ROOM_INDEX(x, y);
+			if (GET_META_TILE_FLAGS(index16) & FLAG_SOLID)
+			{
+				player1.pos_y = (unsigned long)((y << 4) + CELL_SIZE) << HALF_POS_BIT_COUNT;
+				player1.vel_y = 0;
+				// prevent hovering against the roof.
+				jump_held_count = JUMP_HOLD_MAX;
+				break;
+			}
+		}					
+	}
+	else // floor check
+	{
+		for (i = 0; i < 2; ++i)
+		{
+			x = (high_2byte(player1.pos_x) + (8<<i)) >> 4;
+			y = (high_2byte(player1.pos_y) + 32) >> 4; // feet
+			index16 = GRID_XY_TO_ROOM_INDEX(x, y);
+			if (GET_META_TILE_FLAGS(index16) & FLAG_SOLID)
+			{
+				jump_count = 0;
+				grounded = 1;
+				player1.pos_y = (unsigned long)((y << 4) - 32) << HALF_POS_BIT_COUNT;
+				player1.vel_y = 0;
+				airtime = 0;
+				break;
+			}
+		}		
+	}
+
+	if (grounded == 0)
+	{
+		++airtime;
+		if (airtime >= JUMP_COYOTE_DELAY && jump_count == 0)
+		{
+			// We fell of a ledge. eat a jump so that you can't fall->jump->jump to get further.
+			jump_count++;
+		}
+	}	
+
+	if (pad_all & PAD_RIGHT)
+	{
+		player1.facing_left = 0;
+	}
+	else if (pad_all & PAD_LEFT)
+	{
+		player1.facing_left = 1;
+	}
+
+	if (!grounded)
+	{
+		if (player1.vel_y > 0)
+		{
+			anim_index = player1.facing_left ? ANIM_PLAYER_FALL_LEFT : ANIM_PLAYER_FALL_RIGHT;
+			global_working_anim = &player1.sprite.anim;
+			queue_next_anim(anim_index);
+			commit_next_anim();
+		}
+		else
+		{
+			anim_index = player1.facing_left ? ANIM_PLAYER_JUMP_LEFT : ANIM_PLAYER_JUMP_RIGHT;
+			global_working_anim = &player1.sprite.anim;
+			queue_next_anim(anim_index);
+			commit_next_anim();
+		}
+	}
+	else if (pad_all & PAD_RIGHT)
+	{
+		//player1.facing_left = 0;
+		anim_index = ANIM_PLAYER_RUN_RIGHT;
+		global_working_anim = &player1.sprite.anim;
+		queue_next_anim(anim_index);
+		commit_next_anim();
+	}
+	else if (pad_all & PAD_LEFT)
+	{
+		//player1.facing_left = 1;
+		anim_index = ANIM_PLAYER_RUN_LEFT;
+		global_working_anim = &player1.sprite.anim;
+		queue_next_anim(anim_index);
+		commit_next_anim();
+	}
+	else
+	{					
+		anim_index = player1.facing_left ? ANIM_PLAYER_IDLE_LEFT : ANIM_PLAYER_IDLE_RIGHT;
+		global_working_anim = &player1.sprite.anim;
+		queue_next_anim(anim_index);
+		commit_next_anim();
+	}
+
+	//draw_player();
+}
+
 void load_current_map(unsigned int nt, unsigned char* _current_room)
 {
 	// "const_cast"
-	_current_room = (unsigned char*)(level_data);
+	_current_room = (unsigned char*)(current_room);
 	
 	//shake_remaining = 0;
 
@@ -273,8 +522,6 @@ void vram_buffer_load_2x2_metatile()
 	static unsigned int local_att_index16;
     static unsigned char nametable_index;
 
-    const unsigned char* current_room = level_data;
-
     nametable_index = (in_x_tile / 16) % 2;
 
 	// TILES
@@ -325,8 +572,6 @@ void vram_buffer_load_column()
 	static unsigned int local_index16;
 	static unsigned int local_att_index16;
     static unsigned char nametable_index;
-
-    const unsigned char* current_room = level_data;
 
     nametable_index = (in_x_tile / 16) % 2;
 

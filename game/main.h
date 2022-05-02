@@ -30,6 +30,33 @@
 #define ROOM_WIDTH_TILES (16*ROOM_WIDTH_PAGES)
 #define GRID_XY_TO_ROOM_INDEX(x,y) (((y) * ROOM_WIDTH_TILES) + (x))
 
+#define META_TILE_FLAGS_OFFSET (5)
+#define GET_META_TILE_FLAGS(room_table_index) metatiles_temp[current_room[(room_table_index)] * META_TILE_NUM_BYTES + META_TILE_FLAGS_OFFSET]
+// TODO: These should be needed anymore.
+//#define GET_META_TILE_FLAGS_NEXT(room_table_index) GET_META_TILE_FLAGS(room_table_index) //metatiles_temp[next_room[(room_table_index)] * META_TILE_NUM_BYTES + META_TILE_FLAGS_OFFSET]
+//#define GET_META_TILE_FLAGS_SCROLL(room_number, room_table_index) metatiles_temp[rooms[(room_number)][(room_table_index)] * META_TILE_NUM_BYTES + META_TILE_FLAGS_OFFSET]
+
+// Constants
+#define HALF_POS_BIT_COUNT (16ul)
+#define FP_0_05 ((unsigned long)3277ul) // approx
+#define FP_0_18 ((unsigned long)11796ul) // aprrox
+#define FP_0_25 ((unsigned long)16384ul)
+#define FP_0_5 ((unsigned long)32768ul)
+#define FP_0_75 ((unsigned long)49152ul)
+#define FP_WHOLE(x) ((unsigned long)(x)<<HALF_POS_BIT_COUNT)
+
+// Tunables
+#define JUMP_VEL (FP_WHOLE(3ul) + FP_0_5)
+#define JUMP_HOLD_MAX (15ul)
+#define GRAVITY (FP_0_25)
+#define GRAVITY_LOW (FP_0_05)
+#define WALK_SPEED (FP_WHOLE(1ul) + FP_0_5)
+#define JUMP_COYOTE_DELAY (8)
+
+// Induvidual flag meanings.
+#define FLAG_SOLID (1 << 0)
+#define FLAG_WATER (1 << 1)
+
 #pragma bss-name(push, "ZEROPAGE")
 #pragma bss-name(pop)
 
@@ -57,12 +84,28 @@ typedef struct camera
 	unsigned int pos_y;
 } camera;
 
-typedef struct object
+// data speciic to player game objects.
+typedef struct animated_sprite
 {
+	// Was the last horizontal move *attempted* in the left direction?
+	unsigned char facing_left;
+
+	// Stores all of the active animation info.
 	anim_info anim;
-	unsigned int pos_x;
-	unsigned int pos_y;
-} object;
+
+} animated_sprite;
+
+typedef struct game_actor
+{
+	animated_sprite sprite;
+
+	unsigned long pos_x;
+	unsigned long pos_y;
+
+	signed long vel_y;
+
+	unsigned char facing_left;
+} game_actor;
 
 
 // RAM
@@ -76,6 +119,7 @@ extern unsigned char x;
 extern unsigned char y;
 extern unsigned char index;
 extern unsigned char i;
+extern unsigned long temp32;
 // temp used for working with a single vertical row of tiles.
 extern unsigned char nametable_col[30];
 
@@ -85,7 +129,7 @@ extern unsigned int in_y_tile;
 // Used by the anim functions to avoid passing in a parameter.
 extern anim_info* global_working_anim;
 
-extern object player;
+extern game_actor player1;
 extern camera cam;
 
 // Functions
