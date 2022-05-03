@@ -273,16 +273,23 @@ void update_player()
 			// >>4 to put the position into metatile-space (16x16 chunks).
 			y = (high_2byte(player1.pos_y) + y_collision_offsets[i]) >> 4;
 
-			// Convert the x,y into an index into the room data array.
-			index16 = GRID_XY_TO_ROOM_INDEX(x, y);
-
-			// Check if that point is in a solid metatile
-			if (GET_META_TILE_FLAGS(index16) & FLAG_SOLID)
+			// Prevent player for colliding with data outside the map, but still
+			// allow them to travel above (and below) the top of the map.
+			// This hard coded 15 will obviously need to change if we add vertical
+			// levels.
+			if (y < 15)
 			{
-				// Hit a wall, shift back to the edge of the wall.
-				player1.pos_x = (unsigned long)((x << 4) + 16) << HALF_POS_BIT_COUNT;
+				// Convert the x,y into an index into the room data array.
+				index16 = GRID_XY_TO_ROOM_INDEX(x, y);
 
-				break;
+				// Check if that point is in a solid metatile
+				if (GET_META_TILE_FLAGS(index16) & FLAG_SOLID)
+				{
+					// Hit a wall, shift back to the edge of the wall.
+					player1.pos_x = (unsigned long)((x << 4) + 16) << HALF_POS_BIT_COUNT;
+
+					break;
+				}
 			}
 		}
 	}
@@ -307,17 +314,20 @@ void update_player()
 			// >>4 to put the position into metatile-space (16x16 chunks).
 			y = (high_2byte(player1.pos_y) + y_collision_offsets[i]) >> 4;
 
-			// Convert the x,y into an index into the room data array.
-			//temp16 = GRID_XY_TO_ROOM_NUMBER(x, y);
-			index16 = GRID_XY_TO_ROOM_INDEX(x, y);
-
-			// Check if that point is in a solid metatile
-			if (GET_META_TILE_FLAGS(index16) & FLAG_SOLID)
+			if (y < 15)
 			{
-				// Hit a wall, shift back to the edge of the wall.
-				player1.pos_x = temp32; //(unsigned long)((x << 4) - 17) << HALF_POS_BIT_COUNT;
+				// Convert the x,y into an index into the room data array.
+				//temp16 = GRID_XY_TO_ROOM_NUMBER(x, y);
+				index16 = GRID_XY_TO_ROOM_INDEX(x, y);
 
-				break;
+				// Check if that point is in a solid metatile
+				if (GET_META_TILE_FLAGS(index16) & FLAG_SOLID)
+				{
+					// Hit a wall, shift back to the edge of the wall.
+					player1.pos_x = temp32; //(unsigned long)((x << 4) - 17) << HALF_POS_BIT_COUNT;
+
+					break;
+				}
 			}
 		}
 	}
@@ -383,14 +393,17 @@ void update_player()
 		{
 			x = (high_2byte(player1.pos_x) + x_collision_offsets[i]) >> 4;
 			y = (high_2byte(player1.pos_y)) >> 4; // head
-			index16 = GRID_XY_TO_ROOM_INDEX(x, y);
-			if (GET_META_TILE_FLAGS(index16) & FLAG_SOLID)
+			if (y < 15)
 			{
-				player1.pos_y = (unsigned long)((y << 4) + CELL_SIZE) << HALF_POS_BIT_COUNT;
-				player1.vel_y = 0;
-				// prevent hovering against the roof.
-				jump_held_count = JUMP_HOLD_MAX;
-				break;
+				index16 = GRID_XY_TO_ROOM_INDEX(x, y);
+				if (GET_META_TILE_FLAGS(index16) & FLAG_SOLID)
+				{
+					player1.pos_y = (unsigned long)((y << 4) + CELL_SIZE) << HALF_POS_BIT_COUNT;
+					player1.vel_y = 0;
+					// prevent hovering against the roof.
+					jump_held_count = JUMP_HOLD_MAX;
+					break;
+				}
 			}
 		}					
 	}
@@ -400,15 +413,18 @@ void update_player()
 		{
 			x = (high_2byte(player1.pos_x) + x_collision_offsets[i]) >> 4;
 			y = (high_2byte(player1.pos_y) + 32) >> 4; // feet
-			index16 = GRID_XY_TO_ROOM_INDEX(x, y);
-			if (GET_META_TILE_FLAGS(index16) & FLAG_SOLID)
+			if (y < 15)
 			{
-				jump_count = 0;
-				grounded = 1;
-				player1.pos_y = (unsigned long)((y << 4) - 32) << HALF_POS_BIT_COUNT;
-				player1.vel_y = 0;
-				airtime = 0;
-				break;
+				index16 = GRID_XY_TO_ROOM_INDEX(x, y);
+				if (GET_META_TILE_FLAGS(index16) & FLAG_SOLID)
+				{
+					jump_count = 0;
+					grounded = 1;
+					player1.pos_y = (unsigned long)((y << 4) - 32) << HALF_POS_BIT_COUNT;
+					player1.vel_y = 0;
+					airtime = 0;
+					break;
+				}
 			}
 		}		
 	}
