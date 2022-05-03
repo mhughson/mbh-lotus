@@ -36,6 +36,8 @@ anim_info* global_working_anim;
 game_actor player1;
 camera cam;
 
+unsigned char cur_state;
+
 #pragma rodata-name ("CODE")
 #pragma code-name ("CODE")
 
@@ -61,4 +63,53 @@ void commit_next_anim()
 	}
 
 	global_working_anim->anim_queued = 0xff;
+}
+
+#define FADE_DELAY 2
+void fade_to_black()
+{
+	pal_bright(3);
+	delay(FADE_DELAY);
+	pal_bright(2);
+	delay(FADE_DELAY);
+	pal_bright(1);
+	delay(FADE_DELAY);
+	pal_bright(0);
+//	delay(FADE_DELAY);
+}
+
+void fade_from_black()
+{
+	pal_bright(1);
+	delay(FADE_DELAY);
+	pal_bright(2);
+	delay(FADE_DELAY);
+	pal_bright(3);
+	delay(FADE_DELAY);
+	pal_bright(4);
+//	delay(FADE_DELAY);
+}
+
+void fade_to_white()
+{
+	pal_bright(5);
+	delay(FADE_DELAY);
+	pal_bright(6);
+	delay(FADE_DELAY);
+	pal_bright(7);
+	delay(FADE_DELAY);
+	pal_bright(8);
+//	delay(FADE_DELAY);
+}
+
+void fade_from_white()
+{
+	pal_bright(7);
+	delay(FADE_DELAY);
+	pal_bright(6);
+	delay(FADE_DELAY);
+	pal_bright(5);
+	delay(FADE_DELAY);
+	pal_bright(4);
+//	delay(FADE_DELAY);
 }

@@ -57,6 +57,8 @@
 #define FLAG_SOLID (1 << 0)
 #define FLAG_WATER (1 << 1)
 
+enum { STATE_BOOT, STATE_TITLE, STATE_GAME };
+
 #pragma bss-name(push, "ZEROPAGE")
 #pragma bss-name(pop)
 
@@ -132,10 +134,18 @@ extern anim_info* global_working_anim;
 extern game_actor player1;
 extern camera cam;
 
+extern unsigned char cur_state;
+
 // Functions
 //
 
 void queue_next_anim(unsigned char next_anim_index);
 void commit_next_anim();
+
+#define FADE_DELAY 2
+void fade_to_black();
+void fade_from_black();
+void fade_to_white();
+void fade_from_white();
 
 #endif // ONCE_MAIN_H

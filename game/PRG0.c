@@ -13,13 +13,17 @@
 
 #include "NES_ST/meta_player.h"
 #include "meta_tiles_temp.h"
+#include "NES_ST/screen_title.h"
 
 const unsigned char palette[16]={ 0x0f,0x05,0x23,0x37,0x0f,0x01,0x21,0x31,0x0f,0x06,0x16,0x26,0x0f,0x09,0x19,0x29 };
+const unsigned char palette_title[16]={ 0x0f,0x15,0x25,0x30,0x0f,0x13,0x25,0x30,0x0f,0x06,0x16,0x26,0x0f,0x09,0x19,0x29 };
+
+
 
 #define NUM_Y_COLLISION_OFFSETS 3
 const unsigned char y_collision_offsets[NUM_Y_COLLISION_OFFSETS] = { 1, 12, 23 };
-#define NUM_X_COLLISION_OFFSETS 2
-const unsigned char x_collision_offsets[NUM_X_COLLISION_OFFSETS] = { 8, 16 };
+#define NUM_X_COLLISION_OFFSETS 3
+const unsigned char x_collision_offsets[NUM_X_COLLISION_OFFSETS] = { 2, 8, 14 };
 
 typedef struct anim_def
 {
@@ -76,20 +80,20 @@ const struct anim_def* sprite_anims[] =
 
 const unsigned char current_room[ROOM_WIDTH_TILES * 15] = 
 {
-	5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5,    5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5,    5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   3, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	1, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,    3, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,   3, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,    0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1,    1, 1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1,   1, 1, 1, 1, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0,
-	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,    0, 0, 3, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1,    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,   1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,   1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1,    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,   1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0,
+	5, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 5,    5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5,    5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0,    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0,    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,    1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,    0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   3, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1,    1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,    3, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,   3, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,    0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1,    1, 1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1,   1, 1, 1, 1, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0,
+	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 3, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1,    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,   1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,   1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1,    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,   1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0,
 	5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5,    5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5,    5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5,   5, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
@@ -122,18 +126,12 @@ void main_real()
 	set_vram_buffer(); // do at least once, sets a pointer to a buffer
 	clear_vram_buffer();
 
-	set_chr_bank_0(0);
 	bank_bg(0);
 	bank_spr(1);
 
-	pal_bg(palette);
-	pal_spr(palette);
+	//ppu_on_all(); // turn on screen
 
-	load_current_map(NAMETABLE_A, NULL);
-
-	ppu_on_all(); // turn on screen
-
-	pal_bright(4);
+	//pal_bright(4);
 
 	// Horizontal scrolling...
 	set_mirror_mode(MIRROR_MODE_VERT);
@@ -142,6 +140,8 @@ void main_real()
 	player1.pos_y = FP_WHOLE(128);
 
 	//music_play(1);
+
+	go_to_state(STATE_TITLE);
 
 	// infinite loop
 	while (1)
@@ -158,37 +158,54 @@ void main_real()
 
 		clear_vram_buffer(); // do at the beginning of each frame
 
-		// store the camera position at the start of the framem, so that
-		// we can detect if it moved by the end of the frame.
-		old_cam_x = cam.pos_x;
-
-		update_player();
-
-        // move the camera to the player if needed.
-        if (high_2byte(player1.pos_x) > cam.pos_x + 128 && cam.pos_x < ROOM_WIDTH_PIXELS-256)
-        {
-            cam.pos_x = high_2byte(player1.pos_x) - 128;
-        }
-        else if (high_2byte(player1.pos_x) < cam.pos_x + 64 && (cam.pos_x / 256) == ((high_2byte(player1.pos_x) - 64) / 256))
-        {
-            cam.pos_x = high_2byte(player1.pos_x) - 64;
-        }
-
-		// This should really be >> 4 (every 16 pixels) but that will miss the initial
-		// row loading. Could update "load_map" but the nametable logic is kind of annoying
-		// for the non-vram version. Will dig in more later.
-		if ((old_cam_x >> 3) < (cam.pos_x >> 3))
+		switch(cur_state)
 		{
-			in_x_tile = (cam.pos_x + 256) / 16;
-			vram_buffer_load_column();
+			case STATE_TITLE:
+			{
+				if (pad_all_new & PAD_ANY_CONFIRM_BUTTON)
+				{
+					go_to_state(STATE_GAME);
+				}
+				break;
+			}
+
+			case STATE_GAME:
+			{
+				// store the camera position at the start of the framem, so that
+				// we can detect if it moved by the end of the frame.
+				old_cam_x = cam.pos_x;
+
+				update_player();
+
+				// move the camera to the player if needed.
+				if (high_2byte(player1.pos_x) > cam.pos_x + 128 && cam.pos_x < ROOM_WIDTH_PIXELS-256)
+				{
+					cam.pos_x = high_2byte(player1.pos_x) - 128;
+				}
+				else if (high_2byte(player1.pos_x) < cam.pos_x + 64 && (cam.pos_x / 256) == ((high_2byte(player1.pos_x) - 64) / 256))
+				{
+					cam.pos_x = high_2byte(player1.pos_x) - 64;
+				}
+
+				// This should really be >> 4 (every 16 pixels) but that will miss the initial
+				// row loading. Could update "load_map" but the nametable logic is kind of annoying
+				// for the non-vram version. Will dig in more later.
+				if ((old_cam_x >> 3) < (cam.pos_x >> 3))
+				{
+					in_x_tile = (cam.pos_x + 256) / 16;
+					vram_buffer_load_column();
+				}
+
+				draw_player();
+
+				// cur_col is the last column to be loaded, aka the right
+				// hand side of the screen. The scroll amount is relative to the 
+				// left hand side of the screen, so offset by 256.
+				set_scroll_x(cam.pos_x);				
+				break;
+			}
 		}
 
-		draw_player();
-
-		// cur_col is the last column to be loaded, aka the right
-		// hand side of the screen. The scroll amount is relative to the 
-		// left hand side of the screen, so offset by 256.
-		set_scroll_x(cam.pos_x);
 
 		PROFILE_POKE(PROF_CLEAR)
 	}
@@ -237,7 +254,7 @@ void draw_player()
 
 void update_player()
 {
-	if (pad_all & PAD_LEFT)
+	if (pad_all & PAD_LEFT && (cam.pos_x / 256) <= (( high_2byte((player1.pos_x)) - (WALK_SPEED >> 16)) / 256) && player1.pos_x >= WALK_SPEED)
 	{
 		// move the player left.
 		player1.pos_x -= (unsigned long)WALK_SPEED;// + FP_0_5;
@@ -269,7 +286,8 @@ void update_player()
 			}
 		}
 	}
-	if (pad_all & PAD_RIGHT)
+	// Is the right side of the sprite, after walking, going to be passed the end of the map?
+	if (pad_all & PAD_RIGHT && (player1.pos_x + WALK_SPEED + FP_WHOLE(16) ) <= FP_WHOLE(ROOM_WIDTH_PIXELS))
 	{
 
 		temp32 = player1.pos_x;
@@ -378,9 +396,9 @@ void update_player()
 	}
 	else // floor check
 	{
-		for (i = 0; i < 2; ++i)
+		for (i = 0; i < NUM_X_COLLISION_OFFSETS; ++i)
 		{
-			x = (high_2byte(player1.pos_x) + (8<<i)) >> 4;
+			x = (high_2byte(player1.pos_x) + x_collision_offsets[i]) >> 4;
 			y = (high_2byte(player1.pos_y) + 32) >> 4; // feet
 			index16 = GRID_XY_TO_ROOM_INDEX(x, y);
 			if (GET_META_TILE_FLAGS(index16) & FLAG_SOLID)
@@ -644,4 +662,39 @@ void vram_buffer_load_column()
     }
 
 	PROFILE_POKE(PROF_R)
+}
+
+void go_to_state(unsigned char new_state)
+{
+	cur_state = new_state;
+
+	switch(cur_state)
+	{
+		case STATE_TITLE:
+		{
+			ppu_off();
+			set_chr_bank_0(2);	
+			pal_bg(palette_title);
+			pal_spr(palette_title);		
+			vram_adr(NTADR_A(0,0));
+			vram_unrle(screen_title);
+			ppu_on_all();
+			fade_from_black();
+			break;
+		}
+
+		case STATE_GAME:
+		{
+			fade_to_black();
+			ppu_off();
+			set_chr_bank_0(0);
+			pal_bg(palette);
+			pal_spr(palette);		
+			load_current_map(NAMETABLE_A, NULL);
+
+			ppu_on_all();
+			fade_from_black();
+			break;
+		}
+	}
 }
