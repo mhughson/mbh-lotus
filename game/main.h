@@ -57,7 +57,7 @@
 #define FLAG_SOLID (1 << 0)
 #define FLAG_WATER (1 << 1)
 
-enum { STATE_BOOT, STATE_TITLE, STATE_GAME };
+enum { STATE_BOOT, STATE_TITLE, STATE_GAME, STATE_OVER };
 
 #pragma bss-name(push, "ZEROPAGE")
 #pragma bss-name(pop)

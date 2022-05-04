@@ -14,6 +14,7 @@
 #include "NES_ST/meta_player.h"
 #include "meta_tiles_temp.h"
 #include "NES_ST/screen_title.h"
+#include "NES_ST/screen_gameover.h"
 
 const unsigned char palette[16]={ 0x0f,0x05,0x23,0x37,0x0f,0x01,0x21,0x31,0x0f,0x06,0x16,0x26,0x0f,0x09,0x19,0x29 };
 const unsigned char palette_title[16]={ 0x0f,0x15,0x25,0x30,0x0f,0x13,0x25,0x30,0x0f,0x06,0x16,0x26,0x0f,0x09,0x19,0x29 };
@@ -94,7 +95,7 @@ const unsigned char current_room[ROOM_WIDTH_TILES * 15] =
 	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 3, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1,    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,   1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,   1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1,    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,   1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0,
-	5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5,    5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5,    5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5,   5, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	5, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5,    5, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 5,    5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5,   5, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
 
@@ -136,9 +137,6 @@ void main_real()
 	// Horizontal scrolling...
 	set_mirror_mode(MIRROR_MODE_VERT);
 
-	player1.pos_x = FP_WHOLE(128);
-	player1.pos_y = FP_WHOLE(128);
-
 	//music_play(1);
 
 	go_to_state(STATE_TITLE);
@@ -177,6 +175,15 @@ void main_real()
 
 				update_player();
 
+				// Handle case where the state changed in update_player()
+				// We want to make sure that the state changes hold (eg. scroll)
+				// and don't get overwritten through the rest of this state.
+				if (cur_state != STATE_GAME)
+				{
+					clear_vram_buffer();
+					break;
+				}
+
 				// move the camera to the player if needed.
 				if (high_2byte(player1.pos_x) > cam.pos_x + 128 && cam.pos_x < ROOM_WIDTH_PIXELS-256)
 				{
@@ -202,6 +209,19 @@ void main_real()
 				// hand side of the screen. The scroll amount is relative to the 
 				// left hand side of the screen, so offset by 256.
 				set_scroll_x(cam.pos_x);				
+				break;
+			}
+
+			case STATE_OVER:
+			{
+				if (pad_all_new & PAD_ANY_CONFIRM_BUTTON)
+				{
+					go_to_state(STATE_GAME);
+				}
+				else if (pad_all_new & PAD_B)
+				{
+					go_to_state(STATE_TITLE);
+				}
 				break;
 			}
 		}
@@ -241,11 +261,13 @@ void draw_player()
 
 	//cur_cam_x = high_2byte(player1.pos_x) - 128;
 
-	oam_meta_spr(
-		high_2byte(player1.pos_x) - cam.pos_x, 
-		high_2byte(player1.pos_y) - 1 - cam.pos_y,
-		meta_player_list[sprite_anims[player1.sprite.anim.anim_current]->frames[player1.sprite.anim.anim_frame]]);
-
+	if (high_2byte(player1.pos_y) < 240 || high_2byte(player1.pos_y) > (0xffff - 16))
+	{
+		oam_meta_spr(
+			high_2byte(player1.pos_x) - cam.pos_x, 
+			high_2byte(player1.pos_y) - 1 - cam.pos_y,
+			meta_player_list[sprite_anims[player1.sprite.anim.anim_current]->frames[player1.sprite.anim.anim_frame]]);
+	}
 
 	// Update animation.
 	//++player1.sprite.anim.anim_ticks;
@@ -413,6 +435,12 @@ void update_player()
 		{
 			x = (high_2byte(player1.pos_x) + x_collision_offsets[i]) >> 4;
 			y = (high_2byte(player1.pos_y) + 32) >> 4; // feet
+
+			if (y > 15 && y < 20)
+			{
+				go_to_state(STATE_OVER);
+				break;
+			}
 			if (y < 15)
 			{
 				index16 = GRID_XY_TO_ROOM_INDEX(x, y);
@@ -688,7 +716,9 @@ void go_to_state(unsigned char new_state)
 	{
 		case STATE_TITLE:
 		{
+			fade_to_black();
 			ppu_off();
+			scroll(0,0);		
 			set_chr_bank_0(2);	
 			pal_bg(palette_title);
 			pal_spr(palette_title);		
@@ -703,14 +733,35 @@ void go_to_state(unsigned char new_state)
 		{
 			fade_to_black();
 			ppu_off();
+			scroll(0,0);
+			cam.pos_x = 0;
 			set_chr_bank_0(0);
 			pal_bg(palette);
 			pal_spr(palette);		
 			load_current_map(NAMETABLE_A, NULL);
 
+			player1.pos_x = FP_WHOLE(4);
+			player1.pos_y = FP_WHOLE((6<<4));
+			player1.vel_y = 0;
+			player1.facing_left = 0;
+
 			ppu_on_all();
 			fade_from_black();
 			break;
+		}
+
+		case STATE_OVER:
+		{
+			fade_to_white();
+			ppu_off();
+			scroll(0,0);		
+			set_chr_bank_0(0);	
+			pal_bg(palette_title);
+			pal_spr(palette_title);		
+			vram_adr(NTADR_A(0,0));
+			vram_unrle(screen_gameover);
+			ppu_on_all();
+			fade_from_white();
 		}
 	}
 }

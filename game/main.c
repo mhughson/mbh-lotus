@@ -90,14 +90,15 @@ void fade_from_black()
 //	delay(FADE_DELAY);
 }
 
+#define FADE_DELAY_SLOW 10
 void fade_to_white()
 {
 	pal_bright(5);
-	delay(FADE_DELAY);
+	delay(FADE_DELAY_SLOW);
 	pal_bright(6);
-	delay(FADE_DELAY);
+	delay(FADE_DELAY_SLOW);
 	pal_bright(7);
-	delay(FADE_DELAY);
+	delay(FADE_DELAY_SLOW);
 	pal_bright(8);
 //	delay(FADE_DELAY);
 }
