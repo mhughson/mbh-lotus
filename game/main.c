@@ -26,7 +26,9 @@ unsigned char x;
 unsigned char y;
 unsigned char index;
 unsigned char i;
+unsigned char temp;
 unsigned long temp32;
+unsigned char tempFlags;
 unsigned char nametable_col[30];
 
 unsigned int in_x_tile;

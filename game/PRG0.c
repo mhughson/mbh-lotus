@@ -22,9 +22,9 @@ const unsigned char palette_title[16]={ 0x0f,0x15,0x25,0x30,0x0f,0x13,0x25,0x30,
 
 
 #define NUM_Y_COLLISION_OFFSETS 3
-const unsigned char y_collision_offsets[NUM_Y_COLLISION_OFFSETS] = { 1, 12, 23 };
+const unsigned char y_collision_offsets[NUM_Y_COLLISION_OFFSETS] = { 1, 16, 31 };
 #define NUM_X_COLLISION_OFFSETS 3
-const unsigned char x_collision_offsets[NUM_X_COLLISION_OFFSETS] = { 2, 8, 14 };
+const unsigned char x_collision_offsets[NUM_X_COLLISION_OFFSETS] = { 4, 8, 12 };
 
 typedef struct anim_def
 {
@@ -87,14 +87,14 @@ const unsigned char current_room[ROOM_WIDTH_TILES * 15] =
 	0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0,    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,    1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,    0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   3, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1,    1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,    3, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,   3, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,    3, 2, 1, 1, 6, 7, 6, 7, 6, 7, 6, 7, 1, 1, 1, 1,   3, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,    0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1,    1, 1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1,   1, 1, 1, 1, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0,
 	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 3, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1,    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,   1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,   1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1,    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,   1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0,
+	1, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1,    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,   1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 6, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 1, 1, 1, 1,    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,   1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0,
 	5, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5,    5, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 5,    5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5,   5, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
@@ -115,6 +115,7 @@ unsigned int scroll_y;
 // Functions
 //
 
+void kill_player();
 void update_player();
 void draw_player();
 
@@ -274,12 +275,24 @@ void draw_player()
 
 }
 
+void kill_player()
+{
+	go_to_state(STATE_OVER);
+}
+
 void update_player()
 {
+	static unsigned char hit_kill_box;
+
 	if (pad_all & PAD_LEFT && (cam.pos_x / 256) <= (( high_2byte((player1.pos_x)) - (WALK_SPEED >> 16)) / 256) && player1.pos_x >= WALK_SPEED)
 	{
+		temp32 = player1.pos_x;
+
 		// move the player left.
 		player1.pos_x -= (unsigned long)WALK_SPEED;// + FP_0_5;
+
+		// track if the player hit a spike.
+		hit_kill_box = 0;
 
 		for (i = 0; i < NUM_Y_COLLISION_OFFSETS; ++i)
 		{
@@ -289,7 +302,7 @@ void update_player()
 			// The position is stored using fixed point math, 
 			// where the high byte is the whole part, and the
 			// low byte is the fraction.
-			x = (high_2byte(player1.pos_x)) >> 4;
+			x = (high_2byte(player1.pos_x) + x_collision_offsets[0] - 1) >> 4;
 
 			// Player is 24 pixels high, so +12 checks middle of them.
 			// >>4 to put the position into metatile-space (16x16 chunks).
@@ -304,15 +317,26 @@ void update_player()
 				// Convert the x,y into an index into the room data array.
 				index16 = GRID_XY_TO_ROOM_INDEX(x, y);
 
+				tempFlags = GET_META_TILE_FLAGS(index16);
+
 				// Check if that point is in a solid metatile
-				if (GET_META_TILE_FLAGS(index16) & FLAG_SOLID)
+				if (tempFlags & FLAG_SOLID)
 				{
 					// Hit a wall, shift back to the edge of the wall.
-					player1.pos_x = (unsigned long)((x << 4) + 16) << HALF_POS_BIT_COUNT;
-
+					player1.pos_x = temp32;
+					hit_kill_box = 0;
 					break;
 				}
+				else if (tempFlags & FLAG_KILL && player1.vel_y >= 0)
+				{
+					hit_kill_box = 1;
+				}
 			}
+		}
+
+		if (hit_kill_box == 1)
+		{
+			kill_player();
 		}
 	}
 	// Is the right side of the sprite, after walking, going to be passed the end of the map?
@@ -322,6 +346,8 @@ void update_player()
 		temp32 = player1.pos_x;
 		player1.pos_x += WALK_SPEED;// + FP_0_5;
 
+		hit_kill_box = 0;
+
 		for (i = 0; i < NUM_Y_COLLISION_OFFSETS; ++i)
 		{
 			// take the player position, offset it a little
@@ -330,7 +356,7 @@ void update_player()
 			// The position is stored using fixed point math, 
 			// where the high byte is the whole part, and the
 			// low byte is the fraction.
-			x = (high_2byte(player1.pos_x) + 16) >> 4;
+			x = (high_2byte(player1.pos_x) + x_collision_offsets[NUM_X_COLLISION_OFFSETS - 1] + 1) >> 4;
 
 			// Player is 24 pixels high, so +12 checks middle of them.
 			// >>4 to put the position into metatile-space (16x16 chunks).
@@ -342,15 +368,27 @@ void update_player()
 				//temp16 = GRID_XY_TO_ROOM_NUMBER(x, y);
 				index16 = GRID_XY_TO_ROOM_INDEX(x, y);
 
+				tempFlags = GET_META_TILE_FLAGS(index16);
+
 				// Check if that point is in a solid metatile
-				if (GET_META_TILE_FLAGS(index16) & FLAG_SOLID)
+				if (tempFlags & FLAG_SOLID)
 				{
 					// Hit a wall, shift back to the edge of the wall.
 					player1.pos_x = temp32; //(unsigned long)((x << 4) - 17) << HALF_POS_BIT_COUNT;
+					hit_kill_box = 0;
 
 					break;
 				}
+				else if (tempFlags & FLAG_KILL && player1.vel_y >= 0)
+				{
+					hit_kill_box = 1;
+				}
 			}
+		}
+
+		if (hit_kill_box == 1)
+		{
+			kill_player();
 		}
 	}
 
@@ -431,6 +469,7 @@ void update_player()
 	}
 	else // floor check
 	{
+		hit_kill_box = 0;
 		for (i = 0; i < NUM_X_COLLISION_OFFSETS; ++i)
 		{
 			x = (high_2byte(player1.pos_x) + x_collision_offsets[i]) >> 4;
@@ -444,17 +483,28 @@ void update_player()
 			if (y < 15)
 			{
 				index16 = GRID_XY_TO_ROOM_INDEX(x, y);
-				if (GET_META_TILE_FLAGS(index16) & FLAG_SOLID)
+				tempFlags = GET_META_TILE_FLAGS(index16);
+				if (tempFlags & FLAG_SOLID)
 				{
 					jump_count = 0;
 					grounded = 1;
 					player1.pos_y = (unsigned long)((y << 4) - 32) << HALF_POS_BIT_COUNT;
 					player1.vel_y = 0;
 					airtime = 0;
+					hit_kill_box = 0;
 					break;
 				}
+				else if (tempFlags & FLAG_KILL)
+				{
+					hit_kill_box = 1;
+				}
 			}
-		}		
+		}	
+
+		if (hit_kill_box == 1)
+		{
+			kill_player();
+		}	
 	}
 
 	if (grounded == 0)
@@ -752,6 +802,9 @@ void go_to_state(unsigned char new_state)
 
 		case STATE_OVER:
 		{
+			// bit of a hack to keep the player visible during the fade to
+			// white.
+			draw_player();
 			fade_to_white();
 			ppu_off();
 			scroll(0,0);		
@@ -760,6 +813,10 @@ void go_to_state(unsigned char new_state)
 			pal_spr(palette_title);		
 			vram_adr(NTADR_A(0,0));
 			vram_unrle(screen_gameover);
+			// we draw the player sprites at the start of the white fade,
+			// so now we need to clear it before fading back in or else you
+			// will see her for a few frames.
+			oam_clear();
 			ppu_on_all();
 			fade_from_white();
 		}

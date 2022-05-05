@@ -55,7 +55,7 @@
 
 // Induvidual flag meanings.
 #define FLAG_SOLID (1 << 0)
-#define FLAG_WATER (1 << 1)
+#define FLAG_KILL  (1 << 1)
 
 enum { STATE_BOOT, STATE_TITLE, STATE_GAME, STATE_OVER };
 
@@ -122,6 +122,7 @@ extern unsigned char y;
 extern unsigned char index;
 extern unsigned char i;
 extern unsigned long temp32;
+extern unsigned char tempFlags;
 // temp used for working with a single vertical row of tiles.
 extern unsigned char nametable_col[30];
 
