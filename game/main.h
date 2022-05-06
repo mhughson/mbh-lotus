@@ -127,6 +127,11 @@ extern unsigned char tempFlags;
 extern unsigned char nametable_col[30];
 extern unsigned char nametable_col_b[30];
 
+// At some point I think I will need to keep the current 2 nametables of level data in RAM, so that I can
+// edit it on the fly (eg. destructable blocks). Reserving it for now, since this is a large chunk of memory
+// that will be challenging to peel back after its used.
+#define ROOM_PAGE_SIZE (16 * 15 * 2)
+extern unsigned char current_room_page_reserve[ROOM_PAGE_SIZE];
 
 
 extern unsigned int in_x_tile;

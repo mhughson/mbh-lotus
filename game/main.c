@@ -32,6 +32,8 @@ unsigned char tempFlags;
 unsigned char nametable_col[30];
 unsigned char nametable_col_b[30];
 
+unsigned char current_room_page_reserve[ROOM_PAGE_SIZE];
+
 unsigned int in_x_tile;
 unsigned int in_y_tile;
 
