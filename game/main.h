@@ -125,6 +125,9 @@ extern unsigned long temp32;
 extern unsigned char tempFlags;
 // temp used for working with a single vertical row of tiles.
 extern unsigned char nametable_col[30];
+extern unsigned char nametable_col_b[30];
+
+
 
 extern unsigned int in_x_tile;
 extern unsigned int in_y_tile;

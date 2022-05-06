@@ -23,8 +23,8 @@ const unsigned char palette_title[16]={ 0x0f,0x15,0x25,0x30,0x0f,0x13,0x25,0x30,
 
 #define NUM_Y_COLLISION_OFFSETS 3
 const unsigned char y_collision_offsets[NUM_Y_COLLISION_OFFSETS] = { 1, 16, 31 };
-#define NUM_X_COLLISION_OFFSETS 3
-const unsigned char x_collision_offsets[NUM_X_COLLISION_OFFSETS] = { 4, 8, 12 };
+#define NUM_X_COLLISION_OFFSETS 2
+const unsigned char x_collision_offsets[NUM_X_COLLISION_OFFSETS] = { 4, 12 };
 
 typedef struct anim_def
 {
@@ -41,11 +41,11 @@ typedef struct anim_def
 } anim_def;
 
 const anim_def idle_right = { 5, 3, { 0, 1, 2 } };
-const anim_def walk_right = { 10, 5, { 5, 6, 7, 8, 9 } };
+const anim_def walk_right = { 5, 6, { 5, 6, 7, 8, 9, 10 } };
 const anim_def jump_right = { 60, 1, { 3 } };
 const anim_def fall_right = { 60, 1, { 4 } };
 const anim_def idle_left = { 5, 3, { 11, 12, 13 } };
-const anim_def walk_left = { 10, 5, { 16, 17, 18, 19, 20 } };
+const anim_def walk_left = { 5, 6, { 16, 17, 18, 19, 20, 21 } };
 const anim_def jump_left = { 60, 1, { 14 } };
 const anim_def fall_left = { 60, 1, { 15 } };
 
@@ -283,10 +283,18 @@ void kill_player()
 void update_player()
 {
 	static unsigned char hit_kill_box;
+	// static unsigned int high_x;
+	// static unsigned int high_y;
+	static const unsigned int high_walk_speed = (WALK_SPEED >> 16);
+
+	PROFILE_POKE(PROF_G);
+
+	// high_x = high_2byte(player1.pos_x);
+	// high_y = high_2byte(player1.pos_y);
 
 	if (pad_all & PAD_LEFT && 
 		//((cam.pos_x) / 256) <= (( high_2byte((player1.pos_x)) - (WALK_SPEED >> 16)) / 256) && 
-		high_2byte(player1.pos_x) - cam.pos_x >= ((WALK_SPEED >> 16) + 8) &&
+		high_2byte(player1.pos_x) - cam.pos_x >= (high_walk_speed + 8) &&
 		player1.pos_x >= WALK_SPEED + FP_WHOLE(8))
 	{
 		temp32 = player1.pos_x;
@@ -323,23 +331,14 @@ void update_player()
 				tempFlags = GET_META_TILE_FLAGS(index16);
 
 				// Check if that point is in a solid metatile
-				if (tempFlags & FLAG_SOLID)
+				if (tempFlags & FLAG_SOLID || (grounded && tempFlags & FLAG_KILL))
 				{
 					// Hit a wall, shift back to the edge of the wall.
 					player1.pos_x = temp32;
 					hit_kill_box = 0;
 					break;
 				}
-				else if (tempFlags & FLAG_KILL && player1.vel_y >= 0)
-				{
-					hit_kill_box = 1;
-				}
 			}
-		}
-
-		if (hit_kill_box == 1)
-		{
-			kill_player();
 		}
 	}
 	// Is the right side of the sprite, after walking, going to be passed the end of the map?
@@ -373,8 +372,10 @@ void update_player()
 
 				tempFlags = GET_META_TILE_FLAGS(index16);
 
-				// Check if that point is in a solid metatile
-				if (tempFlags & FLAG_SOLID)
+				// Check if that point is in a solid metatile.
+				// Treat spikes like walls if the player is on the floor. It feels lame to 
+				// walk into a spike and die; you should need to fall into them.
+				if (tempFlags & FLAG_SOLID || (grounded && tempFlags & FLAG_KILL))
 				{
 					// Hit a wall, shift back to the edge of the wall.
 					player1.pos_x = temp32; //(unsigned long)((x << 4) - 17) << HALF_POS_BIT_COUNT;
@@ -382,16 +383,7 @@ void update_player()
 
 					break;
 				}
-				else if (tempFlags & FLAG_KILL && player1.vel_y >= 0)
-				{
-					hit_kill_box = 1;
-				}
 			}
-		}
-
-		if (hit_kill_box == 1)
-		{
-			kill_player();
 		}
 	}
 
@@ -497,7 +489,12 @@ void update_player()
 					hit_kill_box = 0;
 					break;
 				}
-				else if (tempFlags & FLAG_KILL)
+
+				// We want the kill check to be more forgiving.
+				y = (high_2byte(player1.pos_y) + 24) >> 4; // feet
+				index16 = GRID_XY_TO_ROOM_INDEX(x, y);
+				tempFlags = GET_META_TILE_FLAGS(index16);
+				if (tempFlags & FLAG_KILL)
 				{
 					hit_kill_box = 1;
 				}
@@ -571,6 +568,8 @@ void update_player()
 	}
 
 	//draw_player();
+
+	PROFILE_POKE(PROF_R);
 }
 
 void load_current_map(unsigned int nt, unsigned char* _current_room)
@@ -697,29 +696,25 @@ void vram_buffer_load_column()
 
 	PROFILE_POKE(PROF_G)
 
+	//if (in_x_tile % 2 == 0)
     // left column
     for (local_i = 0; local_i < 30; local_i+=2)
     {
 
         local_index16 = GRID_XY_TO_ROOM_INDEX(in_x_tile, (local_i / 2));
         local_att_index16 = current_room[local_index16] * META_TILE_NUM_BYTES;
+
+		// left column
         nametable_col[local_i] = metatiles_temp[local_att_index16];
         nametable_col[local_i + 1] = metatiles_temp[local_att_index16 + 2];
+
+		// right column
+        nametable_col_b[local_i] = metatiles_temp[local_att_index16 + 1];
+        nametable_col_b[local_i + 1] = metatiles_temp[local_att_index16 + 3];
     }
 
     multi_vram_buffer_vert(nametable_col, 30, get_ppu_addr(nametable_index, in_x_tile * CELL_SIZE, 0));
-
-    // right column
-    for (local_i = 0; local_i < 30; local_i+=2)
-    {
-
-        local_index16 = GRID_XY_TO_ROOM_INDEX(in_x_tile, (local_i / 2));
-        local_att_index16 = current_room[local_index16] * META_TILE_NUM_BYTES;
-        nametable_col[local_i] = metatiles_temp[local_att_index16 + 1];
-        nametable_col[local_i + 1] = metatiles_temp[local_att_index16 + 3];
-    }
-
-    multi_vram_buffer_vert(nametable_col, 30, get_ppu_addr(nametable_index, (in_x_tile * CELL_SIZE) + 8, 0));
+    multi_vram_buffer_vert(nametable_col_b, 30, get_ppu_addr(nametable_index, (in_x_tile * CELL_SIZE) + 8, 0));
 
 
 	// ATTRIBUTES

@@ -30,6 +30,7 @@ unsigned char temp;
 unsigned long temp32;
 unsigned char tempFlags;
 unsigned char nametable_col[30];
+unsigned char nametable_col_b[30];
 
 unsigned int in_x_tile;
 unsigned int in_y_tile;
