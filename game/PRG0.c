@@ -48,6 +48,8 @@ const anim_def idle_left = { 5, 3, { 11, 12, 13 } };
 const anim_def walk_left = { 5, 6, { 16, 17, 18, 19, 20, 21 } };
 const anim_def jump_left = { 60, 1, { 14 } };
 const anim_def fall_left = { 60, 1, { 15 } };
+const anim_def idle_crouch_right = { 60, 1, { 22 } };
+const anim_def idle_crouch_left = { 60, 1, { 23 } };
 
 
 enum
@@ -60,6 +62,8 @@ enum
 	ANIM_PLAYER_JUMP_LEFT = 5, 
 	ANIM_PLAYER_FALL_RIGHT = 6,
 	ANIM_PLAYER_FALL_LEFT = 7, 
+	ANIM_PLAYER_IDLE_CROUCH_RIGHT = 8,
+	ANIM_PLAYER_IDLE_CROUCH_LEFT = 9,
 
 	NUM_ANIMS,
 };
@@ -77,6 +81,9 @@ const struct anim_def* sprite_anims[] =
 
 	&fall_right,
 	&fall_left,
+
+	&idle_crouch_right,
+	&idle_crouch_left,
 };
 
 const unsigned char current_room[ROOM_WIDTH_TILES * 15] = 
@@ -558,6 +565,13 @@ void update_player()
 	{
 		//player1.facing_left = 1;
 		anim_index = ANIM_PLAYER_RUN_LEFT;
+		global_working_anim = &player1.sprite.anim;
+		queue_next_anim(anim_index);
+		commit_next_anim();
+	}
+	else if (pad_all & PAD_DOWN)
+	{
+		anim_index = player1.facing_left ? ANIM_PLAYER_IDLE_CROUCH_LEFT : ANIM_PLAYER_IDLE_CROUCH_RIGHT;
 		global_working_anim = &player1.sprite.anim;
 		queue_next_anim(anim_index);
 		commit_next_anim();
