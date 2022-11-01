@@ -52,6 +52,7 @@
 #define GRAVITY_LOW (FP_0_05)
 #define WALK_SPEED (FP_WHOLE(1ul) + FP_0_5)
 #define JUMP_COYOTE_DELAY (8)
+#define ATTACK_LEN (5)
 
 // Induvidual flag meanings.
 #define FLAG_SOLID (1 << 0)
@@ -123,6 +124,7 @@ extern unsigned char index;
 extern unsigned char i;
 extern unsigned long temp32;
 extern unsigned char tempFlags;
+extern unsigned char ticks_since_attack;
 // temp used for working with a single vertical row of tiles.
 extern unsigned char nametable_col[30];
 extern unsigned char nametable_col_b[30];

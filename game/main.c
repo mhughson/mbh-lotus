@@ -29,6 +29,7 @@ unsigned char i;
 unsigned char temp;
 unsigned long temp32;
 unsigned char tempFlags;
+unsigned char ticks_since_attack = 0xff;
 unsigned char nametable_col[30];
 unsigned char nametable_col_b[30];
 

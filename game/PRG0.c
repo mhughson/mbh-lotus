@@ -50,6 +50,9 @@ const anim_def jump_left = { 60, 1, { 14 } };
 const anim_def fall_left = { 60, 1, { 15 } };
 const anim_def idle_crouch_right = { 60, 1, { 22 } };
 const anim_def idle_crouch_left = { 60, 1, { 23 } };
+const anim_def idle_attack_right = { 60, 1, { 24 } };
+const anim_def jump_attack_right = { 60, 1, { 25 } };
+const anim_def walk_attack_right = { 5, 6, { 26, 27, 28, 29, 30, 31 } };
 
 
 enum
@@ -64,6 +67,9 @@ enum
 	ANIM_PLAYER_FALL_LEFT = 7, 
 	ANIM_PLAYER_IDLE_CROUCH_RIGHT = 8,
 	ANIM_PLAYER_IDLE_CROUCH_LEFT = 9,
+	ANIM_PLAYER_IDLE_ATTACK_RIGHT = 10,
+	ANIM_PLAYER_JUMP_ATTACK_RIGHT = 11,
+	ANIM_PLAYER_WALK_ATTACK_RIGHT = 12,
 
 	NUM_ANIMS,
 };
@@ -84,6 +90,10 @@ const struct anim_def* sprite_anims[] =
 
 	&idle_crouch_right,
 	&idle_crouch_left,
+
+	&idle_attack_right,
+	&jump_attack_right,
+	&walk_attack_right,
 };
 
 const unsigned char current_room[ROOM_WIDTH_TILES * 15] = 
@@ -442,6 +452,18 @@ void update_player()
 		jump_held_count = 0;
 	}
 
+	if (ticks_since_attack >= ATTACK_LEN)
+	{
+		if (pad_all_new & PAD_B)
+		{
+			ticks_since_attack = 0;
+		}
+	}
+	else
+	{
+		++ticks_since_attack;
+	}
+
 	player1.vel_y += GRAVITY;
 	player1.pos_y += player1.vel_y;
 
@@ -577,8 +599,8 @@ void update_player()
 		commit_next_anim();
 	}
 	else
-	{					
-		anim_index = player1.facing_left ? ANIM_PLAYER_IDLE_LEFT : ANIM_PLAYER_IDLE_RIGHT;
+	{		
+		anim_index = (ticks_since_attack < ATTACK_LEN) ? ANIM_PLAYER_IDLE_ATTACK_RIGHT : (player1.facing_left ? ANIM_PLAYER_IDLE_LEFT : ANIM_PLAYER_IDLE_RIGHT);
 		global_working_anim = &player1.sprite.anim;
 		queue_next_anim(anim_index);
 		commit_next_anim();
