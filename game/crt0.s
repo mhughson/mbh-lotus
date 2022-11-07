@@ -400,6 +400,7 @@ sounds_data:
 
 	.incbin "chrrom_bank0.chr"
 	.incbin "chrrom_bank1.chr"
+	.incbin "chrrom_bank2.chr"
 ;	.incbin "ninja2.chr"
 ;	.incbin "ninja3.chr"
 ;	.incbin "Alpha.chr"

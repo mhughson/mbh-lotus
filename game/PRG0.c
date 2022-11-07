@@ -730,6 +730,18 @@ void go_to_state(unsigned char new_state)
 			ppu_off();
 			scroll(0,0);		
 //			set_chr_bank_0(2);	
+
+/*
+;mode 2 changes $0000-$03FF
+;mode 3 changes $0400-$07FF
+;mode 4 changes $0800-$0BFF
+;mode 5 changes $0C00-$0FFF
+*/	
+			set_chr_mode_2(16);
+			set_chr_mode_3(17);
+			set_chr_mode_4(18);
+			set_chr_mode_5(19);
+
 			pal_bg(palette_title);
 			pal_spr(palette_title);		
 			vram_adr(NTADR_A(0,0));
@@ -745,9 +757,16 @@ void go_to_state(unsigned char new_state)
 		{
 			fade_to_black();
 			ppu_off();
+			music_stop();
 			scroll(0,0);
 			cam.pos_x = 0;
 //			set_chr_bank_0(0);
+
+			set_chr_mode_2(0);
+			set_chr_mode_3(1);
+			set_chr_mode_4(2);
+			set_chr_mode_5(3);
+
 			pal_bg(palette);
 			pal_spr(palette);		
 			load_current_map(NAMETABLE_A, NULL);
