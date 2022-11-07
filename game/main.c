@@ -2,7 +2,7 @@
 
 #include "LIB/neslib.h"
 #include "LIB/nesdoug.h"
-#include "A53/bank_helpers.h"
+#include "mmc3\mmc3_code.h"
 #include "../include/stdlib.h"
 
 #include "main.h"
@@ -43,6 +43,12 @@ game_actor player1;
 camera cam;
 
 unsigned char cur_state;
+
+#pragma bss-name(push, "XRAM")
+// extra RAM at $6000-$7fff
+//unsigned char wram_array[0x2000];
+unsigned char save_version_validation[NUM_SAVE_VERSION_VALIDATION];
+#pragma bss-name(pop)
 
 #pragma rodata-name ("CODE")
 #pragma code-name ("CODE")

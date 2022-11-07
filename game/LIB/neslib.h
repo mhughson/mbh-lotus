@@ -20,8 +20,8 @@
 
 //set bg and spr palettes, data is 32 bytes array
 
-#ifndef BF599DA1_F14E_4624_8DF1_52FFF7B9E1BD
-#define BF599DA1_F14E_4624_8DF1_52FFF7B9E1BD
+#ifndef BCA59C52_C8BE_43C8_B204_4E357D727522
+#define BCA59C52_C8BE_43C8_B204_4E357D727522
 
 void __fastcall__ pal_all(const char *data);
 
@@ -113,9 +113,6 @@ void __fastcall__ oam_spr(unsigned char x,unsigned char y,unsigned char chrnum,u
 // Note: sprid removed for speed
 
 void __fastcall__ oam_meta_spr(unsigned char x,unsigned char y,const unsigned char *data);
-
-//same as oam_meta_spr, but allows for sprite id offets, and palette override.
-void __fastcall__ oam_meta_spr_offset(unsigned char x, unsigned char y, unsigned char offset, unsigned char pal_override, const unsigned char *data);
 
 
 //hide all remaining sprites from given offset
@@ -329,4 +326,6 @@ void __fastcall__ delay(unsigned char frames);
 #define MSB(x)			(((x)>>8))
 #define LSB(x)			(((x)&0xff))
 
-#endif /* BF599DA1_F14E_4624_8DF1_52FFF7B9E1BD */
+
+
+#endif /* BCA59C52_C8BE_43C8_B204_4E357D727522 */

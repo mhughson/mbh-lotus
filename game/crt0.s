@@ -4,13 +4,14 @@
 
 
 
-; Edited to work with MMC1 code
-.define SOUND_BANK 2
+; Edited to work with MMC3 code
+.define SOUND_BANK 12
+;segment BANK12
 
 
 FT_BASE_ADR		= $0100		;page in RAM, should be $xx00
 FT_DPCM_OFF		= $f000		;$c000..$ffc0, 64-byte steps
-FT_SFX_STREAMS	= 4			;number of sound effects played at once, 1..4
+FT_SFX_STREAMS	= 1			;number of sound effects played at once, 1..4
 
 FT_THREAD       = 1		;undefine if you call sound effects in the same thread as sound update
 FT_PAL_SUPPORT	= 1		;undefine to exclude PAL support
@@ -35,10 +36,10 @@ FT_SFX_ENABLE   = 1		;undefine to exclude all sound effects code
 	.import	__CODE_LOAD__   ,__CODE_RUN__   ,__CODE_SIZE__
 	.import	__RODATA_LOAD__ ,__RODATA_RUN__ ,__RODATA_SIZE__
 	.import NES_MAPPER, NES_PRG_BANKS, NES_CHR_BANKS, NES_MIRRORING
-    
-	.import upload_chars
 
     .include "zeropage.inc"
+
+
 
 
 PPU_CTRL	=$2000
@@ -56,7 +57,7 @@ CTRL_PORT1	=$4016
 CTRL_PORT2	=$4017
 
 OAM_BUF		=$0200
-;PAL_BUF		=$01c0
+PAL_BUF		=$01c0
 VRAM_BUF	=$0700
 
 
@@ -84,7 +85,6 @@ PPU_CTRL_VAR1: 		.res 1
 PPU_MASK_VAR: 		.res 1
 RAND_SEED: 			.res 2
 FT_TEMP: 			.res 3
-BANK_WRITE_IP:		.res 1
 
 TEMP: 				.res 11
 SPRID:				.res 1
@@ -104,30 +104,25 @@ RLE_HIGH	=TEMP+1
 RLE_TAG		=TEMP+2
 RLE_BYTE	=TEMP+3
 
-OFFSET:				.res 1
-PAL_OVERRIDE:		.res 1
-
 ;nesdoug code requires
 VRAM_INDEX:			.res 1
 META_PTR:			.res 2
 DATA_PTR:			.res 2
 
 
-; bss segment added my mhughson. not really sure if this is correct :|
-.segment "BSS"
 
-PAL_BUF:			.res 32 ; originally hardcode to $01c0, inside stack memory, be was getting hit with stack overflow.
+
 
 .segment "HEADER"
 
     .byte $4e,$45,$53,$1a
 	.byte <NES_PRG_BANKS
 	.byte <NES_CHR_BANKS
-	.byte <NES_MIRRORING|(<NES_MAPPER&$f<<4); ;|2 ;battery save
-	.byte <NES_MAPPER&$f0|8
-	.byte $00,$00,$00 ;$07 ;8kb work RAM
-	.byte $09 ;32k of CHR RAM
-	.byte $00,$00,$00,$00
+	.byte <NES_MIRRORING|(<NES_MAPPER<<4)|2 ;battery save
+	.byte $8|(<NES_MAPPER&$f0);ines2 flag + upper half of mapper number
+	.res 2,0
+	.byte $70 ; 8kb save ram
+	.res 5,0
 
 
 ; linker complains if I don't have at least one mention of each bank
@@ -135,12 +130,20 @@ PAL_BUF:			.res 32 ; originally hardcode to $01c0, inside stack memory, be was g
 .segment "BANK0"
 .segment "BANK1"
 .segment "BANK2"
-; .segment "BANK3"
-; .segment "BANK4"
-; .segment "BANK5"
-; .segment "BANK6"
+.segment "BANK3"
+.segment "BANK4"
+.segment "BANK5"
+.segment "BANK6"
+.segment "BANK7"
+.segment "BANK8"
+.segment "BANK9"
+.segment "BANK10"
+.segment "BANK11"
+.segment "BANK12"
+
 
 .segment "STARTUP"
+; this should be mapped to the last PRG bank
 
 start:
 _exit:
@@ -156,44 +159,9 @@ _exit:
     stx DMC_FREQ
     stx PPU_CTRL		;no NMI
 	
-clearRAM:
-    txa
-@1:
-    sta $000,x
-    sta $100,x
-    sta $200,x
-    sta $300,x
-    sta $400,x
-    sta $500,x
-    sta $600,x
-    sta $700,x
-    inx
-    bne @1
-
-	;x is still zero
+	jsr _disable_irq ;disable mmc3 IRQ
 	
-; Mapper reset
-
-	lda #$81		; outer PRG bank
-	sta A53_REG_SELECT
-	lda #7	; 
-	sta A53_REG_VALUE
-	
-	lda #$80		; mode
-	sta A53_REG_SELECT
-	lda #%101111	; 
-	sta A53_REG_VALUE
-	
-
-	lda #$00 ;CHR bank #0 for first tileset
-	jsr _set_chr_bank_0
-	
-	;lda #$01 ;CHR bank #1 for second tileset
-	;jsr _set_chr_bank_1
-	
-	lda #$01 ;PRG bank #1 at $8000
-	jsr _set_prg_bank
-	
+	;x is zero
 
 initPPU:
     bit PPU_STATUS
@@ -214,6 +182,16 @@ clearPalette:
 	sta PPU_DATA
 	dex
 	bne @1
+	
+	
+	lda #$01				; DEBUGGING
+	sta PPU_DATA
+	lda #$11
+	sta PPU_DATA
+	lda #$21
+	sta PPU_DATA
+	lda #$30
+	sta PPU_DATA
 
 clearVRAM:
 	txa
@@ -227,15 +205,71 @@ clearVRAM:
 	bne @1
 	dey
 	bne @1
+
+clearRAM:
+    txa
+@1:
+    sta $000,x
+    sta $100,x
+    sta $200,x
+    sta $300,x
+    sta $400,x
+    sta $500,x
+    sta $600,x
+    sta $700,x
+    inx
+    bne @1
 	
-	jsr upload_chars
+; don't call any subroutines until the banks are in place	
+	
+	
+	
+; MMC3 reset
+
+; set which bank at $8000
+; also $c000 fixed to 14 of 15
+	lda #0 ; PRG bank zero
+	jsr _set_prg_8000
+; set which bank at $a000
+	lda #13 ; PRG bank 13 of 15
+	jsr _set_prg_a000
+	
+; with CHR invert, set $0000-$03FF
+	lda #0
+	jsr _set_chr_mode_2
+; with CHR invert, set $0400-$07FF
+	lda #1
+	jsr _set_chr_mode_3
+; with CHR invert, set $0800-$0BFF
+	lda #2
+	jsr _set_chr_mode_4
+; with CHR invert, set $0C00-$0FFF
+	lda #3
+	jsr _set_chr_mode_5
+; with CHR invert, set $1000-$17FF
+	lda #4
+	jsr _set_chr_mode_0
+; with CHR invert, set $1800-$1FFF
+	lda #6
+	jsr _set_chr_mode_1
+;set mirroring to vertical, no good reason	
+	lda #0
+	jsr _set_mirroring
+;allow reads and writes to WRAM	
+	lda #$80 ;WRAM_ON 0x80
+	jsr _set_wram_mode
+	
+	cli ;allow irq's to happen on the 6502 chip	
+		;however, the mmc3 IRQ was disabled above
+	
+	
 
 	lda #4
 	jsr _pal_bright
 	jsr _pal_clear
 	jsr _oam_clear
 
-    ;jsr	zerobss
+    jsr zerobss
 	jsr	copydata
 
     lda #<(__STACK_START__+__STACKSIZE__) ;changed
@@ -246,10 +280,23 @@ clearVRAM:
 ;	jsr	initlib
 ; removed. this called the CONDES function
 
+
+
+
+
+	
+
+
+
+
+
+
+
+
 	lda #%10000000
 	sta <PPU_CTRL_VAR
 	sta PPU_CTRL		;enable NMI
-	lda #%00000000 ;#%00000110 updated to disable left 8 pixels
+	lda #%00000000
 	sta <PPU_MASK_VAR
 
 waitSync3:
@@ -287,9 +334,11 @@ detectNTSC:
 	
 	
 	
-	lda #SOUND_BANK ;PRG bank where all the music stuff is there
+;BANK12
+	
+	lda #SOUND_BANK ;swap the music in place before using
 					;SOUND_BANK is defined above
-	jsr _set_prg_bank
+	jsr _set_prg_8000
 	
 	ldx #<music_data
 	ldy #>music_data
@@ -301,17 +350,13 @@ detectNTSC:
 	jsr FamiToneSfxInit
 	
 	lda #$00 ;PRG bank #0 at $8000, back to basic
-	jsr _set_prg_bank
-	
-	;for split screens with different CHR bank at top... disable it
-	jsr _unset_nmi_chr_tile_bank
+	jsr _set_prg_8000
 
 	jmp _main			;no parameters
 	
 	
 
-	;.include "MMC1/mmc1_macros.asm"
-	.include "A53/bank_helpers.asm"
+	.include "MMC3/mmc3_code.asm"
 	.include "LIB/neslib.s"
 	.include "LIB/nesdoug.s"
 	
@@ -319,28 +364,26 @@ detectNTSC:
 
 
 	
-; I put all the music stuff on bank 6
-; all the music functions swap in bank 6
-	
-;.segment "CODE" ;does nothing-segments set in famitone5.s again
-	.include "MUSIC/famitone5.s"
 
-.segment "BANK2" ; im suprised this works, having music/sound data in different bank from famitone, but it does.
+	
+.segment "CODE"	
+	.include "MUSIC/famitone5.s"
+; When music files get very big, it's probably best to
+; split the songs into multiple swapped banks
+; the music code itself is in the regular CODE banks.
+; It could be moved into BANK12 if music data is small.
+	
+.segment "BANK12"	
+	
 music_data:
- 	.include "MUSIC/songs.s"
+	.include "MUSIC/songs.s"
 
 sounds_data:
- 	.include "MUSIC/sounds.s"
+	.include "MUSIC/sounds.s"
 
 
 	
-; NOTE: This won't work with music/sound other than the MMC1 demo. I think this is become the 
-;		memory layout needs to be really specific: https://nesdoug.com/2018/09/05/17-dmc-sound/
-;
-;		"This is the tricky part. DMC samples must go between $c000 and $ffc0. preferably as far 
-;		to the end as possible. Subtract the byte size of the samples from ffc0 and round down 
-;		to the next xx40. In the cfg file, define the SAMPLE segment to start there."
-;
+	
 ;.segment "SAMPLES"
 ;	.incbin "MUSIC/BassDrum.dmc"
 
@@ -353,11 +396,14 @@ sounds_data:
    	.word irq	;$fffe irq / brk
 
 
-;.segment "CHARS"
+.segment "CHARS"
 
-;	.incbin "chrrom_bank0.chr"
-;	.incbin "chrrom_bank1.chr"
-;	.incbin "chrrom_bank2.chr"
+	.incbin "chrrom_bank0.chr"
+	.incbin "chrrom_bank1.chr"
+;	.incbin "ninja2.chr"
+;	.incbin "ninja3.chr"
+;	.incbin "Alpha.chr"
+;	.incbin "Gears.chr"
 ; the CHARS segment is much bigger, and I could have 
 ; incbin-ed many more chr files
 	

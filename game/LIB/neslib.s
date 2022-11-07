@@ -2,10 +2,10 @@
 ;with improvements by VEG
 ;Feel free to do anything you want with this code, consider it Public Domain
 
-;nesdoug version, 2019-09
+;nesdoug version, 2019-11
 ;minor change %%, added ldx #0 to functions returning char
 ;removed sprid from c functions to speed them up
-;music and nmi changed for mmc1
+;music and nmi changed for mmc3
 
 ;SOUND_BANK is defined at the top of crt0.s
 ;and needs to match the bank where the music is
@@ -15,7 +15,7 @@
 	.export _pal_all,_pal_bg,_pal_spr,_pal_col,_pal_clear
 	.export _pal_bright,_pal_spr_bright,_pal_bg_bright
 	.export _ppu_off,_ppu_on_all,_ppu_on_bg,_ppu_on_spr,_ppu_mask,_ppu_system
-	.export _oam_clear,_oam_size,_oam_spr,_oam_meta_spr,_oam_meta_spr_offset,_oam_hide_rest
+	.export _oam_clear,_oam_size,_oam_spr,_oam_meta_spr,_oam_hide_rest
 	.export _ppu_wait_frame,_ppu_wait_nmi
 	.export _scroll,_split
 	.export _bank_spr,_bank_bg
@@ -27,7 +27,6 @@
 	.export _vram_adr,_vram_put,_vram_fill,_vram_inc,_vram_unrle
 	.export _set_vram_update,_flush_vram_update
 	.export _memcpy,_memfill,_delay
-	.export real_nmi
 	
 	.export _flush_vram_update_nmi, _oam_set, _oam_get
 
@@ -36,27 +35,15 @@
 ;NMI handler
 
 nmi:
-    pha 
-    lda <BANK_WRITE_IP
-    beq @continue
-        lda #$00
-        sta BANK_WRITE_IP
-        pla
-        jmp @skip_all ; If we were in the middle of switching banks, skip this nmi. Gross, but effective.
-    @continue:
-    pla
-
-	jsr real_nmi
-	
-	@skip_all:
-	rti
-
-real_nmi:
 	pha
 	txa
 	pha
 	tya
 	pha
+	
+	lda #0
+	sta mmc3_index
+	sta irq_done
 
 	lda <PPU_MASK_VAR	;if rendering is disabled, do not access the VRAM at all
 	and #%00011000
@@ -64,14 +51,6 @@ real_nmi:
 	jmp	@skipAll
 
 @doUpdate:
-
-;for split screens with different CHR bank at top	
-	lda nmiChrTileBank
-	cmp #NO_CHR_BANK 
-	beq @no_chr_chg
-	jsr _set_chr_bank_0
-@no_chr_chg:
-
 
 	lda #>OAM_BUF		;update OAM
 	sta PPU_OAM_DMA
@@ -143,6 +122,10 @@ real_nmi:
 
 	lda <PPU_CTRL_VAR
 	sta PPU_CTRL
+	
+	jsr irq_parser	; needs to happen inside v-blank... 
+					; so goes before the music
+			; but, if screen if off this should be skipped
 
 @skipAll:
 
@@ -159,26 +142,23 @@ real_nmi:
 
 @skipNtsc:
 
+	
+
 ;switch the music into the prg bank first
-	lda BP_BANK ;save current prg bank
+	lda BP_BANK_8000 ;save current prg bank
 	pha
 	lda #SOUND_BANK
-	jsr _set_prg_bank
+	jsr _set_prg_8000
 	jsr FamiToneUpdate
 	pla
-	sta BP_BANK ;restore prg bank
-	jsr _set_prg_bank
+	sta BP_BANK_8000 ;restore prg bank
+	jsr _set_prg_8000
 
 	pla
 	tay
 	pla
 	tax
 	pla
-
-	rts
-
-irq:
-
     rti
 
 
@@ -471,16 +451,11 @@ _oam_spr:
 
 _oam_meta_spr:
 
-	; The last 2 bytes of params get stored in A and X
+	sta <PTR
+	stx <PTR+1
 
-	; PTR is a 2 byte WORD stored in TEMP array (see crt0.s)
-
-	sta <PTR  		;store a in the lower byte of PTR
-	stx <PTR+1 		;store x in the lower byte of PTR+1. Is this the same as "stx >PTR"?
-
-	ldy #1			;2 popa calls replacement, performed in reversed order
-					;store the number 1 in Y
-	lda (sp),y		;??
+	ldy #1		;2 popa calls replacement, performed in reversed order
+	lda (sp),y
 	dey
 	sta <SCRX
 	lda (sp),y
@@ -527,69 +502,6 @@ _oam_meta_spr:
 	stx SPRID
 	rts
 
-
-;void __fastcall__ oam_meta_spr_offset(unsigned char x, unsigned char y, unsigned char offset, unsigned char pal_override, const unsigned char *data);
-_oam_meta_spr_offset:
-    sta <PTR
-    stx <PTR+1
-
-    ldy #3        	;3 popa calls replacement, performed in reversed order
-    lda (sp),y		; Back to original code...
-    dey
-    sta <SCRX
-    lda (sp),y
-	dey
-    sta <SCRY
-    lda (sp),y		; load the offset into A
-	dey
-    sta OFFSET		; store A (the offset) at address OFFSET.
-	lda (sp),y		; load the offset into A
-   	sta PAL_OVERRIDE ; store A (the pal override) at address PAL_OVERRIDE.
-    
-    ldx SPRID
-
-@1:
-
-    lda (PTR),y        ;x offset
-    cmp #$80
-    beq @2
-    iny
-    clc
-    adc <SCRX
-    sta OAM_BUF+3,x
-    lda (PTR),y        ;y offset
-    iny
-    clc
-    adc <SCRY
-    sta OAM_BUF+0,x
-    lda (PTR),y        ;tile
-    clc
-    adc OFFSET			; increment the tile id by the offset amount.
-    iny
-    sta OAM_BUF+1,x
-    lda (PTR),y        	;attribute
-	and #$e0			; a & 0x11100000 ; V,H,B,unused x 3,pal[2]
-	ora PAL_OVERRIDE	; a | PAL_OVERRIDE
-    iny
-    sta OAM_BUF+2,x
-    inx
-    inx
-    inx
-    inx
-    jmp @1
-
-@2:
-
-    lda <sp
-    adc #3 ;3            ;carry is always set here
-    sta <sp
-    bcc @3
-    inc <sp+1
-
-@3:
-
-    stx SPRID
-    rts
 
 
 ;void __fastcall__ oam_hide_rest(void);
@@ -908,31 +820,31 @@ _vram_write:
 
 _music_play:
 	tax
-	lda BP_BANK ;save current prg bank
+	lda BP_BANK_8000 ;save current prg bank
 	pha
 	lda #SOUND_BANK
-	jsr _set_prg_bank
+	jsr _set_prg_8000 ;only uses A register
 	txa ;song number
 	jsr FamiToneMusicPlay
 	
 	pla
-	sta BP_BANK ;restore prg bank
-	jmp _set_prg_bank
+	sta BP_BANK_8000 ;restore prg bank
+	jmp _set_prg_8000
 	;rts
 
 
 ;void __fastcall__ music_stop(void);
 
 _music_stop:
-	lda BP_BANK ;save current prg bank
+	lda BP_BANK_8000 ;save current prg bank
 	pha
 	lda #SOUND_BANK
-	jsr _set_prg_bank
+	jsr _set_prg_8000
 	jsr FamiToneMusicStop
 	
 	pla
-	sta BP_BANK ;restore prg bank
-	jmp _set_prg_bank
+	sta BP_BANK_8000 ;restore prg bank
+	jmp _set_prg_8000
 	;rts
 
 
@@ -942,16 +854,16 @@ _music_stop:
 
 _music_pause:
 	tax
-	lda BP_BANK ;save current prg bank
+	lda BP_BANK_8000 ;save current prg bank
 	pha
 	lda #SOUND_BANK
-	jsr _set_prg_bank
+	jsr _set_prg_8000 ;only uses A register
 	txa ;song number
 	jsr FamiToneMusicPause
 	
 	pla
-	sta BP_BANK ;restore prg bank
-	jmp _set_prg_bank
+	sta BP_BANK_8000 ;restore prg bank
+	jmp _set_prg_8000
 	;rts
 
 	
@@ -969,18 +881,18 @@ _sfx_play:
 	lda @sfxPriority,x
 	tax
 	
-	lda BP_BANK ;save current prg bank
+	lda BP_BANK_8000 ;save current prg bank
 	pha
 	lda #SOUND_BANK
-	jsr _set_prg_bank
+	jsr _set_prg_8000 ;only uses A register
 	
 	jsr popa ;a = sound
 	;x = channel offset
 	jsr FamiToneSfxPlay
 	
 	pla
-	sta BP_BANK ;restore prg bank
-	jmp _set_prg_bank
+	sta BP_BANK_8000 ;restore prg bank
+	jmp _set_prg_8000
 	;rts
 
 @sfxPriority:
@@ -998,16 +910,16 @@ _sfx_play:
 .if(FT_DPCM_ENABLE)
 _sample_play:
 	tax
-	lda BP_BANK ;save current prg bank
+	lda BP_BANK_8000 ;save current prg bank
 	pha
 	lda #SOUND_BANK
-	jsr _set_prg_bank
+	jsr _set_prg_8000 ;only uses A register
 	txa ;sample number
 	jsr FamiToneSamplePlay
 	
 	pla
-	sta BP_BANK ;restore prg bank
-	jmp _set_prg_bank
+	sta BP_BANK_8000 ;restore prg bank
+	jmp _set_prg_8000
 	;rts
 
 .else

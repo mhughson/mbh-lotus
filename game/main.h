@@ -23,6 +23,13 @@
 #define PROF_B 0x9f // blue + grey
 #define PROF_W 0x1f // white + grey
 
+// Used as both a potential versioning system, and also the value
+// padded at the start of XRAM to validate a valid save game.
+#define SAVE_VERSION 1
+// The number of bytes that should contain the SAVE_VERSION at the 
+// start of XRAM to confirm that this is valid save data.
+#define NUM_SAVE_VERSION_VALIDATION 4
+
 #define CELL_SIZE (16)
 #define META_TILE_NUM_BYTES (8)
 #define ROOM_WIDTH_PAGES (4)
@@ -58,7 +65,29 @@
 #define FLAG_SOLID (1 << 0)
 #define FLAG_KILL  (1 << 1)
 
+enum
+{
+	ANIM_PLAYER_IDLE_RIGHT = 0,
+	ANIM_PLAYER_IDLE_LEFT = 1, 
+	ANIM_PLAYER_RUN_RIGHT = 2,
+	ANIM_PLAYER_RUN_LEFT = 3, 
+	ANIM_PLAYER_JUMP_RIGHT = 4,
+	ANIM_PLAYER_JUMP_LEFT = 5, 
+	ANIM_PLAYER_FALL_RIGHT = 6,
+	ANIM_PLAYER_FALL_LEFT = 7, 
+	ANIM_PLAYER_IDLE_CROUCH_RIGHT = 8,
+	ANIM_PLAYER_IDLE_CROUCH_LEFT = 9,
+	// ANIM_PLAYER_IDLE_ATTACK_RIGHT = 10,
+	// ANIM_PLAYER_JUMP_ATTACK_RIGHT = 11,
+	// ANIM_PLAYER_WALK_ATTACK_RIGHT = 12,
+
+	NUM_ANIMS,
+};
+
+
 enum { STATE_BOOT, STATE_TITLE, STATE_GAME, STATE_OVER };
+
+enum { BANK_0 = 0, BANK_1, BANK_2, BANK_3 };
 
 #pragma bss-name(push, "ZEROPAGE")
 #pragma bss-name(pop)
@@ -146,6 +175,11 @@ extern game_actor player1;
 extern camera cam;
 
 extern unsigned char cur_state;
+
+// XRAM
+//
+
+extern unsigned char save_version_validation[NUM_SAVE_VERSION_VALIDATION];
 
 // Functions
 //
