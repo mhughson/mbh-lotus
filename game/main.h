@@ -23,6 +23,13 @@
 #define PROF_B 0x9f // blue + grey
 #define PROF_W 0x1f // white + grey
 
+// Used as both a potential versioning system, and also the value
+// padded at the start of XRAM to validate a valid save game.
+#define SAVE_VERSION 1
+// The number of bytes that should contain the SAVE_VERSION at the 
+// start of XRAM to confirm that this is valid save data.
+#define NUM_SAVE_VERSION_VALIDATION 4
+
 #define CELL_SIZE (16)
 #define META_TILE_NUM_BYTES (8)
 #define ROOM_WIDTH_PAGES (4)
@@ -168,6 +175,11 @@ extern game_actor player1;
 extern camera cam;
 
 extern unsigned char cur_state;
+
+// XRAM
+//
+
+extern unsigned char save_version_validation[NUM_SAVE_VERSION_VALIDATION];
 
 // Functions
 //

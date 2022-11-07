@@ -74,18 +74,34 @@ void main_real()
 	unsigned int old_cam_x;
 
 	set_mirroring(MIRROR_VERTICAL);
-	bank_spr(1);
+
 	irq_array[0] = 0xff; // end of data
 	set_irq_ptr(irq_array); // point to this array
 	
 	
-	// // clear the WRAM, not done by the init code
-	// // memfill(void *dst,unsigned char value,unsigned int len);
-	// memfill(wram_array,0,0x2000); 
-	
-	
-//	wram_array[0] = 'A'; // put some values at $6000-7fff
-//	wram_array[2] = 'C'; // for later testing	
+	// SAVE_VERSION is a magic number which means that this is valid save data.
+	// Any other value is assumed to be garbage and therefore this is
+	// a first time booting.
+	// We check multiple entries in an array to reduce the chance of a fluke where the
+	// random piece of data happens to match the version number.
+	for (i = 0; i < NUM_SAVE_VERSION_VALIDATION; ++i)
+	{
+		if (save_version_validation[i] != SAVE_VERSION)
+		{
+			// clear all of WRAM.
+			memfill(save_version_validation, 0, 0x2000);
+
+			for (i = 0; i < NUM_SAVE_VERSION_VALIDATION; ++i)
+			{
+				// Store the save version as our magic number to check next time.
+				save_version_validation[i] = SAVE_VERSION;
+			}
+
+			// SET NON-ZERO DEFAULT VALUES HERE.
+
+			break;
+		}
+	}
 
     ppu_off(); // screen off
 

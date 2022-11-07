@@ -118,10 +118,11 @@ DATA_PTR:			.res 2
     .byte $4e,$45,$53,$1a
 	.byte <NES_PRG_BANKS
 	.byte <NES_CHR_BANKS
-	.byte <NES_MIRRORING|(<NES_MAPPER<<4)
-	.byte <NES_MAPPER&$f0
-	.byte 1 ;8k of PRG RAM
-	.res 7,0
+	.byte <NES_MIRRORING|(<NES_MAPPER<<4)|2 ;battery save
+	.byte $8|(<NES_MAPPER&$f0);ines2 flag + upper half of mapper number
+	.res 2,0
+	.byte $70 ; 8kb save ram
+	.res 5,0
 
 
 ; linker complains if I don't have at least one mention of each bank

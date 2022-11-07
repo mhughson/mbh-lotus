@@ -46,8 +46,8 @@ unsigned char cur_state;
 
 #pragma bss-name(push, "XRAM")
 // extra RAM at $6000-$7fff
-unsigned char wram_array[0x2000];
-
+//unsigned char wram_array[0x2000];
+unsigned char save_version_validation[NUM_SAVE_VERSION_VALIDATION];
 #pragma bss-name(pop)
 
 #pragma rodata-name ("CODE")
