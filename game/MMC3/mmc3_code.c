@@ -1,13 +1,15 @@
 // Contains functions to help with working with multiple PRG/CHR banks
-// NOTE! These functions need to be located in the fixed bank $c000-ffff
+// NOTE! These functions need to be located in the fixed bank $e000-ffff
+#pragma rodata-name ("STARTUP")
+#pragma code-name ("STARTUP")
 
 
-// call a function in a different bank
-
-#include "bank_helpers.h"
+#include "mmc3_code.h"
 
 unsigned char bankLevel;
 unsigned char bankBuffer[MAX_BANK_DEPTH];
+
+// call a function in a different bank
 
 void banked_call(unsigned char bankId, void (*method)(void)) {
     bank_push(bankId);
@@ -27,7 +29,7 @@ void bank_push(unsigned char bankId) {
     bankBuffer[bankLevel] = bankId;
     ++bankLevel;
 // removed error code
-    set_prg_bank(bankId);
+    set_prg_8000(bankId);
 }
 
 
@@ -37,7 +39,7 @@ void bank_push(unsigned char bankId) {
 void bank_pop(void) {
     --bankLevel;
     if (bankLevel > 0) {
-        set_prg_bank(bankBuffer[bankLevel-1]);
+        set_prg_8000(bankBuffer[bankLevel-1]);
     }
 }
 

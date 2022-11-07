@@ -16,19 +16,9 @@ set path=..\bin\;%path%
 
 set CC65_HOME=..\
 
-set a53enable=1
-
 IF DEFINED audio (
 	MUSIC\text2vol5.exe MUSIC\songs.txt -ca65
 	MUSIC\nsf2data5.exe MUSIC\sounds.nsf -ca65
-)
-
-IF DEFINED gfx (
-	python gfx\xor.py chrrom_bank0.chr chrrom_bank1.chr 0xor1.chr
-	python gfx\donut.py chrrom_bank0.chr -fo gfx/chrrom_bank0.d
-	python gfx\donut.py 0xor1.chr -fo gfx/0xor1.d
-	python gfx\donut.py chrrom_bank1.chr -fo gfx/chrrom_bank1.d
-	python gfx\donut.py chrrom_bank2.chr -fo gfx/chrrom_bank2.d
 )
 
 IF DEFINED maps (
@@ -43,28 +33,26 @@ IF DEFINED code (
 	cc65 -g -Oirs PRG0.c --add-source
 	cc65 -g -Oirs PRG1.c --add-source
 	cc65 -g -Oirs PRG2.c --add-source
-	cc65 -g -Oirs A53\bank_helpers.c --add-source
+	cc65 -g -Oirs mmc3\mmc3_code.c --add-source
 	ca65 crt0.s
 	ca65 %name%.s -g
 	ca65 PRG0.s -g
 	ca65 PRG1.s -g
 	ca65 PRG2.s -g
-	ca65 donut.s -g
-	ca65 unpack.s -g
-	ca65 A53\bank_helpers.s -g
+	ca65 mmc3\mmc3_code.s -g
 
 	REM -dbgfile does not impact the resulting .nes file.
-	ld65 -C A53.cfg --dbgfile %name%.dbg -o %name%.nes crt0.o %name%.o A53\bank_helpers.o donut.o unpack.o PRG0.o PRG1.o PRG2.o nes.lib -Ln labels.txt -m map.txt
+	ld65 -C mmc3_128_128.cfg --dbgfile %name%.dbg -o %name%.nes crt0.o %name%.o mmc3\mmc3_code.o PRG0.o PRG1.o PRG2.o nes.lib -Ln labels.txt -m map.txt
 
 	del *.o
-	del A53\*.o
+	del mmc3\*.o
 
 	mkdir BUILD\
 	move /Y %name%.nes BUILD\ 
 	move /Y %name%.dbg BUILD\ 
 	move /Y labels.txt BUILD\ 
 	move /Y %name%.s BUILD\ 
-	move /Y A53\bank_helpers.s BUILD\ 
+	move /Y mmc3\mmc3_code.s BUILD\ 
 	move /Y PRG0.s BUILD\ 
 	move /Y PRG1.s BUILD\ 
 	move /Y PRG2.s BUILD\

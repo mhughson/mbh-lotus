@@ -2,7 +2,7 @@
 #include "main.h"
 #include "LIB/neslib.h"
 #include "LIB/nesdoug.h"
-#include "A53/bank_helpers.h"
+#include "mmc3\mmc3_code.h"
 #include "../include/stdlib.h"
 
 #pragma rodata-name ("BANK2")

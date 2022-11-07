@@ -9,6 +9,7 @@
         "pico_credits_screen.h": "c",
         "stdlib.h": "c",
         "bank_helpers.h": "c",
-        "meta_tiles_temp.h": "c"
+        "meta_tiles_temp.h": "c",
+        "mmc3_code.h": "c"
     }
 }

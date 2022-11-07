@@ -2,7 +2,7 @@
 #include "main.h"
 #include "LIB/neslib.h"
 #include "LIB/nesdoug.h"
-#include "A53/bank_helpers.h"
+#include "mmc3\mmc3_code.h"
 #include "../include/stdlib.h"
 
 #pragma rodata-name ("BANK0")
@@ -11,7 +11,6 @@
 // Const data
 //
 
-#include "NES_ST/meta_player.h"
 #include "meta_tiles_temp.h"
 #include "NES_ST/screen_title.h"
 #include "NES_ST/screen_gameover.h"
@@ -26,75 +25,7 @@ const unsigned char y_collision_offsets[NUM_Y_COLLISION_OFFSETS] = { 1, 16, 31 }
 #define NUM_X_COLLISION_OFFSETS 2
 const unsigned char x_collision_offsets[NUM_X_COLLISION_OFFSETS] = { 4, 12 };
 
-typedef struct anim_def
-{
-	// how many frames to hold on each frame of animation.
-	unsigned char ticks_per_frame;
 
-	// how many frames are used in frames array.
-	// TODO: would it be better to just use a special value (eg. 0xff)
-	//		 to signify the end of the anim?
-	unsigned char anim_len;
-
-	// index into meta_sprites array
-	unsigned char frames[17];
-} anim_def;
-
-const anim_def idle_right = { 5, 3, { 0, 1, 2 } };
-const anim_def walk_right = { 5, 6, { 5, 6, 7, 8, 9, 10 } };
-const anim_def jump_right = { 60, 1, { 3 } };
-const anim_def fall_right = { 60, 1, { 4 } };
-const anim_def idle_left = { 5, 3, { 11, 12, 13 } };
-const anim_def walk_left = { 5, 6, { 16, 17, 18, 19, 20, 21 } };
-const anim_def jump_left = { 60, 1, { 14 } };
-const anim_def fall_left = { 60, 1, { 15 } };
-const anim_def idle_crouch_right = { 60, 1, { 22 } };
-const anim_def idle_crouch_left = { 60, 1, { 23 } };
-const anim_def idle_attack_right = { 60, 1, { 24 } };
-const anim_def jump_attack_right = { 60, 1, { 25 } };
-const anim_def walk_attack_right = { 5, 6, { 26, 27, 28, 29, 30, 31 } };
-
-
-enum
-{
-	ANIM_PLAYER_IDLE_RIGHT = 0,
-	ANIM_PLAYER_IDLE_LEFT = 1, 
-	ANIM_PLAYER_RUN_RIGHT = 2,
-	ANIM_PLAYER_RUN_LEFT = 3, 
-	ANIM_PLAYER_JUMP_RIGHT = 4,
-	ANIM_PLAYER_JUMP_LEFT = 5, 
-	ANIM_PLAYER_FALL_RIGHT = 6,
-	ANIM_PLAYER_FALL_LEFT = 7, 
-	ANIM_PLAYER_IDLE_CROUCH_RIGHT = 8,
-	ANIM_PLAYER_IDLE_CROUCH_LEFT = 9,
-	ANIM_PLAYER_IDLE_ATTACK_RIGHT = 10,
-	ANIM_PLAYER_JUMP_ATTACK_RIGHT = 11,
-	ANIM_PLAYER_WALK_ATTACK_RIGHT = 12,
-
-	NUM_ANIMS,
-};
-
-const struct anim_def* sprite_anims[] =
-{
-	&idle_right,
-	&idle_left,
-
-	&walk_right,
-	&walk_left,
-
-	&jump_right,
-	&jump_left,
-
-	&fall_right,
-	&fall_left,
-
-	&idle_crouch_right,
-	&idle_crouch_left,
-
-	&idle_attack_right,
-	&jump_attack_right,
-	&walk_attack_right,
-};
 
 const unsigned char current_room[ROOM_WIDTH_TILES * 15] = 
 {
@@ -128,6 +59,8 @@ unsigned char on_ground;
 unsigned char new_jump_btn;
 unsigned int scroll_y;
 
+unsigned char irq_array[32];
+unsigned char double_buffer[32];
 
 // Functions
 //
@@ -139,6 +72,20 @@ void draw_player();
 void main_real()
 {
 	unsigned int old_cam_x;
+
+	set_mirroring(MIRROR_VERTICAL);
+	bank_spr(1);
+	irq_array[0] = 0xff; // end of data
+	set_irq_ptr(irq_array); // point to this array
+	
+	
+	// // clear the WRAM, not done by the init code
+	// // memfill(void *dst,unsigned char value,unsigned int len);
+	// memfill(wram_array,0,0x2000); 
+	
+	
+//	wram_array[0] = 'A'; // put some values at $6000-7fff
+//	wram_array[2] = 'C'; // for later testing	
 
     ppu_off(); // screen off
 
@@ -153,7 +100,7 @@ void main_real()
 	//pal_bright(4);
 
 	// Horizontal scrolling...
-	set_mirror_mode(MIRROR_MODE_VERT);
+//	set_mirror_mode(MIRROR_MODE_VERT);
 
 	//music_play(1);
 
@@ -221,7 +168,7 @@ void main_real()
 					vram_buffer_load_column();
 				}
 
-				draw_player();
+				banked_call(BANK_1, draw_player);
 
 				// cur_col is the last column to be loaded, aka the right
 				// hand side of the screen. The scroll amount is relative to the 
@@ -249,49 +196,6 @@ void main_real()
 	}
 }
 
-unsigned char update_anim()
-{
-	static const struct anim_def* cur_anim;
-	cur_anim = sprite_anims[global_working_anim->anim_current];
-
-	// Note: In WnW this was done in each draw function manually, and I'm not sure why. Perhaps
-	//		 to ensure that the first frame got played before advancing?
-	++global_working_anim->anim_ticks;
-
-	if (global_working_anim->anim_ticks >= cur_anim->ticks_per_frame)
-	{
-		global_working_anim->anim_ticks = 0;
-		++global_working_anim->anim_frame;
-		// todo: don't always loop.
-		if (global_working_anim->anim_frame >= cur_anim->anim_len)
-		{
-			global_working_anim->anim_frame = 0;
-			return 1;
-		}
-	}
-	return 0;
-}
-
-void draw_player()
-{
-	global_working_anim = &player1.sprite.anim;
-	update_anim();
-
-	//cur_cam_x = high_2byte(player1.pos_x) - 128;
-
-	if (high_2byte(player1.pos_y) < 240 || high_2byte(player1.pos_y) > (0xffff - 16))
-	{
-		oam_meta_spr(
-			high_2byte(player1.pos_x) - cam.pos_x, 
-			high_2byte(player1.pos_y) - 1 - cam.pos_y,
-			meta_player_list[sprite_anims[player1.sprite.anim.anim_current]->frames[player1.sprite.anim.anim_frame]]);
-	}
-
-	// Update animation.
-	//++player1.sprite.anim.anim_ticks;
-
-}
-
 void kill_player()
 {
 	go_to_state(STATE_OVER);
@@ -304,7 +208,7 @@ void update_player()
 	// static unsigned int high_y;
 	static const unsigned int high_walk_speed = (WALK_SPEED >> 16);
 
-	PROFILE_POKE(PROF_G);
+//	PROFILE_POKE(PROF_G);
 
 	// high_x = high_2byte(player1.pos_x);
 	// high_y = high_2byte(player1.pos_y);
@@ -434,6 +338,7 @@ void update_player()
 			++jump_held_count;
 			++jump_count;
 			player1.vel_y = -(JUMP_VEL);
+			sfx_play(0,0);
 		}
 		else if (jump_count < 1 && pad_all_new & PAD_A)
 		{
@@ -452,17 +357,17 @@ void update_player()
 		jump_held_count = 0;
 	}
 
-	if (ticks_since_attack >= ATTACK_LEN)
-	{
-		if (pad_all_new & PAD_B)
-		{
-			ticks_since_attack = 0;
-		}
-	}
-	else
-	{
-		++ticks_since_attack;
-	}
+	// if (ticks_since_attack >= ATTACK_LEN)
+	// {
+	// 	if (pad_all_new & PAD_B)
+	// 	{
+	// 		ticks_since_attack = 0;
+	// 	}
+	// }
+	// else
+	// {
+	// 	++ticks_since_attack;
+	// }
 
 	player1.vel_y += GRAVITY;
 	player1.pos_y += player1.vel_y;
@@ -600,7 +505,8 @@ void update_player()
 	}
 	else
 	{		
-		anim_index = (ticks_since_attack < ATTACK_LEN) ? ANIM_PLAYER_IDLE_ATTACK_RIGHT : (player1.facing_left ? ANIM_PLAYER_IDLE_LEFT : ANIM_PLAYER_IDLE_RIGHT);
+		//anim_index = (ticks_since_attack < ATTACK_LEN) ? ANIM_PLAYER_IDLE_ATTACK_RIGHT : (player1.facing_left ? ANIM_PLAYER_IDLE_LEFT : ANIM_PLAYER_IDLE_RIGHT);
+		anim_index = (player1.facing_left ? ANIM_PLAYER_IDLE_LEFT : ANIM_PLAYER_IDLE_RIGHT);
 		global_working_anim = &player1.sprite.anim;
 		queue_next_anim(anim_index);
 		commit_next_anim();
@@ -668,6 +574,7 @@ void load_current_map(unsigned int nt, unsigned char* _current_room)
 
 // LARGELY UNTESTED!
 // ATTRIBUTES LOOKS LIKE THEY WOULD NOT WORK. ASSUMES 16 TILE WIDE LEVELS
+/*
 void vram_buffer_load_2x2_metatile()
 {
 	// Function gets called from a lot of places, so not safe to use globals.
@@ -719,7 +626,7 @@ void vram_buffer_load_2x2_metatile()
 
 	one_vram_buffer(local_i, get_at_addr(nametable_index, (local_x) * CELL_SIZE, (local_y) * CELL_SIZE));
 }
-
+*/
 void vram_buffer_load_column()
 {
 	static unsigned char local_x;
@@ -806,13 +713,15 @@ void go_to_state(unsigned char new_state)
 			fade_to_black();
 			ppu_off();
 			scroll(0,0);		
-			set_chr_bank_0(2);	
+//			set_chr_bank_0(2);	
 			pal_bg(palette_title);
 			pal_spr(palette_title);		
 			vram_adr(NTADR_A(0,0));
 			vram_unrle(screen_title);
 			ppu_on_all();
+//			music_play(0);
 			fade_from_black();
+			music_play(0);
 			break;
 		}
 
@@ -822,7 +731,7 @@ void go_to_state(unsigned char new_state)
 			ppu_off();
 			scroll(0,0);
 			cam.pos_x = 0;
-			set_chr_bank_0(0);
+//			set_chr_bank_0(0);
 			pal_bg(palette);
 			pal_spr(palette);		
 			load_current_map(NAMETABLE_A, NULL);
@@ -841,11 +750,12 @@ void go_to_state(unsigned char new_state)
 		{
 			// bit of a hack to keep the player visible during the fade to
 			// white.
-			draw_player();
+			music_stop();
+			banked_call(BANK_1, draw_player);
 			fade_to_white();
 			ppu_off();
 			scroll(0,0);		
-			set_chr_bank_0(0);	
+//			set_chr_bank_0(0);	
 			pal_bg(palette_title);
 			pal_spr(palette_title);		
 			vram_adr(NTADR_A(0,0));
