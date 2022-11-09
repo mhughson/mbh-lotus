@@ -13,13 +13,13 @@ main.o:
     CODE              Offs=000E75  Size=000129  Align=00001  Fill=0000
     BSS               Offs=000020  Size=00024A  Align=00001  Fill=0000
     DATA              Offs=000000  Size=000001  Align=00001  Fill=0000
-    XRAM              Offs=000000  Size=000004  Align=00001  Fill=0000
+    XRAM              Offs=000000  Size=000F04  Align=00001  Fill=0000
 mmc3_code.o:
     BSS               Offs=00026A  Size=00000B  Align=00001  Fill=0000
     STARTUP           Offs=0008BF  Size=000055  Align=00001  Fill=0000
 PRG0.o:
     BSS               Offs=000275  Size=000054  Align=00001  Fill=0000
-    BANK0             Offs=000000  Size=00194C  Align=00001  Fill=0000
+    BANK0             Offs=000000  Size=001948  Align=00001  Fill=0000
 PRG1.o:
     BSS               Offs=0002C9  Size=000002  Align=00001  Fill=0000
     DATA              Offs=000001  Size=000014  Align=00001  Fill=0000
@@ -111,8 +111,8 @@ HEADER                000000  00000F  000010  00001
 ZEROPAGE              000000  000051  000052  00001
 DATA                  000300  000314  000015  00001
 BSS                   000315  0005DF  0002CB  00001
-XRAM                  006000  006003  000004  00001
-BANK0                 008000  00994B  00194C  00001
+XRAM                  006000  006F03  000F04  00001
+BANK0                 008000  009947  001948  00001
 BANK1                 008000  00888D  00088E  00001
 BANK12                008000  009462  001463  00001
 BANK2                 008000  008000  000001  00001
@@ -132,15 +132,16 @@ __STACK_START__           000700 REA    __STARTUP__               000001 REA
 _bank_bg                  00E59B RLA    _bank_spr                 00E58B RLA    
 _banked_call              00E8BF RLA    _cam                      000577 RLA    
 _clear_vram_buffer        00A070 RLA    _commit_next_anim         00AE8C RLA    
-_cur_state                00057B RLA    _delay                    00E7E5 RLA    
-_draw_player              00873E RLA    _fade_from_black          00AF29 RLA    
-_fade_from_white          00AF6F RLA    _fade_to_black            00AF06 RLA    
-_fade_to_white            00AF4C RLA    _get_at_addr              00A19A RLA    
-_get_pad_new              00A07A RLA    _get_ppu_addr             00A173 RLA    
-_global_working_anim      000563 RLA    _i                        00033D RLA    
-_in_x_tile                00055F RLA    _index                    00033C RLA    
-_index16                  000338 RLA    _main                     00AF92 RLA    
-_main_real                008958 RLA    _memfill                  00E7B6 RLA    
+_cur_state                00057B RLA    _current_room             006004 RLA    
+_delay                    00E7E5 RLA    _draw_player              00873E RLA    
+_fade_from_black          00AF29 RLA    _fade_from_white          00AF6F RLA    
+_fade_to_black            00AF06 RLA    _fade_to_white            00AF4C RLA    
+_get_at_addr              00A19A RLA    _get_pad_new              00A07A RLA    
+_get_ppu_addr             00A173 RLA    _global_working_anim      000563 RLA    
+_i                        00033D RLA    _in_x_tile                00055F RLA    
+_index                    00033C RLA    _index16                  000338 RLA    
+_main                     00AF92 RLA    _main_real                008958 RLA    
+_memcpy                   00E783 RLA    _memfill                  00E7B6 RLA    
 _multi_vram_buffer_vert   00A043 RLA    _music_play               00E5FD RLA    
 _music_stop               00E610 RLA    _nametable_col            000343 RLA    
 _nametable_col_b          000361 RLA    _oam_clear                00E42B RLA    
@@ -209,50 +210,51 @@ _nametable_col_b          000361 RLA    _in_x_tile                00055F RLA
 _global_working_anim      000563 RLA    _player1                  000565 RLA    
 _cam                      000577 RLA    _cur_state                00057B RLA    
 __STACK_START__           000700 REA    _save_version_validation  006000 RLA    
-_draw_player              00873E RLA    _main_real                008958 RLA    
-_set_vram_buffer          00A000 RLA    _multi_vram_buffer_vert   00A043 RLA    
-_one_vram_buffer          00A052 RLA    _clear_vram_buffer        00A070 RLA    
-_get_pad_new              00A07A RLA    _set_scroll_x             00A11C RLA    
-_get_ppu_addr             00A173 RLA    _get_at_addr              00A19A RLA    
-_queue_next_anim          00AE75 RLA    _commit_next_anim         00AE8C RLA    
-_fade_to_black            00AF06 RLA    _fade_from_black          00AF29 RLA    
-_fade_to_white            00AF4C RLA    _fade_from_white          00AF6F RLA    
-_main                     00AF92 RLA    addysp1                   00AF9E RLA    
-addysp                    00AF9F RLA    shlax2                    00AFAC RLA    
-aslax2                    00AFAC RLA    shlax3                    00AFB7 RLA    
-aslax4                    00AFC5 RLA    shlax4                    00AFC5 RLA    
-axlong                    00AFD6 RLA    callax                    00AFE3 RLA    
-copydata                  00AFEA RLA    decsp2                    00B017 RLA    
-decsp3                    00B024 RLA    decsp4                    00B031 RLA    
-tosicmp                   00B040 RLA    incsp1                    00B06C RLA    
-popax                     00B073 RLA    incsp2                    00B07B RLA    
-incsp3                    00B089 RLA    incsp4                    00B08E RLA    
-tosadd0ax                 00B093 RLA    tosaddeax                 00B099 RLA    
-laddeq                    00B0C0 RLA    toslcmp                   00B0E5 RLA    
-tosgeeax                  00B120 RLA    pusheax                   00B12F RLA    
-tossubeax                 00B14D RLA    boolge                    00B185 RLA    
-boolult                   00B18D RLA    tosmoda0                  00B19A RLA    
-negax                     00B1AF RLA    tosorax                   00B1BF RLA    
-popa                      00B1CF RLA    popptr1                   00B1DB RLA    
-pusha                     00B1ED RLA    push0                     00B1FF RLA    
-pushax                    00B203 RLA    popsargsudiv16            00B219 RLA    
-shrax1                    00B239 RLA    shrax3                    00B241 RLA    
-shrax4                    00B24F RLA    stax0sp                   00B260 RLA    
-staxysp                   00B262 RLA    udiv16                    00B27C RLA    
-zerobss                   00B2BA RLA    __DATA_LOAD__             00B2DD RLA    
-_set_prg_8000             00E11C RLA    _set_chr_mode_2           00E147 RLA    
-_set_chr_mode_3           00E150 RLA    _set_chr_mode_4           00E159 RLA    
-_set_chr_mode_5           00E162 RLA    _set_mirroring            00E180 RLA    
-_set_irq_ptr              00E18F RLA    _pal_bg                   00E3B0 RLA    
-_pal_spr                  00E3BA RLA    _pal_bright               00E3FE RLA    
-_ppu_off                  00E405 RLA    _ppu_on_all               00E40E RLA    
-_oam_clear                00E42B RLA    _oam_meta_spr             00E481 RLA    
-_ppu_wait_nmi             00E4ED RLA    _vram_unrle               00E4F8 RLA    
-_scroll                   00E52F RLA    _bank_spr                 00E58B RLA    
-_bank_bg                  00E59B RLA    _vram_write               00E5D6 RLA    
-_music_play               00E5FD RLA    _music_stop               00E610 RLA    
-_sfx_play                 00E634 RLA    _pad_poll                 00E666 RLA    
-_vram_adr                 00E742 RLA    _memfill                  00E7B6 RLA    
+_current_room             006004 RLA    _draw_player              00873E RLA    
+_main_real                008958 RLA    _set_vram_buffer          00A000 RLA    
+_multi_vram_buffer_vert   00A043 RLA    _one_vram_buffer          00A052 RLA    
+_clear_vram_buffer        00A070 RLA    _get_pad_new              00A07A RLA    
+_set_scroll_x             00A11C RLA    _get_ppu_addr             00A173 RLA    
+_get_at_addr              00A19A RLA    _queue_next_anim          00AE75 RLA    
+_commit_next_anim         00AE8C RLA    _fade_to_black            00AF06 RLA    
+_fade_from_black          00AF29 RLA    _fade_to_white            00AF4C RLA    
+_fade_from_white          00AF6F RLA    _main                     00AF92 RLA    
+addysp1                   00AF9E RLA    addysp                    00AF9F RLA    
+shlax2                    00AFAC RLA    aslax2                    00AFAC RLA    
+shlax3                    00AFB7 RLA    shlax4                    00AFC5 RLA    
+aslax4                    00AFC5 RLA    axlong                    00AFD6 RLA    
+callax                    00AFE3 RLA    copydata                  00AFEA RLA    
+decsp2                    00B017 RLA    decsp3                    00B024 RLA    
+decsp4                    00B031 RLA    tosicmp                   00B040 RLA    
+incsp1                    00B06C RLA    popax                     00B073 RLA    
+incsp2                    00B07B RLA    incsp3                    00B089 RLA    
+incsp4                    00B08E RLA    tosadd0ax                 00B093 RLA    
+tosaddeax                 00B099 RLA    laddeq                    00B0C0 RLA    
+toslcmp                   00B0E5 RLA    tosgeeax                  00B120 RLA    
+pusheax                   00B12F RLA    tossubeax                 00B14D RLA    
+boolge                    00B185 RLA    boolult                   00B18D RLA    
+tosmoda0                  00B19A RLA    negax                     00B1AF RLA    
+tosorax                   00B1BF RLA    popa                      00B1CF RLA    
+popptr1                   00B1DB RLA    pusha                     00B1ED RLA    
+push0                     00B1FF RLA    pushax                    00B203 RLA    
+popsargsudiv16            00B219 RLA    shrax1                    00B239 RLA    
+shrax3                    00B241 RLA    shrax4                    00B24F RLA    
+stax0sp                   00B260 RLA    staxysp                   00B262 RLA    
+udiv16                    00B27C RLA    zerobss                   00B2BA RLA    
+__DATA_LOAD__             00B2DD RLA    _set_prg_8000             00E11C RLA    
+_set_chr_mode_2           00E147 RLA    _set_chr_mode_3           00E150 RLA    
+_set_chr_mode_4           00E159 RLA    _set_chr_mode_5           00E162 RLA    
+_set_mirroring            00E180 RLA    _set_irq_ptr              00E18F RLA    
+_pal_bg                   00E3B0 RLA    _pal_spr                  00E3BA RLA    
+_pal_bright               00E3FE RLA    _ppu_off                  00E405 RLA    
+_ppu_on_all               00E40E RLA    _oam_clear                00E42B RLA    
+_oam_meta_spr             00E481 RLA    _ppu_wait_nmi             00E4ED RLA    
+_vram_unrle               00E4F8 RLA    _scroll                   00E52F RLA    
+_bank_spr                 00E58B RLA    _bank_bg                  00E59B RLA    
+_vram_write               00E5D6 RLA    _music_play               00E5FD RLA    
+_music_stop               00E610 RLA    _sfx_play                 00E634 RLA    
+_pad_poll                 00E666 RLA    _vram_adr                 00E742 RLA    
+_memcpy                   00E783 RLA    _memfill                  00E7B6 RLA    
 _delay                    00E7E5 RLA    _banked_call              00E8BF RLA    
 
 
@@ -284,135 +286,139 @@ __STACK_START__ ([linker generated]):
 __STARTUP__ (crt0.o):
     main.o                    main.s(22)
 _bank_bg (crt0.o):
-    PRG0.o                    PRG0.s(120)
+    PRG0.o                    PRG0.s(123)
 _bank_spr (crt0.o):
-    PRG0.o                    PRG0.s(119)
+    PRG0.o                    PRG0.s(122)
 _banked_call (mmc3_code.o):
-    PRG0.o                    PRG0.s(133)
+    PRG0.o                    PRG0.s(137)
     main.o                    main.s(29)
 _cam (main.o):
     PRG1.o                    PRG1.s(28)
-    PRG0.o                    PRG0.s(99)
+    PRG0.o                    PRG0.s(101)
 _clear_vram_buffer (crt0.o):
-    PRG0.o                    PRG0.s(128)
+    PRG0.o                    PRG0.s(132)
 _commit_next_anim (main.o):
-    PRG0.o                    PRG0.s(103)
+    PRG0.o                    PRG0.s(106)
 _cur_state (main.o):
-    PRG0.o                    PRG0.s(100)
+    PRG0.o                    PRG0.s(102)
+_current_room (main.o):
+    PRG0.o                    PRG0.s(104)
 _delay (crt0.o):
     main.o                    main.s(28)
 _draw_player (PRG1.o):
-    PRG0.o                    PRG0.s(163)
+    PRG0.o                    PRG0.s(167)
 _fade_from_black (main.o):
-    PRG0.o                    PRG0.s(105)
+    PRG0.o                    PRG0.s(108)
 _fade_from_white (main.o):
-    PRG0.o                    PRG0.s(107)
+    PRG0.o                    PRG0.s(110)
 _fade_to_black (main.o):
-    PRG0.o                    PRG0.s(104)
+    PRG0.o                    PRG0.s(107)
 _fade_to_white (main.o):
-    PRG0.o                    PRG0.s(106)
+    PRG0.o                    PRG0.s(109)
 _get_at_addr (crt0.o):
-    PRG0.o                    PRG0.s(132)
+    PRG0.o                    PRG0.s(136)
 _get_pad_new (crt0.o):
-    PRG0.o                    PRG0.s(129)
+    PRG0.o                    PRG0.s(133)
 _get_ppu_addr (crt0.o):
-    PRG0.o                    PRG0.s(131)
+    PRG0.o                    PRG0.s(135)
 _global_working_anim (main.o):
     PRG1.o                    PRG1.s(26)
-    PRG0.o                    PRG0.s(97)
+    PRG0.o                    PRG0.s(99)
 _i (main.o):
-    PRG0.o                    PRG0.s(91)
+    PRG0.o                    PRG0.s(93)
 _in_x_tile (main.o):
-    PRG0.o                    PRG0.s(96)
+    PRG0.o                    PRG0.s(98)
 _index (main.o):
-    PRG0.o                    PRG0.s(90)
+    PRG0.o                    PRG0.s(92)
 _index16 (main.o):
-    PRG0.o                    PRG0.s(87)
+    PRG0.o                    PRG0.s(89)
 _main (main.o):
     crt0.o                    crt0.s(30)
 _main_real (PRG0.o):
-    main.o                    main.s(57)
-_memfill (crt0.o):
-    PRG0.o                    PRG0.s(124)
-_multi_vram_buffer_vert (crt0.o):
+    main.o                    main.s(58)
+_memcpy (crt0.o):
     PRG0.o                    PRG0.s(127)
+_memfill (crt0.o):
+    PRG0.o                    PRG0.s(128)
+_multi_vram_buffer_vert (crt0.o):
+    PRG0.o                    PRG0.s(131)
 _music_play (crt0.o):
-    PRG0.o                    PRG0.s(114)
+    PRG0.o                    PRG0.s(117)
 _music_stop (crt0.o):
-    PRG0.o                    PRG0.s(115)
+    PRG0.o                    PRG0.s(118)
 _nametable_col (main.o):
-    PRG0.o                    PRG0.s(94)
+    PRG0.o                    PRG0.s(96)
 _nametable_col_b (main.o):
-    PRG0.o                    PRG0.s(95)
+    PRG0.o                    PRG0.s(97)
 _oam_clear (crt0.o):
-    PRG0.o                    PRG0.s(113)
+    PRG0.o                    PRG0.s(116)
 _oam_meta_spr (crt0.o):
     PRG1.o                    PRG1.s(29)
 _one_vram_buffer (crt0.o):
-    PRG0.o                    PRG0.s(126)
+    PRG0.o                    PRG0.s(130)
 _pad_all (main.o):
-    PRG0.o                    PRG0.s(85)
+    PRG0.o                    PRG0.s(87)
 _pad_all_new (main.o):
-    PRG0.o                    PRG0.s(86)
+    PRG0.o                    PRG0.s(88)
 _pad_poll (crt0.o):
-    PRG0.o                    PRG0.s(117)
+    PRG0.o                    PRG0.s(120)
 _pal_bg (crt0.o):
-    PRG0.o                    PRG0.s(108)
+    PRG0.o                    PRG0.s(111)
 _pal_bright (crt0.o):
     main.o                    main.s(27)
 _pal_spr (crt0.o):
-    PRG0.o                    PRG0.s(109)
+    PRG0.o                    PRG0.s(112)
 _player1 (main.o):
     PRG1.o                    PRG1.s(27)
-    PRG0.o                    PRG0.s(98)
+    PRG0.o                    PRG0.s(100)
 _ppu_off (crt0.o):
-    PRG0.o                    PRG0.s(111)
+    PRG0.o                    PRG0.s(114)
 _ppu_on_all (crt0.o):
-    PRG0.o                    PRG0.s(112)
+    PRG0.o                    PRG0.s(115)
 _ppu_wait_nmi (crt0.o):
-    PRG0.o                    PRG0.s(110)
+    PRG0.o                    PRG0.s(113)
 _queue_next_anim (main.o):
-    PRG0.o                    PRG0.s(102)
+    PRG0.o                    PRG0.s(105)
 _save_version_validation (main.o):
-    PRG0.o                    PRG0.s(101)
+    PRG0.o                    PRG0.s(103)
 _scroll (crt0.o):
-    PRG0.o                    PRG0.s(118)
+    PRG0.o                    PRG0.s(121)
 _set_chr_mode_2 (crt0.o):
-    PRG0.o                    PRG0.s(134)
-_set_chr_mode_3 (crt0.o):
-    PRG0.o                    PRG0.s(135)
-_set_chr_mode_4 (crt0.o):
-    PRG0.o                    PRG0.s(136)
-_set_chr_mode_5 (crt0.o):
-    PRG0.o                    PRG0.s(137)
-_set_irq_ptr (crt0.o):
-    PRG0.o                    PRG0.s(139)
-_set_mirroring (crt0.o):
     PRG0.o                    PRG0.s(138)
+_set_chr_mode_3 (crt0.o):
+    PRG0.o                    PRG0.s(139)
+_set_chr_mode_4 (crt0.o):
+    PRG0.o                    PRG0.s(140)
+_set_chr_mode_5 (crt0.o):
+    PRG0.o                    PRG0.s(141)
+_set_irq_ptr (crt0.o):
+    PRG0.o                    PRG0.s(143)
+_set_mirroring (crt0.o):
+    PRG0.o                    PRG0.s(142)
 _set_prg_8000 (crt0.o):
     mmc3_code.o               mmc3\mmc3_code.s(21)
 _set_scroll_x (crt0.o):
-    PRG0.o                    PRG0.s(130)
+    PRG0.o                    PRG0.s(134)
 _set_vram_buffer (crt0.o):
-    PRG0.o                    PRG0.s(125)
+    PRG0.o                    PRG0.s(129)
 _sfx_play (crt0.o):
-    PRG0.o                    PRG0.s(116)
+    PRG0.o                    PRG0.s(119)
 _temp32 (main.o):
-    PRG0.o                    PRG0.s(92)
+    PRG0.o                    PRG0.s(94)
 _tempFlags (main.o):
-    PRG0.o                    PRG0.s(93)
+    PRG0.o                    PRG0.s(95)
 _tick_count (main.o):
-    PRG0.o                    PRG0.s(84)
+    PRG0.o                    PRG0.s(86)
 _vram_adr (crt0.o):
-    PRG0.o                    PRG0.s(121)
+    PRG0.o                    PRG0.s(124)
 _vram_unrle (crt0.o):
-    PRG0.o                    PRG0.s(123)
+    PRG0.o                    PRG0.s(126)
 _vram_write (crt0.o):
-    PRG0.o                    PRG0.s(122)
+    PRG0.o                    PRG0.s(125)
 _x (main.o):
-    PRG0.o                    PRG0.s(88)
+    PRG0.o                    PRG0.s(90)
 _y (main.o):
-    PRG0.o                    PRG0.s(89)
+    PRG0.o                    PRG0.s(91)
 addysp (addysp.o):
     incsp4.o                  runtime/incsp4.s(8)
     incsp3.o                  runtime/incsp3.s(8)
@@ -421,43 +427,43 @@ addysp1 (addysp.o):
     lsub.o                    runtime/lsub.s(11)
     ladd.o                    runtime/ladd.s(8)
 aslax2 (aslax2.o):
-    PRG0.o                    PRG0.s(5643)
-    PRG0.o                    PRG0.s(5643)
+    PRG0.o                    PRG0.s(5640)
+    PRG0.o                    PRG0.s(5640)
 aslax4 (aslax4.o):
-    PRG0.o                    PRG0.s(5643)
-    PRG0.o                    PRG0.s(5643)
-    PRG0.o                    PRG0.s(5643)
+    PRG0.o                    PRG0.s(5640)
+    PRG0.o                    PRG0.s(5640)
+    PRG0.o                    PRG0.s(5640)
 axlong (axlong.o):
-    PRG0.o                    PRG0.s(5643)
+    PRG0.o                    PRG0.s(5640)
 boolge (makebool.o):
     lge.o                     runtime/lge.s(8)
 boolult (makebool.o):
-    PRG0.o                    PRG0.s(5643)
+    PRG0.o                    PRG0.s(5640)
 callax (call.o):
     mmc3_code.o               mmc3\mmc3_code.s(179)
 copydata (copydata.o):
     crt0.o                    crt0.s(30)
 decsp2 (decsp2.o):
     PRG1.o                    PRG1.s(2089)
-    PRG0.o                    PRG0.s(5643)
+    PRG0.o                    PRG0.s(5640)
 decsp3 (decsp3.o):
-    PRG0.o                    PRG0.s(5643)
-    PRG0.o                    PRG0.s(5643)
+    PRG0.o                    PRG0.s(5640)
+    PRG0.o                    PRG0.s(5640)
 decsp4 (decsp4.o):
     lpush.o                   runtime/lpush.s(12)
 incsp1 (incsp1.o):
-    PRG0.o                    PRG0.s(5643)
+    PRG0.o                    PRG0.s(5640)
     mmc3_code.o               mmc3\mmc3_code.s(179)
-    main.o                    main.s(512)
+    main.o                    main.s(515)
 incsp2 (incsp2.o):
     popptr1.o                 runtime/popptr1.s(8)
 incsp3 (incsp3.o):
     mmc3_code.o               mmc3\mmc3_code.s(179)
 incsp4 (incsp4.o):
     lcmp.o                    runtime/lcmp.s(9)
-    PRG0.o                    PRG0.s(5643)
+    PRG0.o                    PRG0.s(5640)
 laddeq (laddeq.o):
-    PRG0.o                    PRG0.s(5643)
+    PRG0.o                    PRG0.s(5640)
 negax (negabs.o):
     shelp.o                   runtime/shelp.s(11)
     mod.o                     runtime/mod.s(11)
@@ -489,43 +495,43 @@ ptr4 (zeropage.o):
     udiv.o                    runtime/udiv.s(10)
     shelp.o                   runtime/shelp.s(12)
 push0 (pushax.o):
-    PRG0.o                    PRG0.s(5643)
+    PRG0.o                    PRG0.s(5640)
 pusha (pusha.o):
-    PRG0.o                    PRG0.s(5643)
-    PRG0.o                    PRG0.s(5643)
-    PRG0.o                    PRG0.s(5643)
-    PRG0.o                    PRG0.s(5643)
+    PRG0.o                    PRG0.s(5640)
+    PRG0.o                    PRG0.s(5640)
+    PRG0.o                    PRG0.s(5640)
+    PRG0.o                    PRG0.s(5640)
     mmc3_code.o               mmc3\mmc3_code.s(179)
-    main.o                    main.s(512)
-    main.o                    main.s(512)
+    main.o                    main.s(515)
+    main.o                    main.s(515)
 pushax (pushax.o):
-    PRG0.o                    PRG0.s(5643)
-    PRG0.o                    PRG0.s(5643)
-    PRG0.o                    PRG0.s(5643)
-    PRG0.o                    PRG0.s(5643)
+    PRG0.o                    PRG0.s(5640)
+    PRG0.o                    PRG0.s(5640)
+    PRG0.o                    PRG0.s(5640)
+    PRG0.o                    PRG0.s(5640)
     mmc3_code.o               mmc3\mmc3_code.s(179)
 pusheax (lpush.o):
-    PRG0.o                    PRG0.s(5643)
+    PRG0.o                    PRG0.s(5640)
 shlax2 (aslax2.o):
-    PRG0.o                    PRG0.s(5643)
-    PRG0.o                    PRG0.s(5643)
-    PRG0.o                    PRG0.s(5643)
+    PRG0.o                    PRG0.s(5640)
+    PRG0.o                    PRG0.s(5640)
+    PRG0.o                    PRG0.s(5640)
 shlax3 (aslax3.o):
-    PRG0.o                    PRG0.s(5643)
-    PRG0.o                    PRG0.s(5643)
-    PRG0.o                    PRG0.s(5643)
+    PRG0.o                    PRG0.s(5640)
+    PRG0.o                    PRG0.s(5640)
+    PRG0.o                    PRG0.s(5640)
 shlax4 (aslax4.o):
-    PRG0.o                    PRG0.s(5643)
-    PRG0.o                    PRG0.s(5643)
-    PRG0.o                    PRG0.s(5643)
+    PRG0.o                    PRG0.s(5640)
+    PRG0.o                    PRG0.s(5640)
+    PRG0.o                    PRG0.s(5640)
 shrax1 (shrax1.o):
-    PRG0.o                    PRG0.s(5643)
+    PRG0.o                    PRG0.s(5640)
 shrax3 (shrax3.o):
-    PRG0.o                    PRG0.s(5643)
+    PRG0.o                    PRG0.s(5640)
 shrax4 (shrax4.o):
-    PRG0.o                    PRG0.s(5643)
-    PRG0.o                    PRG0.s(5643)
-    PRG0.o                    PRG0.s(5643)
+    PRG0.o                    PRG0.s(5640)
+    PRG0.o                    PRG0.s(5640)
+    PRG0.o                    PRG0.s(5640)
 sp (zeropage.o):
     popptr1.o                 runtime/popptr1.s(9)
     lcmp.o                    runtime/lcmp.s(10)
@@ -563,9 +569,9 @@ sreg (zeropage.o):
     PRG0.o                    PRG0.s(10)
     main.o                    main.s(10)
 stax0sp (staxsp.o):
-    PRG0.o                    PRG0.s(5643)
+    PRG0.o                    PRG0.s(5640)
 staxysp (staxsp.o):
-    PRG0.o                    PRG0.s(5643)
+    PRG0.o                    PRG0.s(5640)
 tmp1 (zeropage.o):
     shrax4.o                  runtime/shrax4.s(8)
     shrax3.o                  runtime/shrax3.s(8)
@@ -583,22 +589,22 @@ tmp1 (zeropage.o):
 tmp2 (zeropage.o):
     shelp.o                   runtime/shelp.s(12)
 tosadd0ax (ladd.o):
-    PRG0.o                    PRG0.s(5643)
+    PRG0.o                    PRG0.s(5640)
 tosaddeax (ladd.o):
-    PRG0.o                    PRG0.s(5643)
+    PRG0.o                    PRG0.s(5640)
 tosgeeax (lge.o):
-    PRG0.o                    PRG0.s(5643)
+    PRG0.o                    PRG0.s(5640)
 tosicmp (icmp.o):
-    PRG0.o                    PRG0.s(5643)
-    PRG0.o                    PRG0.s(5643)
+    PRG0.o                    PRG0.s(5640)
+    PRG0.o                    PRG0.s(5640)
 toslcmp (lcmp.o):
     lge.o                     runtime/lge.s(8)
 tosmoda0 (mod.o):
-    PRG0.o                    PRG0.s(5643)
+    PRG0.o                    PRG0.s(5640)
 tosorax (or.o):
-    PRG0.o                    PRG0.s(5643)
+    PRG0.o                    PRG0.s(5640)
 tossubeax (lsub.o):
-    PRG0.o                    PRG0.s(5643)
+    PRG0.o                    PRG0.s(5640)
 udiv16 (udiv.o):
     shelp.o                   runtime/shelp.s(11)
 zerobss (zerobss.o):

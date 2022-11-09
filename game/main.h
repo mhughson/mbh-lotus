@@ -179,7 +179,10 @@ extern unsigned char cur_state;
 // XRAM
 //
 
+// Yup! Almost 4KB of RAM going to a copy of the current room!
+#define MAX_ROOM_NUM_TILES (240 * 16)
 extern unsigned char save_version_validation[NUM_SAVE_VERSION_VALIDATION];
+extern unsigned char current_room[MAX_ROOM_NUM_TILES];
 
 // Functions
 //

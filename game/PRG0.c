@@ -28,7 +28,7 @@ const unsigned char x_collision_offsets[NUM_X_COLLISION_OFFSETS] = { 4, 12 };
 const unsigned char bg_banks[4] = { 3, 8, 9, 10 };
 
 
-const unsigned char current_room[ROOM_WIDTH_TILES * 15] = 
+const unsigned char room_01[ROOM_WIDTH_TILES * 15] = 
 {
 	5, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 5,    5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5,    5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0,    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -551,6 +551,8 @@ void update_player()
 
 void load_current_map(unsigned int nt, unsigned char* _current_room)
 {
+
+	memcpy(current_room, room_01, MAX_ROOM_NUM_TILES);
 	// "const_cast"
 	_current_room = (unsigned char*)(current_room);
 	
@@ -563,7 +565,7 @@ void load_current_map(unsigned int nt, unsigned char* _current_room)
 		for (x = 0; x < 16; ++x)
 		{
 			index16 = GRID_XY_TO_ROOM_INDEX(x, y);
-			index16 = _current_room[index16] * META_TILE_NUM_BYTES;
+			index16 = current_room[index16] * META_TILE_NUM_BYTES;
 			vram_adr(NTADR(nt,x*2,y*2));	
 			vram_write(&metatiles_temp[index16], 2);
 			vram_adr(NTADR(nt,x*2,(y*2)+1));	
@@ -581,20 +583,20 @@ void load_current_map(unsigned int nt, unsigned char* _current_room)
 			// room index.
 			index16 = (y * ROOM_WIDTH_TILES) + (x);
 			// meta tile palette index.
-			index16 = (_current_room[index16] * META_TILE_NUM_BYTES) + 4;
+			index16 = (current_room[index16] * META_TILE_NUM_BYTES) + 4;
 			// bit shift amount
 			i |= (metatiles_temp[index16]);
 
 			index16 = (y * ROOM_WIDTH_TILES) + (x + 1);
-			index16 = (_current_room[index16] * META_TILE_NUM_BYTES) + 4;
+			index16 = (current_room[index16] * META_TILE_NUM_BYTES) + 4;
 			i |= (metatiles_temp[index16]) << 2;
 
 			index16 = ((y + 1) * ROOM_WIDTH_TILES) + (x);
-			index16 = (_current_room[index16] * META_TILE_NUM_BYTES) + 4;
+			index16 = (current_room[index16] * META_TILE_NUM_BYTES) + 4;
 			i |= (metatiles_temp[index16]) << 4;
 
 			index16 = ((y + 1) * ROOM_WIDTH_TILES) + (x + 1);
-			index16 = (_current_room[index16] * META_TILE_NUM_BYTES) + 4;
+			index16 = (current_room[index16] * META_TILE_NUM_BYTES) + 4;
 			i |= (metatiles_temp[index16]) << 6;	
 
 			vram_adr(nt + 960 + index);	

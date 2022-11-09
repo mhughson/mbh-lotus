@@ -48,6 +48,7 @@ unsigned char cur_state;
 // extra RAM at $6000-$7fff
 //unsigned char wram_array[0x2000];
 unsigned char save_version_validation[NUM_SAVE_VERSION_VALIDATION];
+unsigned char current_room[MAX_ROOM_NUM_TILES];
 #pragma bss-name(pop)
 
 #pragma rodata-name ("CODE")
