@@ -35,8 +35,10 @@
 #define ROOM_WIDTH_PAGES (4)
 #define ROOM_WIDTH_PIXELS (256*ROOM_WIDTH_PAGES)
 #define ROOM_WIDTH_TILES (16*ROOM_WIDTH_PAGES)
+#define ROOM_SIZE_TILES (ROOM_WIDTH_TILES * 15)
 #define GRID_XY_TO_ROOM_INDEX(x,y) (((y) * ROOM_WIDTH_TILES) + (x))
 
+#define NUM_CUSTOM_PROPS (8)
 #define META_TILE_FLAGS_OFFSET (5)
 #define GET_META_TILE_FLAGS(room_table_index) metatiles_temp[current_room[(room_table_index)] * META_TILE_NUM_BYTES + META_TILE_FLAGS_OFFSET]
 // TODO: These should be needed anymore.
@@ -150,6 +152,7 @@ extern unsigned int index16;
 extern unsigned char x;
 extern unsigned char y;
 extern unsigned char index;
+extern unsigned char index2;
 extern unsigned char i;
 extern unsigned long temp32;
 extern unsigned char tempFlags;
@@ -175,6 +178,16 @@ extern game_actor player1;
 extern camera cam;
 
 extern unsigned char cur_state;
+
+// The currently loading room index (or the one we want to load in the case of input to function).
+extern unsigned char cur_room_index;
+// Input to copy_original_room_to_current
+extern unsigned char tile_index_param;
+// Input to get_obj_id
+extern unsigned char loaded_obj_id;
+extern unsigned char loaded_obj_index;
+// Output from get_cur_room_metatile_set
+extern unsigned int cur_room_metatile_index;
 
 // XRAM
 //

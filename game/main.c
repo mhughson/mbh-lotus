@@ -25,6 +25,7 @@ unsigned int index16;
 unsigned char x;
 unsigned char y;
 unsigned char index;
+unsigned char index2;
 unsigned char i;
 unsigned char temp;
 unsigned long temp32;
@@ -43,6 +44,11 @@ game_actor player1;
 camera cam;
 
 unsigned char cur_state;
+unsigned char cur_room_index;
+unsigned char tile_index_param;
+unsigned char loaded_obj_id;
+unsigned char loaded_obj_index;
+unsigned int cur_room_metatile_index;
 
 #pragma bss-name(push, "XRAM")
 // extra RAM at $6000-$7fff

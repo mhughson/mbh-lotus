@@ -10,6 +10,7 @@
         "stdlib.h": "c",
         "bank_helpers.h": "c",
         "meta_tiles_temp.h": "c",
-        "mmc3_code.h": "c"
+        "mmc3_code.h": "c",
+        "main.h": "c"
     }
 }
