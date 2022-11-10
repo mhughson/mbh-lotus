@@ -13,8 +13,31 @@
 
 void copy_bg_to_current_room_a()
 {
+    cur_room_width_tiles = rooms_maps_a[cur_room_index][8];
+
+    switch (cur_room_width_tiles)
+    {
+    case 16:
+        cur_room_width_tiles_shift_factor = 4;
+        break;
+    case 32:
+        cur_room_width_tiles_shift_factor = 5;
+        break;
+    case 64:
+        cur_room_width_tiles_shift_factor = 6;
+        break;
+    case 128:
+        cur_room_width_tiles_shift_factor = 7;
+        break;
+    
+    default:
+        break;
+    } 
+    cur_room_width_pixels = cur_room_width_tiles * 16;
+    cur_room_size_tiles = cur_room_width_tiles * rooms_maps_a[cur_room_index][9];
+
 	// NUM_CUSTOM_PROPS because the level data starts after the custom props
-	memcpy(current_room, &rooms_maps_a[cur_room_index][NUM_CUSTOM_PROPS], ROOM_SIZE_TILES);	
+	memcpy(current_room, &rooms_maps_a[cur_room_index][NUM_CUSTOM_PROPS], cur_room_size_tiles);	    
 }
 
 // tile_index_param
@@ -29,9 +52,9 @@ void copy_original_room_to_current_a()
 
 void get_obj_id_a()
 {
-	loaded_obj_index = rooms_maps_a[cur_room_index][ROOM_SIZE_TILES + x + NUM_CUSTOM_PROPS];
+	loaded_obj_index = rooms_maps_a[cur_room_index][cur_room_size_tiles + x + NUM_CUSTOM_PROPS];
 	++x;
-	loaded_obj_id = rooms_maps_a[cur_room_index][ROOM_SIZE_TILES + x + NUM_CUSTOM_PROPS];
+	loaded_obj_id = rooms_maps_a[cur_room_index][cur_room_size_tiles + x + NUM_CUSTOM_PROPS];
 	++x;
 }
 

@@ -120,6 +120,14 @@ def GenerateHeader(file_name, world_files):
             
             layers = jsonmap_data["layers"]
 
+            width = jsonmap_data["width"]
+            height = jsonmap_data["height"]
+
+            # Ensure that the width of the map (in tiles) is a power of 2.
+            # The runtime code depends on this as an optimization.
+            if (width & (width-1) != 0) or width == 0:
+                raise NameError("Width of map (in tiles) must be a power of 2, but it is " + str(width))
+
             # First count how many dynamic objects are on the map.
             layer = [x for x in layers if x["name"].lower()=="dynamics"][0] # layers[1] 
             counter = 0
@@ -135,7 +143,8 @@ def GenerateHeader(file_name, world_files):
             # +1 special room type
             # +1 music track
             # +2 world-level
-            newfile.write("const unsigned char " + mapname + "[" + str(960 + counter + 3 + 2 + 1 + 1 + 1 + 2) + "] = \n{\n")
+            # +2 width/height
+            newfile.write("const unsigned char " + mapname + "[" + str((width * height) + counter + 3 + 2 + 1 + 1 + 1 + 2 + 2) + "] = \n{\n")
 
             # TODO: This has a pretty nasty assumption that properties come in order, and have either 100%
             # defined, or none.
@@ -180,6 +189,9 @@ def GenerateHeader(file_name, world_files):
                 newfile.write("\n//CHAPTER:\n" + str(num_worlds) + ",\n")
                 newfile.write("\n//FLOOR:\n" + str(num_levels) + ",\n")
                 num_levels += 1
+
+            newfile.write("\n//WIDTH:\n" + str(width) + ",\n")
+            newfile.write("\n//HEIGHT:\n" + str(height) + ",\n")
 
             # BG Layer.
             layer = [x for x in layers if x["name"].lower()=="background"][0] # layers[1] 

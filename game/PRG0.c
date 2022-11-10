@@ -28,27 +28,6 @@ const unsigned char x_collision_offsets[NUM_X_COLLISION_OFFSETS] = { 4, 12 };
 
 const unsigned char bg_banks[4] = { 3, 8, 9, 10 };
 
-
-// const unsigned char room_01[ROOM_WIDTH_TILES * 15] = 
-// {
-// 	5, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 5,    5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5,    5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-// 	0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0,    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-// 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-// 	0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0,    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-// 	0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,    1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-// 	0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 1, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-// 	0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-// 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,    0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0,   3, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-// 	1, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1,    1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-// 	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,    3, 2, 1, 1, 6, 7, 6, 7, 6, 7, 6, 7, 1, 1, 1, 1,   3, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-// 	1, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,    0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1,    1, 1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1,   1, 1, 1, 1, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0,
-// 	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0,    0, 0, 3, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1,    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,   1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-// 	1, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1,    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,   1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-// 	1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 1, 1, 1, 1,    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,   1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 3, 3,
-// 	5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5,    5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5,    5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5,   5, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-// };
-
-
 // TODO: Move to player
 unsigned char anim_index;
 unsigned char grounded;
@@ -105,6 +84,8 @@ void main_real()
 			break;
 		}
 	}
+
+	memfill(current_room, 0, MAX_ROOM_NUM_TILES);
 
     ppu_off(); // screen off
 
@@ -178,7 +159,7 @@ void main_real()
 				#define CAM_DEAD_ZONE 16
 
 				// move the camera to the player if needed.
-				if (high_2byte(player1.pos_x) > cam.pos_x + (128 + CAM_DEAD_ZONE) && cam.pos_x < ROOM_WIDTH_PIXELS-256)
+				if (high_2byte(player1.pos_x) > cam.pos_x + (128 + CAM_DEAD_ZONE) && cam.pos_x < cur_room_width_pixels-256)
 				{
 					cam.pos_x = high_2byte(player1.pos_x) - (128 + CAM_DEAD_ZONE);
 				}
@@ -193,11 +174,13 @@ void main_real()
 				if ((old_cam_x >> 3) < (cam.pos_x >> 3))
 				{
 					in_x_tile = (cam.pos_x + 256) / 16;
+					in_x_pixel = (cam.pos_x + 256);
 					vram_buffer_load_column();
 				}
 				else if ((old_cam_x >> 3) > (cam.pos_x >> 3))
 				{
 					in_x_tile = (cam.pos_x) / 16;
+					in_x_pixel = (cam.pos_x);
 					vram_buffer_load_column();
 				}
 
@@ -206,7 +189,16 @@ void main_real()
 				// cur_col is the last column to be loaded, aka the right
 				// hand side of the screen. The scroll amount is relative to the 
 				// left hand side of the screen, so offset by 256.
-				set_scroll_x(cam.pos_x);				
+				set_scroll_x(cam.pos_x);
+
+#if DEBUG_ENABLED
+				if (pad_all_new & PAD_SELECT)
+				{
+					cur_state = 0xff;
+					++cur_room_index;
+					go_to_state(STATE_GAME);
+				}
+#endif // DEBUG_ENABLED
 				break;
 			}
 
@@ -296,7 +288,7 @@ void update_player()
 		}
 	}
 	// Is the right side of the sprite, after walking, going to be passed the end of the map?
-	if (pad_all & PAD_RIGHT && (player1.pos_x + WALK_SPEED + FP_WHOLE(16) ) <= FP_WHOLE(ROOM_WIDTH_PIXELS))
+	if (pad_all & PAD_RIGHT && (player1.pos_x + WALK_SPEED + FP_WHOLE(16) ) <= FP_WHOLE(cur_room_width_pixels))
 	{
 
 		temp32 = player1.pos_x;
@@ -552,7 +544,6 @@ void update_player()
 
 void load_current_map(unsigned int nt)
 {
-	cur_room_index = 0;
 	banked_call(BANK_2, copy_bg_to_current_room);
 
 	
@@ -581,21 +572,21 @@ void load_current_map(unsigned int nt)
 			i = 0;
 
 			// room index.
-			index16 = (y * ROOM_WIDTH_TILES) + (x);
+			index16 = (y * cur_room_width_tiles) + (x);
 			// meta tile palette index.
 			index16 = (current_room[index16] * META_TILE_NUM_BYTES) + 4;
 			// bit shift amount
 			i |= (metatiles_temp[index16]);
 
-			index16 = (y * ROOM_WIDTH_TILES) + (x + 1);
+			index16 = (y * cur_room_width_tiles) + (x + 1);
 			index16 = (current_room[index16] * META_TILE_NUM_BYTES) + 4;
 			i |= (metatiles_temp[index16]) << 2;
 
-			index16 = ((y + 1) * ROOM_WIDTH_TILES) + (x);
+			index16 = ((y + 1) * cur_room_width_tiles) + (x);
 			index16 = (current_room[index16] * META_TILE_NUM_BYTES) + 4;
 			i |= (metatiles_temp[index16]) << 4;
 
-			index16 = ((y + 1) * ROOM_WIDTH_TILES) + (x + 1);
+			index16 = ((y + 1) * cur_room_width_tiles) + (x + 1);
 			index16 = (current_room[index16] * META_TILE_NUM_BYTES) + 4;
 			i |= (metatiles_temp[index16]) << 6;	
 
@@ -669,32 +660,45 @@ void vram_buffer_load_column()
 	static unsigned int local_index16;
 	static unsigned int local_att_index16;
     static unsigned char nametable_index;
+	static unsigned int tile_index;
+	static unsigned char tile_offset;
 
     nametable_index = (in_x_tile / 16) % 2;
 
 	// TILES
 
-	PROFILE_POKE(PROF_G)
+PROFILE_POKE(PROF_G)
 
 	//if (in_x_tile % 2 == 0)
     // left column
+
+	tile_index = in_x_pixel / 8;
+	tile_offset = (in_x_pixel % 16) / 8;
+
+	local_index16 = GRID_XY_TO_ROOM_INDEX(in_x_tile, 0);
+	//local_att_index16 = current_room[local_index16] * META_TILE_NUM_BYTES;
+
     for (local_i = 0; local_i < 30; local_i+=2)
     {
 
-        local_index16 = GRID_XY_TO_ROOM_INDEX(in_x_tile, (local_i / 2));
+        // local_index16 = GRID_XY_TO_ROOM_INDEX(in_x_tile, (local_i / 2));
         local_att_index16 = current_room[local_index16] * META_TILE_NUM_BYTES;
 
 		// left column
-        nametable_col[local_i] = metatiles_temp[local_att_index16];
-        nametable_col[local_i + 1] = metatiles_temp[local_att_index16 + 2];
+        nametable_col[local_i] = metatiles_temp[local_att_index16 + tile_offset];
+        nametable_col[local_i + 1] = metatiles_temp[local_att_index16 + tile_offset + 2];
 
 		// right column
-        nametable_col_b[local_i] = metatiles_temp[local_att_index16 + 1];
-        nametable_col_b[local_i + 1] = metatiles_temp[local_att_index16 + 3];
+//        nametable_col_b[local_i] = metatiles_temp[local_att_index16 + 1];
+//        nametable_col_b[local_i + 1] = metatiles_temp[local_att_index16 + 3];
+
+		local_index16 += cur_room_width_tiles;
     }
 
-    multi_vram_buffer_vert(nametable_col, 30, get_ppu_addr(nametable_index, in_x_tile * CELL_SIZE, 0));
-    multi_vram_buffer_vert(nametable_col_b, 30, get_ppu_addr(nametable_index, (in_x_tile * CELL_SIZE) + 8, 0));
+
+    multi_vram_buffer_vert(nametable_col, (unsigned char)30, get_ppu_addr(nametable_index, in_x_pixel, 0));
+//    multi_vram_buffer_vert(nametable_col, 30, get_ppu_addr(nametable_index, in_x_tile * CELL_SIZE, 0));
+//    multi_vram_buffer_vert(nametable_col_b, 30, get_ppu_addr(nametable_index, (in_x_tile * CELL_SIZE) + 8, 0));
 
 
 	// ATTRIBUTES
@@ -705,6 +709,10 @@ void vram_buffer_load_column()
 	// multiple of 2 (eg. if you pass in index 5, we want to start on 4).
 	local_x = (in_x_tile / 2) * 2;
 
+	// tile_index = 0;
+
+	// if (tile_index % 4 == 0)
+	// {
     // TODO: This could potentially be batched into a single 
     //       vertical vram write.
     for (local_y = 0; local_y < 15; local_y+=2)
@@ -722,7 +730,7 @@ void vram_buffer_load_column()
         local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES) + 4;
         local_i |= (metatiles_temp[local_att_index16]) << 2;
 
-        local_index16 = local_index16 + ROOM_WIDTH_TILES - 1; //((local_y + 1) * 16) + (local_x);
+        local_index16 = local_index16 + cur_room_width_tiles - 1; //((local_y + 1) * 16) + (local_x);
         local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES) + 4;
         local_i |= (metatiles_temp[local_att_index16]) << 4;
 
@@ -731,9 +739,14 @@ void vram_buffer_load_column()
         local_i |= (metatiles_temp[local_att_index16]) << 6;	
 
         one_vram_buffer(local_i, get_at_addr(nametable_index, (local_x) * CELL_SIZE, (local_y) * CELL_SIZE));
+		// nametable_col[tile_index] = local_i;
+		// ++tile_index;
     }
+//	}
 
-	PROFILE_POKE(PROF_R)
+    // multi_vram_buffer_horz(nametable_col, (unsigned char)15, 
+	// 	get_at_addr(nametable_index, (local_x) * CELL_SIZE, 0));
+PROFILE_POKE(PROF_W)
 }
 
 void go_to_state(unsigned char new_state)
@@ -759,6 +772,8 @@ void go_to_state(unsigned char new_state)
 			set_chr_mode_3(17);
 			set_chr_mode_4(18);
 			set_chr_mode_5(19);
+
+			cur_room_index = 0;
 
 			pal_bg(palette_title);
 			pal_spr(palette_title);		
@@ -788,6 +803,11 @@ void go_to_state(unsigned char new_state)
 			pal_bg(palette);
 			pal_spr(palette);		
 			load_current_map(NAMETABLE_A);
+
+			// Fix the first column missing on the next nt
+			in_x_tile = (cam.pos_x + 256) / 16;
+			in_x_pixel = (cam.pos_x + 256);
+			vram_buffer_load_column();
 
 			player1.pos_x = FP_WHOLE(4);
 			player1.pos_y = FP_WHOLE((6<<4));

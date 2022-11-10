@@ -32,13 +32,9 @@
 
 #define CELL_SIZE (16)
 #define META_TILE_NUM_BYTES (8)
-#define ROOM_WIDTH_PAGES (4)
-#define ROOM_WIDTH_PIXELS (256*ROOM_WIDTH_PAGES)
-#define ROOM_WIDTH_TILES (16*ROOM_WIDTH_PAGES)
-#define ROOM_SIZE_TILES (ROOM_WIDTH_TILES * 15)
-#define GRID_XY_TO_ROOM_INDEX(x,y) (((y) * ROOM_WIDTH_TILES) + (x))
+#define GRID_XY_TO_ROOM_INDEX(x,y) (((y) << cur_room_width_tiles_shift_factor) + (x))
 
-#define NUM_CUSTOM_PROPS (8)
+#define NUM_CUSTOM_PROPS (10)
 #define META_TILE_FLAGS_OFFSET (5)
 #define GET_META_TILE_FLAGS(room_table_index) metatiles_temp[current_room[(room_table_index)] * META_TILE_NUM_BYTES + META_TILE_FLAGS_OFFSET]
 // TODO: These should be needed anymore.
@@ -171,6 +167,8 @@ extern unsigned char current_room_page_reserve[ROOM_PAGE_SIZE];
 extern unsigned int in_x_tile;
 extern unsigned int in_y_tile;
 
+extern unsigned int in_x_pixel;
+
 // Used by the anim functions to avoid passing in a parameter.
 extern anim_info* global_working_anim;
 
@@ -188,6 +186,11 @@ extern unsigned char loaded_obj_id;
 extern unsigned char loaded_obj_index;
 // Output from get_cur_room_metatile_set
 extern unsigned int cur_room_metatile_index;
+
+extern unsigned int cur_room_width_pixels;
+extern unsigned char cur_room_width_tiles;
+extern unsigned char cur_room_width_tiles_shift_factor;
+extern unsigned int cur_room_size_tiles;
 
 // XRAM
 //

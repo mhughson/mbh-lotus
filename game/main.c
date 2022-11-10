@@ -38,6 +38,7 @@ unsigned char current_room_page_reserve[ROOM_PAGE_SIZE];
 
 unsigned int in_x_tile;
 unsigned int in_y_tile;
+unsigned int in_x_pixel;
 
 anim_info* global_working_anim;
 game_actor player1;
@@ -49,6 +50,11 @@ unsigned char tile_index_param;
 unsigned char loaded_obj_id;
 unsigned char loaded_obj_index;
 unsigned int cur_room_metatile_index;
+
+unsigned int cur_room_width_pixels;
+unsigned char cur_room_width_tiles;
+unsigned int cur_room_size_tiles;
+unsigned char cur_room_width_tiles_shift_factor;
 
 #pragma bss-name(push, "XRAM")
 // extra RAM at $6000-$7fff
