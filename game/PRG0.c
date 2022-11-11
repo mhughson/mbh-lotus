@@ -161,27 +161,37 @@ void main_real()
 				// move the camera to the player if needed.
 				if (high_2byte(player1.pos_x) > cam.pos_x + (128 + CAM_DEAD_ZONE) && cam.pos_x < cur_room_width_pixels-256)
 				{
-					cam.pos_x = high_2byte(player1.pos_x) - (128 + CAM_DEAD_ZONE);
+					cam.pos_x = MIN(cur_room_width_pixels-256, high_2byte(player1.pos_x) - (128 + CAM_DEAD_ZONE));
 				}
 				else if (high_2byte(player1.pos_x) < cam.pos_x + (128 - CAM_DEAD_ZONE) && cam.pos_x > 0 ) //(cam.pos_x / 256) == ((high_2byte(player1.pos_x) - 64) / 256))
 				{
+					// TODO: There is probably a chance the rolls over to -1 if the player doesn't start at 0,0. Can't clamp
+					//		 because pos_x is unsigned. Need to detect roll over and clamp to 0.
 					cam.pos_x = high_2byte(player1.pos_x) - (128 - CAM_DEAD_ZONE);
 				}
 
 				// This should really be >> 4 (every 16 pixels) but that will miss the initial
 				// row loading. Could update "load_map" but the nametable logic is kind of annoying
 				// for the non-vram version. Will dig in more later.
-				if ((old_cam_x >> 3) < (cam.pos_x >> 3))
+				if ((old_cam_x >> 3) < (cam.pos_x >> 3) || cur_nametable_y_right != 0)
 				{
 					in_x_tile = (cam.pos_x + 256) / 16;
 					in_x_pixel = (cam.pos_x + 256);
+					cur_nametable_y = cur_nametable_y_right;
 					vram_buffer_load_column();
+
+					cur_nametable_y_right += NAMETABLE_TILES_8_UPDATED_PER_FRAME;
+					if (cur_nametable_y_right >= 30) cur_nametable_y_right = 0;					
 				}
-				else if ((old_cam_x >> 3) > (cam.pos_x >> 3))
+				if ((old_cam_x >> 3) > (cam.pos_x >> 3) || cur_nametable_y_left != 0)
 				{
 					in_x_tile = (cam.pos_x) / 16;
 					in_x_pixel = (cam.pos_x);
+					cur_nametable_y = cur_nametable_y_left;
 					vram_buffer_load_column();
+
+					cur_nametable_y_left += NAMETABLE_TILES_8_UPDATED_PER_FRAME;
+					if (cur_nametable_y_left >= 30) cur_nametable_y_left = 0;		
 				}
 
 				banked_call(BANK_1, draw_player);
@@ -654,51 +664,44 @@ void vram_buffer_load_2x2_metatile()
 */
 void vram_buffer_load_column()
 {
+	// TODO: Remove int is a significant perf improvment.
 	static unsigned char local_x;
 	static unsigned char local_y;
 	static unsigned char local_i;
 	static unsigned int local_index16;
 	static unsigned int local_att_index16;
-    static unsigned char nametable_index;
-	static unsigned int tile_index;
+	static unsigned char nametable_index;
 	static unsigned char tile_offset;
+	static unsigned char array_temp8;
 
-    nametable_index = (in_x_tile / 16) % 2;
+	nametable_index = (in_x_tile / 16) % 2;
 
 	// TILES
 
 PROFILE_POKE(PROF_G)
 
-	//if (in_x_tile % 2 == 0)
-    // left column
-
-	tile_index = in_x_pixel / 8;
 	tile_offset = (in_x_pixel % 16) / 8;
 
-	local_index16 = GRID_XY_TO_ROOM_INDEX(in_x_tile, 0);
-	//local_att_index16 = current_room[local_index16] * META_TILE_NUM_BYTES;
+	local_index16 = GRID_XY_TO_ROOM_INDEX(in_x_tile, cur_nametable_y/2);
 
-    for (local_i = 0; local_i < 30; local_i+=2)
-    {
+	for (local_i = 0; local_i < NAMETABLE_TILES_8_UPDATED_PER_FRAME; local_i+=2)
+	{
+		local_att_index16 = current_room[local_index16] * META_TILE_NUM_BYTES;
 
-        // local_index16 = GRID_XY_TO_ROOM_INDEX(in_x_tile, (local_i / 2));
-        local_att_index16 = current_room[local_index16] * META_TILE_NUM_BYTES;
-
-		// left column
-        nametable_col[local_i] = metatiles_temp[local_att_index16 + tile_offset];
-        nametable_col[local_i + 1] = metatiles_temp[local_att_index16 + tile_offset + 2];
-
-		// right column
-//        nametable_col_b[local_i] = metatiles_temp[local_att_index16 + 1];
-//        nametable_col_b[local_i + 1] = metatiles_temp[local_att_index16 + 3];
+		// single column of tiles
+		array_temp8 = metatiles_temp[local_att_index16 + tile_offset];
+		nametable_col[local_i] = array_temp8;
+		array_temp8 = metatiles_temp[local_att_index16 + tile_offset + 2];
+		nametable_col[local_i + 1] = array_temp8;
 
 		local_index16 += cur_room_width_tiles;
-    }
+	}
 
+	// The screen is only 30 tiles high, which doesn't always divide nicely into out metatile updates, so map sure we don't
+	// update beyond the bottom of the screen.
+	array_temp8 = MIN(NAMETABLE_TILES_8_UPDATED_PER_FRAME, 30 - cur_nametable_y);
 
-    multi_vram_buffer_vert(nametable_col, (unsigned char)30, get_ppu_addr(nametable_index, in_x_pixel, 0));
-//    multi_vram_buffer_vert(nametable_col, 30, get_ppu_addr(nametable_index, in_x_tile * CELL_SIZE, 0));
-//    multi_vram_buffer_vert(nametable_col_b, 30, get_ppu_addr(nametable_index, (in_x_tile * CELL_SIZE) + 8, 0));
+	multi_vram_buffer_vert(nametable_col, (unsigned char)array_temp8, get_ppu_addr(nametable_index, in_x_pixel, cur_nametable_y * 8));
 
 
 	// ATTRIBUTES
@@ -709,43 +712,31 @@ PROFILE_POKE(PROF_G)
 	// multiple of 2 (eg. if you pass in index 5, we want to start on 4).
 	local_x = (in_x_tile / 2) * 2;
 
-	// tile_index = 0;
+	for (local_y = 0; local_y < (NAMETABLE_ATTRIBUTES_16_UPDATED_PER_FRAME); local_y+=2)
+	{
+		local_i = 0;
 
-	// if (tile_index % 4 == 0)
-	// {
-    // TODO: This could potentially be batched into a single 
-    //       vertical vram write.
-    for (local_y = 0; local_y < 15; local_y+=2)
-    {
-        local_i = 0;
+		// room index.
+		local_index16 = GRID_XY_TO_ROOM_INDEX(local_x, local_y + (cur_nametable_y / 2));
+		// meta tile palette index.
+		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES) + 4;
+		// bit shift amount
+		local_i |= (metatiles_temp[local_att_index16]);
 
-        // room index.
-        local_index16 = GRID_XY_TO_ROOM_INDEX(local_x, local_y);
-        // meta tile palette index.
-        local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES) + 4;
-        // bit shift amount
-        local_i |= (metatiles_temp[local_att_index16]);
+		local_index16 = local_index16 + 1; //(local_y * 16) + (local_x + 1);
+		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES) + 4;
+		local_i |= (metatiles_temp[local_att_index16]) << 2;
 
-        local_index16 = local_index16 + 1; //(local_y * 16) + (local_x + 1);
-        local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES) + 4;
-        local_i |= (metatiles_temp[local_att_index16]) << 2;
+		local_index16 = local_index16 + cur_room_width_tiles - 1; //((local_y + 1) * 16) + (local_x);
+		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES) + 4;
+		local_i |= (metatiles_temp[local_att_index16]) << 4;
 
-        local_index16 = local_index16 + cur_room_width_tiles - 1; //((local_y + 1) * 16) + (local_x);
-        local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES) + 4;
-        local_i |= (metatiles_temp[local_att_index16]) << 4;
+		local_index16 = local_index16 + 1; //((local_y + 1) * 16) + (local_x + 1);
+		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES) + 4;
+		local_i |= (metatiles_temp[local_att_index16]) << 6;	
 
-        local_index16 = local_index16 + 1; //((local_y + 1) * 16) + (local_x + 1);
-        local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES) + 4;
-        local_i |= (metatiles_temp[local_att_index16]) << 6;	
-
-        one_vram_buffer(local_i, get_at_addr(nametable_index, (local_x) * CELL_SIZE, (local_y) * CELL_SIZE));
-		// nametable_col[tile_index] = local_i;
-		// ++tile_index;
-    }
-//	}
-
-    // multi_vram_buffer_horz(nametable_col, (unsigned char)15, 
-	// 	get_at_addr(nametable_index, (local_x) * CELL_SIZE, 0));
+		one_vram_buffer(local_i, get_at_addr(nametable_index, (local_x) * CELL_SIZE, ((local_y * CELL_SIZE) + (cur_nametable_y * 8))));
+	}
 PROFILE_POKE(PROF_W)
 }
 
@@ -807,7 +798,11 @@ void go_to_state(unsigned char new_state)
 			// Fix the first column missing on the next nt
 			in_x_tile = (cam.pos_x + 256) / 16;
 			in_x_pixel = (cam.pos_x + 256);
+			cur_nametable_y = 0;
 			vram_buffer_load_column();
+			// This will trigger the streaming on the first frame.
+			cur_nametable_y_right += NAMETABLE_TILES_8_UPDATED_PER_FRAME;
+
 
 			player1.pos_x = FP_WHOLE(4);
 			player1.pos_y = FP_WHOLE((6<<4));

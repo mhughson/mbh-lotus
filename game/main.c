@@ -55,6 +55,9 @@ unsigned int cur_room_width_pixels;
 unsigned char cur_room_width_tiles;
 unsigned int cur_room_size_tiles;
 unsigned char cur_room_width_tiles_shift_factor;
+unsigned char cur_nametable_y;
+unsigned char cur_nametable_y_left;
+unsigned char cur_nametable_y_right;
 
 #pragma bss-name(push, "XRAM")
 // extra RAM at $6000-$7fff

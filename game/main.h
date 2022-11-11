@@ -41,6 +41,9 @@
 //#define GET_META_TILE_FLAGS_NEXT(room_table_index) GET_META_TILE_FLAGS(room_table_index) //metatiles_temp[next_room[(room_table_index)] * META_TILE_NUM_BYTES + META_TILE_FLAGS_OFFSET]
 //#define GET_META_TILE_FLAGS_SCROLL(room_number, room_table_index) metatiles_temp[rooms[(room_number)][(room_table_index)] * META_TILE_NUM_BYTES + META_TILE_FLAGS_OFFSET]
 
+#define NAMETABLE_TILES_8_UPDATED_PER_FRAME (8)
+#define NAMETABLE_ATTRIBUTES_16_UPDATED_PER_FRAME (NAMETABLE_TILES_8_UPDATED_PER_FRAME / 2)
+
 // Constants
 #define HALF_POS_BIT_COUNT (16ul)
 #define FP_0_05 ((unsigned long)3277ul) // approx
@@ -191,6 +194,10 @@ extern unsigned int cur_room_width_pixels;
 extern unsigned char cur_room_width_tiles;
 extern unsigned char cur_room_width_tiles_shift_factor;
 extern unsigned int cur_room_size_tiles;
+
+extern unsigned char cur_nametable_y;
+extern unsigned char cur_nametable_y_left;
+extern unsigned char cur_nametable_y_right;
 
 // XRAM
 //
