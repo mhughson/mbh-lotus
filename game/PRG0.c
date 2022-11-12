@@ -167,7 +167,9 @@ void main_real()
 				{
 					// TODO: There is probably a chance the rolls over to -1 if the player doesn't start at 0,0. Can't clamp
 					//		 because pos_x is unsigned. Need to detect roll over and clamp to 0.
+					old_cam_x = cam.pos_x;
 					cam.pos_x = high_2byte(player1.pos_x) - (128 - CAM_DEAD_ZONE);
+					if (old_cam_x < cam.pos_x) cam.pos_x = 0;
 				}
 
 				// This should really be >> 4 (every 16 pixels) but that will miss the initial
@@ -175,8 +177,8 @@ void main_real()
 				// for the non-vram version. Will dig in more later.
 				if ((old_cam_x >> 3) < (cam.pos_x >> 3) || cur_nametable_y_right != 0)
 				{
-					in_x_tile = (cam.pos_x + 256) / 16;
-					in_x_pixel = (cam.pos_x + 256);
+					in_x_tile = 1 + (cam.pos_x + 256) / 16;
+					in_x_pixel = 16 + (cam.pos_x + 256);
 					cur_nametable_y = cur_nametable_y_right;
 					vram_buffer_load_column();
 
@@ -573,7 +575,21 @@ void load_current_map(unsigned int nt)
 			vram_write(&metatiles_temp[index16+2], 2);
 		}
 	}
+	nt += 0x400;
+	for (y = 0; y < 15; ++y)
+	{
+		for (x = 0; x < 16; ++x)
+		{
+			index16 = GRID_XY_TO_ROOM_INDEX(x+16, y);
+			index16 = current_room[index16] * META_TILE_NUM_BYTES;
+			vram_adr(NTADR(nt,x*2,y*2));	
+			vram_write(&metatiles_temp[index16], 2);
+			vram_adr(NTADR(nt,x*2,(y*2)+1));	
+			vram_write(&metatiles_temp[index16+2], 2);
+		}
+	}
 
+	nt-=0x400;
 	index = 0;
 	for (y = 0; y < 15; y+=2)
 	{
@@ -597,6 +613,39 @@ void load_current_map(unsigned int nt)
 			i |= (metatiles_temp[index16]) << 4;
 
 			index16 = ((y + 1) * cur_room_width_tiles) + (x + 1);
+			index16 = (current_room[index16] * META_TILE_NUM_BYTES) + 4;
+			i |= (metatiles_temp[index16]) << 6;	
+
+			vram_adr(nt + 960 + index);	
+			vram_write(&i, 1);
+			++index;
+		}
+	}
+
+	nt+=0x400;
+	index = 0;
+	for (y = 0; y < 15; y+=2)
+	{
+		for (x = 0; x < 16; x+=2)
+		{
+			i = 0;
+
+			// room index.
+			index16 = (y * cur_room_width_tiles) + (x + 16);
+			// meta tile palette index.
+			index16 = (current_room[index16] * META_TILE_NUM_BYTES) + 4;
+			// bit shift amount
+			i |= (metatiles_temp[index16]);
+
+			index16 = (y * cur_room_width_tiles) + (x + 1 + 16);
+			index16 = (current_room[index16] * META_TILE_NUM_BYTES) + 4;
+			i |= (metatiles_temp[index16]) << 2;
+
+			index16 = ((y + 1) * cur_room_width_tiles) + (x + 16);
+			index16 = (current_room[index16] * META_TILE_NUM_BYTES) + 4;
+			i |= (metatiles_temp[index16]) << 4;
+
+			index16 = ((y + 1) * cur_room_width_tiles) + (x + 1 + 16);
 			index16 = (current_room[index16] * META_TILE_NUM_BYTES) + 4;
 			i |= (metatiles_temp[index16]) << 6;	
 
@@ -795,16 +844,7 @@ void go_to_state(unsigned char new_state)
 			pal_spr(palette);		
 			load_current_map(NAMETABLE_A);
 
-			// Fix the first column missing on the next nt
-			in_x_tile = (cam.pos_x + 256) / 16;
-			in_x_pixel = (cam.pos_x + 256);
-			cur_nametable_y = 0;
-			vram_buffer_load_column();
-			// This will trigger the streaming on the first frame.
-			cur_nametable_y_right += NAMETABLE_TILES_8_UPDATED_PER_FRAME;
-
-
-			player1.pos_x = FP_WHOLE(4);
+			player1.pos_x = FP_WHOLE(32);
 			player1.pos_y = FP_WHOLE((6<<4));
 			player1.vel_y = 0;
 			player1.facing_left = 0;
