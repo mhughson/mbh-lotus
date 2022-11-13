@@ -721,6 +721,8 @@ void vram_buffer_load_column()
 	static unsigned int local_att_index16;
 	static unsigned char nametable_index;
 	static unsigned char tile_offset;
+	static unsigned char tile_offset2;
+
 	static unsigned char array_temp8;
 
 	nametable_index = (in_x_tile / 16) % 2;
@@ -730,18 +732,21 @@ void vram_buffer_load_column()
 PROFILE_POKE(PROF_G)
 
 	tile_offset = (in_x_pixel % 16) / 8;
+	tile_offset2 = tile_offset+2;
 
 	local_index16 = GRID_XY_TO_ROOM_INDEX(in_x_tile, cur_nametable_y/2);
 
-	for (local_i = 0; local_i < NAMETABLE_TILES_8_UPDATED_PER_FRAME; local_i+=2)
+	for (local_i = 0; local_i < NAMETABLE_TILES_8_UPDATED_PER_FRAME; )
 	{
 		local_att_index16 = current_room[local_index16] * META_TILE_NUM_BYTES;
 
 		// single column of tiles
 		array_temp8 = metatiles_temp[local_att_index16 + tile_offset];
 		nametable_col[local_i] = array_temp8;
-		array_temp8 = metatiles_temp[local_att_index16 + tile_offset + 2];
-		nametable_col[local_i + 1] = array_temp8;
+		local_i++;
+		array_temp8 = metatiles_temp[local_att_index16 + tile_offset2];
+		nametable_col[local_i] = array_temp8;
+		local_i++;
 
 		local_index16 += cur_room_width_tiles;
 	}
@@ -755,11 +760,11 @@ PROFILE_POKE(PROF_G)
 
 	// ATTRIBUTES
 
-	PROFILE_POKE(PROF_B)
+PROFILE_POKE(PROF_B)
 
 	// Attributes are in 2x2 meta tile chunks, so we need to round down to the nearest,
 	// multiple of 2 (eg. if you pass in index 5, we want to start on 4).
-	local_x = (in_x_tile / 2) * 2;
+	local_x = (in_x_tile & 0xFFFC);//local_x = (in_x_tile / 2) * 2;
 
 	for (local_y = 0; local_y < (NAMETABLE_ATTRIBUTES_16_UPDATED_PER_FRAME); local_y+=2)
 	{
@@ -768,20 +773,25 @@ PROFILE_POKE(PROF_G)
 		// room index.
 		local_index16 = GRID_XY_TO_ROOM_INDEX(local_x, local_y + (cur_nametable_y / 2));
 		// meta tile palette index.
-		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES) + 4;
+		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
+		local_att_index16+=4;
 		// bit shift amount
 		local_i |= (metatiles_temp[local_att_index16]);
 
-		local_index16 = local_index16 + 1; //(local_y * 16) + (local_x + 1);
-		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES) + 4;
+		local_index16++;//local_index16 = local_index16 + 1; //(local_y * 16) + (local_x + 1);
+		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
+		local_att_index16+=4;
 		local_i |= (metatiles_temp[local_att_index16]) << 2;
 
-		local_index16 = local_index16 + cur_room_width_tiles - 1; //((local_y + 1) * 16) + (local_x);
-		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES) + 4;
+		local_index16 = local_index16 + cur_room_width_tiles; //((local_y + 1) * 16) + (local_x);
+		local_index16--;
+		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
+		local_att_index16+=4;
 		local_i |= (metatiles_temp[local_att_index16]) << 4;
 
-		local_index16 = local_index16 + 1; //((local_y + 1) * 16) + (local_x + 1);
-		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES) + 4;
+		local_index16++;// = local_index16 + 1; //((local_y + 1) * 16) + (local_x + 1);
+		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
+		local_att_index16+=4;
 		local_i |= (metatiles_temp[local_att_index16]) << 6;	
 
 		one_vram_buffer(local_i, get_at_addr(nametable_index, (local_x) * CELL_SIZE, ((local_y * CELL_SIZE) + (cur_nametable_y * 8))));
