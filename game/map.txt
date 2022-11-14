@@ -18,93 +18,89 @@ mmc3_code.o:
     BSS               Offs=00027C  Size=00000B  Align=00001  Fill=0000
     STARTUP           Offs=0008BF  Size=000055  Align=00001  Fill=0000
 PRG0.o:
-    BSS               Offs=000287  Size=000057  Align=00001  Fill=0000
-    BANK0             Offs=000000  Size=001982  Align=00001  Fill=0000
+    BSS               Offs=000287  Size=00005D  Align=00001  Fill=0000
+    BANK0             Offs=000000  Size=001A93  Align=00001  Fill=0000
 PRG1.o:
-    BSS               Offs=0002DE  Size=000002  Align=00001  Fill=0000
+    BSS               Offs=0002E4  Size=000002  Align=00001  Fill=0000
     DATA              Offs=000001  Size=000014  Align=00001  Fill=0000
     BANK1             Offs=000000  Size=00088E  Align=00001  Fill=0000
 PRG2.o:
-    BSS               Offs=0002E0  Size=000001  Align=00001  Fill=0000
+    BSS               Offs=0002E6  Size=000001  Align=00001  Fill=0000
     BANK2             Offs=000000  Size=000940  Align=00001  Fill=0000
-..\lib/nes.lib(addeqsp.o):
-    CODE              Offs=000F9E  Size=000011  Align=00001  Fill=0000
 ..\lib/nes.lib(addysp.o):
-    CODE              Offs=000FAF  Size=00000E  Align=00001  Fill=0000
+    CODE              Offs=000F9E  Size=00000E  Align=00001  Fill=0000
 ..\lib/nes.lib(aslax3.o):
-    CODE              Offs=000FBD  Size=00000E  Align=00001  Fill=0000
+    CODE              Offs=000FAC  Size=00000E  Align=00001  Fill=0000
 ..\lib/nes.lib(aslax4.o):
-    CODE              Offs=000FCB  Size=000011  Align=00001  Fill=0000
+    CODE              Offs=000FBA  Size=000011  Align=00001  Fill=0000
 ..\lib/nes.lib(axlong.o):
-    CODE              Offs=000FDC  Size=00000D  Align=00001  Fill=0000
+    CODE              Offs=000FCB  Size=00000D  Align=00001  Fill=0000
 ..\lib/nes.lib(call.o):
-    CODE              Offs=000FE9  Size=000007  Align=00001  Fill=0000
+    CODE              Offs=000FD8  Size=000007  Align=00001  Fill=0000
 ..\lib/nes.lib(copydata.o):
-    CODE              Offs=000FF0  Size=00002D  Align=00001  Fill=0000
+    CODE              Offs=000FDF  Size=00002D  Align=00001  Fill=0000
 ..\lib/nes.lib(decsp2.o):
-    CODE              Offs=00101D  Size=00000D  Align=00001  Fill=0000
+    CODE              Offs=00100C  Size=00000D  Align=00001  Fill=0000
 ..\lib/nes.lib(decsp3.o):
-    CODE              Offs=00102A  Size=00000D  Align=00001  Fill=0000
+    CODE              Offs=001019  Size=00000D  Align=00001  Fill=0000
 ..\lib/nes.lib(decsp4.o):
-    CODE              Offs=001037  Size=00000D  Align=00001  Fill=0000
+    CODE              Offs=001026  Size=00000D  Align=00001  Fill=0000
 ..\lib/nes.lib(icmp.o):
-    CODE              Offs=001044  Size=00002E  Align=00001  Fill=0000
+    CODE              Offs=001033  Size=00002E  Align=00001  Fill=0000
 ..\lib/nes.lib(incsp1.o):
-    CODE              Offs=001072  Size=000007  Align=00001  Fill=0000
+    CODE              Offs=001061  Size=000007  Align=00001  Fill=0000
 ..\lib/nes.lib(incsp2.o):
-    CODE              Offs=001079  Size=000016  Align=00001  Fill=0000
+    CODE              Offs=001068  Size=000016  Align=00001  Fill=0000
 ..\lib/nes.lib(incsp3.o):
-    CODE              Offs=00108F  Size=000005  Align=00001  Fill=0000
+    CODE              Offs=00107E  Size=000005  Align=00001  Fill=0000
 ..\lib/nes.lib(incsp4.o):
-    CODE              Offs=001094  Size=000005  Align=00001  Fill=0000
+    CODE              Offs=001083  Size=000005  Align=00001  Fill=0000
 ..\lib/nes.lib(ladd.o):
-    CODE              Offs=001099  Size=000025  Align=00001  Fill=0000
+    CODE              Offs=001088  Size=000025  Align=00001  Fill=0000
 ..\lib/nes.lib(laddeq.o):
-    CODE              Offs=0010BE  Size=00002D  Align=00001  Fill=0000
+    CODE              Offs=0010AD  Size=00002D  Align=00001  Fill=0000
 ..\lib/nes.lib(lcmp.o):
-    CODE              Offs=0010EB  Size=00003B  Align=00001  Fill=0000
+    CODE              Offs=0010DA  Size=00003B  Align=00001  Fill=0000
 ..\lib/nes.lib(lge.o):
-    CODE              Offs=001126  Size=000006  Align=00001  Fill=0000
+    CODE              Offs=001115  Size=000006  Align=00001  Fill=0000
 ..\lib/nes.lib(lpush.o):
-    CODE              Offs=00112C  Size=000021  Align=00001  Fill=0000
+    CODE              Offs=00111B  Size=000021  Align=00001  Fill=0000
 ..\lib/nes.lib(lsub.o):
-    CODE              Offs=00114D  Size=000027  Align=00001  Fill=0000
+    CODE              Offs=00113C  Size=000027  Align=00001  Fill=0000
 ..\lib/nes.lib(lule.o):
-    CODE              Offs=001174  Size=000006  Align=00001  Fill=0000
+    CODE              Offs=001163  Size=000006  Align=00001  Fill=0000
 ..\lib/nes.lib(makebool.o):
-    CODE              Offs=00117A  Size=00002C  Align=00001  Fill=0000
+    CODE              Offs=001169  Size=00002C  Align=00001  Fill=0000
 ..\lib/nes.lib(mod.o):
-    CODE              Offs=0011A6  Size=000011  Align=00001  Fill=0000
+    CODE              Offs=001195  Size=000011  Align=00001  Fill=0000
 ..\lib/nes.lib(mul8.o):
-    CODE              Offs=0011B7  Size=00003A  Align=00001  Fill=0000
+    CODE              Offs=0011A6  Size=00003A  Align=00001  Fill=0000
 ..\lib/nes.lib(negabs.o):
-    CODE              Offs=0011F1  Size=000012  Align=00001  Fill=0000
+    CODE              Offs=0011E0  Size=000012  Align=00001  Fill=0000
 ..\lib/nes.lib(or.o):
-    CODE              Offs=001203  Size=000012  Align=00001  Fill=0000
+    CODE              Offs=0011F2  Size=000012  Align=00001  Fill=0000
 ..\lib/nes.lib(popa.o):
-    CODE              Offs=001215  Size=00000C  Align=00001  Fill=0000
+    CODE              Offs=001204  Size=00000C  Align=00001  Fill=0000
 ..\lib/nes.lib(popptr1.o):
-    CODE              Offs=001221  Size=00000E  Align=00001  Fill=0000
+    CODE              Offs=001210  Size=00000E  Align=00001  Fill=0000
 ..\lib/nes.lib(pusha.o):
-    CODE              Offs=00122F  Size=000016  Align=00001  Fill=0000
+    CODE              Offs=00121E  Size=000016  Align=00001  Fill=0000
 ..\lib/nes.lib(pushax.o):
-    CODE              Offs=001245  Size=00001A  Align=00001  Fill=0000
+    CODE              Offs=001234  Size=00001A  Align=00001  Fill=0000
 ..\lib/nes.lib(shelp.o):
-    CODE              Offs=00125F  Size=000020  Align=00001  Fill=0000
+    CODE              Offs=00124E  Size=000020  Align=00001  Fill=0000
 ..\lib/nes.lib(shl.o):
-    CODE              Offs=00127F  Size=000033  Align=00001  Fill=0000
+    CODE              Offs=00126E  Size=000033  Align=00001  Fill=0000
 ..\lib/nes.lib(shrax3.o):
-    CODE              Offs=0012B2  Size=00000E  Align=00001  Fill=0000
+    CODE              Offs=0012A1  Size=00000E  Align=00001  Fill=0000
 ..\lib/nes.lib(shrax4.o):
-    CODE              Offs=0012C0  Size=000011  Align=00001  Fill=0000
+    CODE              Offs=0012AF  Size=000011  Align=00001  Fill=0000
 ..\lib/nes.lib(staxsp.o):
-    CODE              Offs=0012D1  Size=00000B  Align=00001  Fill=0000
-..\lib/nes.lib(subeqsp.o):
-    CODE              Offs=0012DC  Size=000015  Align=00001  Fill=0000
+    CODE              Offs=0012C0  Size=00000B  Align=00001  Fill=0000
 ..\lib/nes.lib(udiv.o):
-    CODE              Offs=0012F1  Size=00004F  Align=00001  Fill=0000
+    CODE              Offs=0012CB  Size=00004F  Align=00001  Fill=0000
 ..\lib/nes.lib(zerobss.o):
-    CODE              Offs=001340  Size=000023  Align=00001  Fill=0000
+    CODE              Offs=00131A  Size=000023  Align=00001  Fill=0000
 ..\lib/nes.lib(zeropage.o):
     ZEROPAGE          Offs=000038  Size=00001A  Align=00001  Fill=0000
 
@@ -117,13 +113,13 @@ CHARS                 000000  005FFF  006000  00001
 HEADER                000000  00000F  000010  00001
 ZEROPAGE              000000  000051  000052  00001
 DATA                  000300  000314  000015  00001
-BSS                   000315  0005F5  0002E1  00001
+BSS                   000315  0005FB  0002E7  00001
 XRAM                  006000  006F03  000F04  00001
-BANK0                 008000  009981  001982  00001
+BANK0                 008000  009A92  001A93  00001
 BANK1                 008000  00888D  00088E  00001
 BANK12                008000  009462  001463  00001
 BANK2                 008000  00893F  000940  00001
-CODE                  00A000  00B362  001363  00001
+CODE                  00A000  00B33C  00133D  00001
 STARTUP               00E000  00E913  000914  00001
 VECTORS               00FFFA  00FFFF  000006  00001
 
@@ -132,8 +128,8 @@ Exports list by name:
 ---------------------
 NES_CHR_BANKS             000010 REA    NES_MAPPER                000004 REA    
 NES_MIRRORING             000000 REA    NES_PRG_BANKS             000008 REA    
-__BSS_RUN__               000315 RLA    __BSS_SIZE__              0002E1 REA    
-__DATA_LOAD__             00B363 RLA    __DATA_RUN__              000300 RLA    
+__BSS_RUN__               000315 RLA    __BSS_SIZE__              0002E7 REA    
+__DATA_LOAD__             00B33D RLA    __DATA_RUN__              000300 RLA    
 __DATA_SIZE__             000015 REA    __STACKSIZE__             000100 REA    
 __STACK_START__           000700 REA    __STARTUP__               000001 REA    
 _bank_bg                  00E59B RLA    _bank_spr                 00E58B RLA    
@@ -175,34 +171,33 @@ _temp32                   00033F RLA    _tempFlags                000343 RLA
 _tick_count               000335 RLA    _tile_index_param         000580 RLA    
 _vram_adr                 00E742 RLA    _vram_unrle               00E4F8 RLA    
 _vram_write               00E5D6 RLA    _x                        00033A RLA    
-_y                        00033B RLA    addeq0sp                  00AF9E RLA    
-addysp                    00AFB0 RLA    addysp1                   00AFAF RLA    
-aslax4                    00AFCB RLA    aslaxy                    00B286 RLA    
-axlong                    00AFDC RLA    boolge                    00B191 RLA    
-boolule                   00B197 RLA    boolult                   00B199 RLA    
-callax                    00AFE9 RLA    copydata                  00AFF0 RLA    
-decsp2                    00B01D RLA    decsp3                    00B02A RLA    
-decsp4                    00B037 RLA    incsp1                    00B072 RLA    
-incsp2                    00B081 RLA    incsp3                    00B08F RLA    
-incsp4                    00B094 RLA    laddeq                    00B0C6 RLA    
-negax                     00B1F5 RLA    popa                      00B215 RLA    
-popax                     00B079 RLA    popptr1                   00B221 RLA    
-popsargsudiv16            00B25F RLA    ptr1                      000040 RLZ    
-ptr2                      000042 RLZ    ptr4                      000046 RLZ    
-push0                     00B245 RLA    pusha                     00B233 RLA    
-pusha0                    00B247 RLA    pushax                    00B249 RLA    
-pusheax                   00B135 RLA    shlax3                    00AFBD RLA    
-shlax4                    00AFCB RLA    shrax3                    00B2B2 RLA    
-shrax4                    00B2C0 RLA    sp                        000038 RLZ    
-sreg                      00003A RLZ    staxysp                   00B2D3 RLA    
-subeq0sp                  00B2DC RLA    tmp1                      000048 RLZ    
-tmp2                      000049 RLZ    tosadd0ax                 00B099 RLA    
-tosaddeax                 00B09F RLA    tosgeeax                  00B126 RLA    
-tosicmp                   00B046 RLA    toslcmp                   00B0EB RLA    
-tosmoda0                  00B1A6 RLA    tosmula0                  00B1B7 RLA    
-tosorax                   00B205 RLA    tossubeax                 00B153 RLA    
-tosuleeax                 00B174 RLA    tosumula0                 00B1B7 RLA    
-udiv16                    00B302 RLA    zerobss                   00B340 RLA    
+_y                        00033B RLA    addysp                    00AF9F RLA    
+addysp1                   00AF9E RLA    aslax4                    00AFBA RLA    
+aslaxy                    00B275 RLA    axlong                    00AFCB RLA    
+boolge                    00B180 RLA    boolule                   00B186 RLA    
+boolult                   00B188 RLA    callax                    00AFD8 RLA    
+copydata                  00AFDF RLA    decsp2                    00B00C RLA    
+decsp3                    00B019 RLA    decsp4                    00B026 RLA    
+incsp1                    00B061 RLA    incsp2                    00B070 RLA    
+incsp3                    00B07E RLA    incsp4                    00B083 RLA    
+laddeq                    00B0B5 RLA    negax                     00B1E4 RLA    
+popa                      00B204 RLA    popax                     00B068 RLA    
+popptr1                   00B210 RLA    popsargsudiv16            00B24E RLA    
+ptr1                      000040 RLZ    ptr2                      000042 RLZ    
+ptr4                      000046 RLZ    push0                     00B234 RLA    
+pusha                     00B222 RLA    pusha0                    00B236 RLA    
+pushax                    00B238 RLA    pusheax                   00B124 RLA    
+shlax3                    00AFAC RLA    shlax4                    00AFBA RLA    
+shrax3                    00B2A1 RLA    shrax4                    00B2AF RLA    
+sp                        000038 RLZ    sreg                      00003A RLZ    
+staxysp                   00B2C2 RLA    tmp1                      000048 RLZ    
+tmp2                      000049 RLZ    tosadd0ax                 00B088 RLA    
+tosaddeax                 00B08E RLA    tosgeeax                  00B115 RLA    
+tosicmp                   00B035 RLA    toslcmp                   00B0DA RLA    
+tosmoda0                  00B195 RLA    tosmula0                  00B1A6 RLA    
+tosorax                   00B1F4 RLA    tossubeax                 00B142 RLA    
+tosuleeax                 00B163 RLA    tosumula0                 00B1A6 RLA    
+udiv16                    00B2DC RLA    zerobss                   00B31A RLA    
 
 
 
@@ -215,7 +210,7 @@ sp                        000038 RLZ    sreg                      00003A RLZ
 ptr1                      000040 RLZ    ptr2                      000042 RLZ    
 ptr4                      000046 RLZ    tmp1                      000048 RLZ    
 tmp2                      000049 RLZ    __STACKSIZE__             000100 REA    
-__BSS_SIZE__              0002E1 REA    __DATA_RUN__              000300 RLA    
+__BSS_SIZE__              0002E7 REA    __DATA_RUN__              000300 RLA    
 __BSS_RUN__               000315 RLA    _tick_count               000335 RLA    
 _pad_all                  000336 RLA    _pad_all_new              000337 RLA    
 _index16                  000338 RLA    _x                        00033A RLA    
@@ -242,31 +237,30 @@ _get_at_addr              00A19A RLA    _queue_next_anim          00AE75 RLA
 _commit_next_anim         00AE8C RLA    _fade_to_black            00AF06 RLA    
 _fade_from_black          00AF29 RLA    _fade_to_white            00AF4C RLA    
 _fade_from_white          00AF6F RLA    _main                     00AF92 RLA    
-addeq0sp                  00AF9E RLA    addysp1                   00AFAF RLA    
-addysp                    00AFB0 RLA    shlax3                    00AFBD RLA    
-shlax4                    00AFCB RLA    aslax4                    00AFCB RLA    
-axlong                    00AFDC RLA    callax                    00AFE9 RLA    
-copydata                  00AFF0 RLA    decsp2                    00B01D RLA    
-decsp3                    00B02A RLA    decsp4                    00B037 RLA    
-tosicmp                   00B046 RLA    incsp1                    00B072 RLA    
-popax                     00B079 RLA    incsp2                    00B081 RLA    
-incsp3                    00B08F RLA    incsp4                    00B094 RLA    
-tosadd0ax                 00B099 RLA    tosaddeax                 00B09F RLA    
-laddeq                    00B0C6 RLA    toslcmp                   00B0EB RLA    
-tosgeeax                  00B126 RLA    pusheax                   00B135 RLA    
-tossubeax                 00B153 RLA    tosuleeax                 00B174 RLA    
-boolge                    00B191 RLA    boolule                   00B197 RLA    
-boolult                   00B199 RLA    tosmoda0                  00B1A6 RLA    
-tosumula0                 00B1B7 RLA    tosmula0                  00B1B7 RLA    
-negax                     00B1F5 RLA    tosorax                   00B205 RLA    
-popa                      00B215 RLA    popptr1                   00B221 RLA    
-pusha                     00B233 RLA    push0                     00B245 RLA    
-pusha0                    00B247 RLA    pushax                    00B249 RLA    
-popsargsudiv16            00B25F RLA    aslaxy                    00B286 RLA    
-shrax3                    00B2B2 RLA    shrax4                    00B2C0 RLA    
-staxysp                   00B2D3 RLA    subeq0sp                  00B2DC RLA    
-udiv16                    00B302 RLA    zerobss                   00B340 RLA    
-__DATA_LOAD__             00B363 RLA    _set_prg_8000             00E11C RLA    
+addysp1                   00AF9E RLA    addysp                    00AF9F RLA    
+shlax3                    00AFAC RLA    shlax4                    00AFBA RLA    
+aslax4                    00AFBA RLA    axlong                    00AFCB RLA    
+callax                    00AFD8 RLA    copydata                  00AFDF RLA    
+decsp2                    00B00C RLA    decsp3                    00B019 RLA    
+decsp4                    00B026 RLA    tosicmp                   00B035 RLA    
+incsp1                    00B061 RLA    popax                     00B068 RLA    
+incsp2                    00B070 RLA    incsp3                    00B07E RLA    
+incsp4                    00B083 RLA    tosadd0ax                 00B088 RLA    
+tosaddeax                 00B08E RLA    laddeq                    00B0B5 RLA    
+toslcmp                   00B0DA RLA    tosgeeax                  00B115 RLA    
+pusheax                   00B124 RLA    tossubeax                 00B142 RLA    
+tosuleeax                 00B163 RLA    boolge                    00B180 RLA    
+boolule                   00B186 RLA    boolult                   00B188 RLA    
+tosmoda0                  00B195 RLA    tosumula0                 00B1A6 RLA    
+tosmula0                  00B1A6 RLA    negax                     00B1E4 RLA    
+tosorax                   00B1F4 RLA    popa                      00B204 RLA    
+popptr1                   00B210 RLA    pusha                     00B222 RLA    
+push0                     00B234 RLA    pusha0                    00B236 RLA    
+pushax                    00B238 RLA    popsargsudiv16            00B24E RLA    
+aslaxy                    00B275 RLA    shrax3                    00B2A1 RLA    
+shrax4                    00B2AF RLA    staxysp                   00B2C2 RLA    
+udiv16                    00B2DC RLA    zerobss                   00B31A RLA    
+__DATA_LOAD__             00B33D RLA    _set_prg_8000             00E11C RLA    
 _set_chr_mode_2           00E147 RLA    _set_chr_mode_3           00E150 RLA    
 _set_chr_mode_4           00E159 RLA    _set_chr_mode_5           00E162 RLA    
 _set_mirroring            00E180 RLA    _set_irq_ptr              00E18F RLA    
@@ -357,7 +351,7 @@ _current_room (main.o):
 _delay (crt0.o):
     main.o                    main.s(28)
 _draw_player (PRG1.o):
-    PRG0.o                    PRG0.s(181)
+    PRG0.o                    PRG0.s(182)
 _fade_from_black (main.o):
     PRG0.o                    PRG0.s(124)
 _fade_from_white (main.o):
@@ -480,8 +474,6 @@ _x (main.o):
     PRG0.o                    PRG0.s(99)
 _y (main.o):
     PRG0.o                    PRG0.s(100)
-addeq0sp (addeqsp.o):
-    PRG0.o                    PRG0.s(5393)
 addysp (addysp.o):
     incsp4.o                  runtime/incsp4.s(8)
     incsp3.o                  runtime/incsp3.s(8)
@@ -490,45 +482,44 @@ addysp1 (addysp.o):
     lsub.o                    runtime/lsub.s(11)
     ladd.o                    runtime/ladd.s(8)
 aslax4 (aslax4.o):
-    PRG0.o                    PRG0.s(5393)
-    PRG0.o                    PRG0.s(5393)
+    PRG0.o                    PRG0.s(5567)
+    PRG0.o                    PRG0.s(5567)
 aslaxy (shl.o):
-    PRG0.o                    PRG0.s(5393)
-    PRG0.o                    PRG0.s(5393)
-    PRG0.o                    PRG0.s(5393)
+    PRG0.o                    PRG0.s(5567)
+    PRG0.o                    PRG0.s(5567)
+    PRG0.o                    PRG0.s(5567)
 axlong (axlong.o):
-    PRG0.o                    PRG0.s(5393)
+    PRG0.o                    PRG0.s(5567)
 boolge (makebool.o):
     lge.o                     runtime/lge.s(8)
 boolule (makebool.o):
     lule.o                    runtime/lule.s(8)
 boolult (makebool.o):
-    PRG0.o                    PRG0.s(5393)
+    PRG0.o                    PRG0.s(5567)
 callax (call.o):
     mmc3_code.o               mmc3\mmc3_code.s(179)
 copydata (copydata.o):
     crt0.o                    crt0.s(30)
 decsp2 (decsp2.o):
     PRG1.o                    PRG1.s(2089)
-    PRG0.o                    PRG0.s(5393)
+    PRG0.o                    PRG0.s(5567)
 decsp3 (decsp3.o):
-    PRG0.o                    PRG0.s(5393)
-    PRG0.o                    PRG0.s(5393)
+    PRG0.o                    PRG0.s(5567)
+    PRG0.o                    PRG0.s(5567)
 decsp4 (decsp4.o):
     lpush.o                   runtime/lpush.s(12)
 incsp1 (incsp1.o):
-    PRG0.o                    PRG0.s(5393)
+    PRG0.o                    PRG0.s(5567)
     mmc3_code.o               mmc3\mmc3_code.s(179)
     main.o                    main.s(557)
 incsp2 (incsp2.o):
     popptr1.o                 runtime/popptr1.s(8)
-    PRG0.o                    PRG0.s(5393)
 incsp3 (incsp3.o):
     mmc3_code.o               mmc3\mmc3_code.s(179)
 incsp4 (incsp4.o):
     lcmp.o                    runtime/lcmp.s(9)
 laddeq (laddeq.o):
-    PRG0.o                    PRG0.s(5393)
+    PRG0.o                    PRG0.s(5567)
 negax (negabs.o):
     shelp.o                   runtime/shelp.s(11)
     mod.o                     runtime/mod.s(11)
@@ -565,7 +556,7 @@ ptr4 (zeropage.o):
     shelp.o                   runtime/shelp.s(12)
     mul8.o                    runtime/mul8.s(10)
 push0 (pushax.o):
-    PRG0.o                    PRG0.s(5393)
+    PRG0.o                    PRG0.s(5567)
 pusha (pusha.o):
     PRG2.o                    PRG2.s(2520)
     PRG2.o                    PRG2.s(2520)
@@ -576,44 +567,44 @@ pusha (pusha.o):
     PRG2.o                    PRG2.s(2520)
     PRG2.o                    PRG2.s(2520)
     PRG2.o                    PRG2.s(2520)
-    PRG0.o                    PRG0.s(5393)
-    PRG0.o                    PRG0.s(5393)
-    PRG0.o                    PRG0.s(5393)
-    PRG0.o                    PRG0.s(5393)
-    PRG0.o                    PRG0.s(5393)
+    PRG0.o                    PRG0.s(5567)
+    PRG0.o                    PRG0.s(5567)
+    PRG0.o                    PRG0.s(5567)
+    PRG0.o                    PRG0.s(5567)
     mmc3_code.o               mmc3\mmc3_code.s(179)
     main.o                    main.s(557)
     main.o                    main.s(557)
 pusha0 (pushax.o):
     PRG2.o                    PRG2.s(2520)
-    PRG0.o                    PRG0.s(5393)
-    PRG0.o                    PRG0.s(5393)
+    PRG0.o                    PRG0.s(5567)
+    PRG0.o                    PRG0.s(5567)
 pushax (pushax.o):
     PRG2.o                    PRG2.s(2520)
-    PRG0.o                    PRG0.s(5393)
-    PRG0.o                    PRG0.s(5393)
-    PRG0.o                    PRG0.s(5393)
+    PRG0.o                    PRG0.s(5567)
+    PRG0.o                    PRG0.s(5567)
+    PRG0.o                    PRG0.s(5567)
+    PRG0.o                    PRG0.s(5567)
     mmc3_code.o               mmc3\mmc3_code.s(179)
 pusheax (lpush.o):
-    PRG0.o                    PRG0.s(5393)
+    PRG0.o                    PRG0.s(5567)
 shlax3 (aslax3.o):
-    PRG0.o                    PRG0.s(5393)
-    PRG0.o                    PRG0.s(5393)
-    PRG0.o                    PRG0.s(5393)
+    PRG0.o                    PRG0.s(5567)
+    PRG0.o                    PRG0.s(5567)
+    PRG0.o                    PRG0.s(5567)
 shlax4 (aslax4.o):
     PRG2.o                    PRG2.s(2520)
-    PRG0.o                    PRG0.s(5393)
+    PRG0.o                    PRG0.s(5567)
 shrax3 (shrax3.o):
-    PRG0.o                    PRG0.s(5393)
+    PRG0.o                    PRG0.s(5567)
 shrax4 (shrax4.o):
-    PRG0.o                    PRG0.s(5393)
-    PRG0.o                    PRG0.s(5393)
-    PRG0.o                    PRG0.s(5393)
+    PRG0.o                    PRG0.s(5567)
+    PRG0.o                    PRG0.s(5567)
+    PRG0.o                    PRG0.s(5567)
+    PRG0.o                    PRG0.s(5567)
 sp (zeropage.o):
     lcmp.o                    runtime/lcmp.s(10)
     decsp4.o                  runtime/decsp4.s(8)
     addysp.o                  runtime/addysp.s(8)
-    subeqsp.o                 runtime/subeqsp.s(8)
     staxsp.o                  runtime/staxsp.s(8)
     pushax.o                  runtime/pushax.s(8)
     pusha.o                   runtime/pusha.s(8)
@@ -628,7 +619,6 @@ sp (zeropage.o):
     icmp.o                    runtime/icmp.s(9)
     decsp3.o                  runtime/decsp3.s(8)
     decsp2.o                  runtime/decsp2.s(8)
-    addeqsp.o                 runtime/addeqsp.s(8)
     PRG1.o                    PRG1.s(10)
     PRG0.o                    PRG0.s(10)
     mmc3_code.o               mmc3\mmc3_code.s(10)
@@ -649,9 +639,7 @@ sreg (zeropage.o):
     PRG0.o                    PRG0.s(10)
     main.o                    main.s(10)
 staxysp (staxsp.o):
-    PRG0.o                    PRG0.s(5393)
-subeq0sp (subeqsp.o):
-    PRG0.o                    PRG0.s(5393)
+    PRG0.o                    PRG0.s(5567)
 tmp1 (zeropage.o):
     shrax4.o                  runtime/shrax4.s(8)
     shrax3.o                  runtime/shrax3.s(8)
@@ -668,31 +656,32 @@ tmp1 (zeropage.o):
 tmp2 (zeropage.o):
     shelp.o                   runtime/shelp.s(12)
 tosadd0ax (ladd.o):
-    PRG0.o                    PRG0.s(5393)
+    PRG0.o                    PRG0.s(5567)
 tosaddeax (ladd.o):
-    PRG0.o                    PRG0.s(5393)
+    PRG0.o                    PRG0.s(5567)
 tosgeeax (lge.o):
-    PRG0.o                    PRG0.s(5393)
+    PRG0.o                    PRG0.s(5567)
 tosicmp (icmp.o):
-    PRG0.o                    PRG0.s(5393)
-    PRG0.o                    PRG0.s(5393)
-    PRG0.o                    PRG0.s(5393)
+    PRG0.o                    PRG0.s(5567)
+    PRG0.o                    PRG0.s(5567)
+    PRG0.o                    PRG0.s(5567)
+    PRG0.o                    PRG0.s(5567)
 toslcmp (lcmp.o):
     lule.o                    runtime/lule.s(8)
     lge.o                     runtime/lge.s(8)
 tosmoda0 (mod.o):
-    PRG0.o                    PRG0.s(5393)
+    PRG0.o                    PRG0.s(5567)
 tosmula0 (mul8.o):
-    PRG0.o                    PRG0.s(5393)
+    PRG0.o                    PRG0.s(5567)
 tosorax (or.o):
-    PRG0.o                    PRG0.s(5393)
+    PRG0.o                    PRG0.s(5567)
 tossubeax (lsub.o):
-    PRG0.o                    PRG0.s(5393)
+    PRG0.o                    PRG0.s(5567)
 tosuleeax (lule.o):
-    PRG0.o                    PRG0.s(5393)
+    PRG0.o                    PRG0.s(5567)
 tosumula0 (mul8.o):
     PRG2.o                    PRG2.s(2520)
-    PRG0.o                    PRG0.s(5393)
+    PRG0.o                    PRG0.s(5567)
 udiv16 (udiv.o):
     shelp.o                   runtime/shelp.s(11)
 zerobss (zerobss.o):

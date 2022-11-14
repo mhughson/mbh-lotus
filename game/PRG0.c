@@ -43,6 +43,11 @@ unsigned int scroll_y;
 unsigned char irq_array[32];
 unsigned char double_buffer[32];
 
+#if DEBUG_ENABLED
+// Debug hack to test teleporting around a map.
+unsigned int debug_pos_start;
+#endif // DEBUG_ENABLED
+
 // Functions
 //
 
@@ -207,7 +212,7 @@ void main_real()
 				if (pad_all_new & PAD_SELECT)
 				{
 					cur_state = 0xff;
-					++cur_room_index;
+					//++cur_room_index;
 					go_to_state(STATE_GAME);
 				}
 #endif // DEBUG_ENABLED
@@ -554,20 +559,36 @@ void update_player()
 	PROFILE_POKE(PROF_R);
 }
 
-void load_current_map(unsigned int nt)
+void copy_current_map_to_nametable()
 {
-	banked_call(BANK_2, copy_bg_to_current_room);
+	static unsigned int start_x;
+	static unsigned int nt;
 
-	
 	//shake_remaining = 0;
 
 	//banked_call(BANK_5, copy_and_process_map_data);
+
+	// Figure out where the start of the nametable the left
+	// side of the camera is in. This is where we will start
+	// loading in tile data, and will determine which nametable
+	// to load data into.
+	start_x = ((cam.pos_x / 256) * 256) / 16; // start of Nametable A
+
+	// Figure out which nametable the camera is starting in.
+	if (cam.pos_x % 512 < 256)
+	{
+		nt = NAMETABLE_A;
+	}
+	else
+	{
+		nt = NAMETABLE_B;
+	}
 
 	for (y = 0; y < 15; ++y)
 	{
 		for (x = 0; x < 16; ++x)
 		{
-			index16 = GRID_XY_TO_ROOM_INDEX(x, y);
+			index16 = GRID_XY_TO_ROOM_INDEX(start_x + x, y);
 			index16 = current_room[index16] * META_TILE_NUM_BYTES;
 			vram_adr(NTADR(nt,x*2,y*2));	
 			vram_write(&metatiles_temp[index16], 2);
@@ -575,12 +596,17 @@ void load_current_map(unsigned int nt)
 			vram_write(&metatiles_temp[index16+2], 2);
 		}
 	}
+ 	
+	// Because nametable data is duplicated in memory, and
+	// because we only support vertical mirroring atm, this
+	// logic works. For example, incrementing from table B
+	// to table C, is ok because table C is a copy of A.
 	nt += 0x400;
 	for (y = 0; y < 15; ++y)
 	{
 		for (x = 0; x < 16; ++x)
 		{
-			index16 = GRID_XY_TO_ROOM_INDEX(x+16, y);
+			index16 = GRID_XY_TO_ROOM_INDEX(start_x + x + 16, y);
 			index16 = current_room[index16] * META_TILE_NUM_BYTES;
 			vram_adr(NTADR(nt,x*2,y*2));	
 			vram_write(&metatiles_temp[index16], 2);
@@ -589,6 +615,7 @@ void load_current_map(unsigned int nt)
 		}
 	}
 
+	// Go back to the start of the first nametable.
 	nt-=0x400;
 	index = 0;
 	for (y = 0; y < 15; y+=2)
@@ -598,21 +625,21 @@ void load_current_map(unsigned int nt)
 			i = 0;
 
 			// room index.
-			index16 = (y * cur_room_width_tiles) + (x);
+			index16 = (y * cur_room_width_tiles) + (start_x + x);
 			// meta tile palette index.
 			index16 = (current_room[index16] * META_TILE_NUM_BYTES) + 4;
 			// bit shift amount
 			i |= (metatiles_temp[index16]);
 
-			index16 = (y * cur_room_width_tiles) + (x + 1);
+			index16 = (y * cur_room_width_tiles) + (start_x + x + 1);
 			index16 = (current_room[index16] * META_TILE_NUM_BYTES) + 4;
 			i |= (metatiles_temp[index16]) << 2;
 
-			index16 = ((y + 1) * cur_room_width_tiles) + (x);
+			index16 = ((y + 1) * cur_room_width_tiles) + (start_x + x);
 			index16 = (current_room[index16] * META_TILE_NUM_BYTES) + 4;
 			i |= (metatiles_temp[index16]) << 4;
 
-			index16 = ((y + 1) * cur_room_width_tiles) + (x + 1);
+			index16 = ((y + 1) * cur_room_width_tiles) + (start_x + x + 1);
 			index16 = (current_room[index16] * META_TILE_NUM_BYTES) + 4;
 			i |= (metatiles_temp[index16]) << 6;	
 
@@ -631,21 +658,21 @@ void load_current_map(unsigned int nt)
 			i = 0;
 
 			// room index.
-			index16 = (y * cur_room_width_tiles) + (x + 16);
+			index16 = (y * cur_room_width_tiles) + (start_x + x + 16);
 			// meta tile palette index.
 			index16 = (current_room[index16] * META_TILE_NUM_BYTES) + 4;
 			// bit shift amount
 			i |= (metatiles_temp[index16]);
 
-			index16 = (y * cur_room_width_tiles) + (x + 1 + 16);
+			index16 = (y * cur_room_width_tiles) + (start_x + x + 1 + 16);
 			index16 = (current_room[index16] * META_TILE_NUM_BYTES) + 4;
 			i |= (metatiles_temp[index16]) << 2;
 
-			index16 = ((y + 1) * cur_room_width_tiles) + (x + 16);
+			index16 = ((y + 1) * cur_room_width_tiles) + (start_x + x + 16);
 			index16 = (current_room[index16] * META_TILE_NUM_BYTES) + 4;
 			i |= (metatiles_temp[index16]) << 4;
 
-			index16 = ((y + 1) * cur_room_width_tiles) + (x + 1 + 16);
+			index16 = ((y + 1) * cur_room_width_tiles) + (start_x + x + 1 + 16);
 			index16 = (current_room[index16] * META_TILE_NUM_BYTES) + 4;
 			i |= (metatiles_temp[index16]) << 6;	
 
@@ -852,15 +879,51 @@ void go_to_state(unsigned char new_state)
 			set_chr_mode_5(3);
 
 			pal_bg(palette);
-			pal_spr(palette);		
-			load_current_map(NAMETABLE_A);
-
+			pal_spr(palette);
+#if DEBUG_ENABLED
+			player1.pos_x = FP_WHOLE(debug_pos_start);
+			debug_pos_start += 128;
+			if (debug_pos_start >= cur_room_width_pixels)
+			{
+				debug_pos_start = 0;
+			}
+#else
+			// TODO: This should come from the map or from
+			//       a destination when coming through a 
+			//		 door.
 			player1.pos_x = FP_WHOLE(32);
+#endif // DEBUG_ENABLED
 			player1.pos_y = FP_WHOLE((6<<4));
 			player1.vel_y = 0;
 			player1.facing_left = 0;
 
+			// Load the room first so that we know it's size.
+			banked_call(BANK_2, copy_bg_to_current_room);
+
+			// Move the camera to the player, but clamp to the edges.
+			if (high_2byte(player1.pos_x) < 128)
+			{
+				cam.pos_x = 0;
+			}
+			else if (high_2byte(player1.pos_x) > (cur_room_width_pixels - 128))
+			{
+				cam.pos_x = cur_room_width_pixels - 256;
+			}
+			else
+			{
+				cam.pos_x = high_2byte(player1.pos_x) - 128;
+			}
+
+			// Copy the map data to nametables based on the player position.
+			copy_current_map_to_nametable();
+
 			ppu_on_all();
+	
+			// pre-adjust scroll, and wait for that to get 
+			// pushed to the ppu.
+			scroll(cam.pos_x,0);	
+			ppu_wait_nmi();	
+
 			fade_from_black();
 			break;
 		}
