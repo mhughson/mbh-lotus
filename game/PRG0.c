@@ -764,7 +764,8 @@ PROFILE_POKE(PROF_B)
 
 	// Attributes are in 2x2 meta tile chunks, so we need to round down to the nearest,
 	// multiple of 2 (eg. if you pass in index 5, we want to start on 4).
-	local_x = (in_x_tile & 0xFFFC);//local_x = (in_x_tile / 2) * 2;
+	local_x = (in_x_tile & 0xFFFE);//local_x = (in_x_tile / 2) * 2;
+	//local_x = (in_x_tile / 2) * 2;
 
 	for (local_y = 0; local_y < (NAMETABLE_ATTRIBUTES_16_UPDATED_PER_FRAME); local_y+=2)
 	{
