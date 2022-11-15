@@ -1,4 +1,5 @@
 #include "PRG0.h"
+#include "PRG1.h"
 #include "PRG2.h"
 #include "main.h"
 #include "LIB/neslib.h"
@@ -53,7 +54,6 @@ unsigned int debug_pos_start;
 
 void kill_player();
 void update_player();
-void draw_player();
 
 void main_real()
 {
@@ -212,7 +212,7 @@ void main_real()
 				if (pad_all_new & PAD_SELECT)
 				{
 					cur_state = 0xff;
-					//++cur_room_index;
+					++cur_room_index;
 					go_to_state(STATE_GAME);
 				}
 #endif // DEBUG_ENABLED
@@ -249,6 +249,7 @@ void update_player()
 	// static unsigned int high_x;
 	// static unsigned int high_y;
 	static const unsigned int high_walk_speed = (WALK_SPEED >> 16);
+	static unsigned int local_i16;
 
 //	PROFILE_POKE(PROF_G);
 
@@ -380,7 +381,7 @@ void update_player()
 			++jump_held_count;
 			++jump_count;
 			player1.vel_y = -(JUMP_VEL);
-			sfx_play(0,0);
+			sfx_play(5,0);
 		}
 		else if (jump_count < 1 && pad_all_new & PAD_A)
 		{
@@ -494,7 +495,79 @@ void update_player()
 			// We fell of a ledge. eat a jump so that you can't fall->jump->jump to get further.
 			jump_count++;
 		}
-	}	
+	}
+
+	// Store the camera position as in a temp variable, as we don't want
+	// affect the actual camera during this sequence, as the player rendering
+	// will attemp to "offset" that camera.
+	index16 = cam.pos_x;
+
+	// TODO: This should be from hitting a trigger, not hard coded like this.
+	if (high_2byte(player1.pos_x) > cur_room_width_pixels - 24)
+	{
+		// TODO: Destination should be data-drive not hard coded to ++.
+		++cur_room_index;
+		
+#define SCROLL_SPEED (4)
+
+		// Load the next room. NOTE: This is loading OVER top of the room in RAM 
+		// that will be visible during scroll, but does NOT override VRAM. This is
+		// a point of not return though, and the old remove must be scrolled out of
+		// view before giving control back to the player.
+		banked_call(BANK_2, copy_bg_to_current_room);
+
+		// We know that the camera is right at the edge of the screen, just by the
+		// nature of the camera system, and so as a result, we know that we need to
+		// scroll 256 pixels to scroll the next room fully into view.
+		for (local_i16 = 0; local_i16 < 256; local_i16+=SCROLL_SPEED)
+		{
+			// desired distance (216) / 64 steps = 3.375
+			// Is dependant on SCROLL_SPEED being 4. If that changes,
+			// then the number of "steps" should be re-calculated.
+			player1.pos_x -= (FP_WHOLE(3) + FP_0_18 + FP_0_18);
+
+			// Draw the player without updating the animation, as it looks
+			// weird if they "moon walk" across the screen.
+			banked_call(BANK_1, draw_player_static);
+
+			index16 += SCROLL_SPEED;
+			// Scroll the camera without affecting "cam" struct.
+			scroll(index16,0);
+
+			// Load in a full column of tile data. Don't time slice in this case
+			// as perf shouldn't be an issue, and time slicing would furth complicate
+			// this sequence.
+			in_x_tile = local_i16 / 16;
+			in_x_pixel = local_i16;
+			vram_buffer_load_column_full();
+
+			// Wait for the frame to be drawn, clear out the sprite data and vram buffer
+			// for the next frame, all within this tight loop.
+			ppu_wait_nmi();
+			oam_clear();
+			clear_vram_buffer();
+		}
+
+		// Load in 3 extra columns, as the default scrolling logic will miss those.
+		for (i = 0; i < 3; ++i)
+		{
+			in_x_tile = local_i16 / 16;
+			in_x_pixel = local_i16;
+			vram_buffer_load_column_full();
+			banked_call(BANK_1, draw_player_static);
+			ppu_wait_nmi();
+			oam_clear();
+			clear_vram_buffer();
+
+			// NOTE: local_i16 starts with the value it was left with at the end of the 
+			//       loop above this intentionally.
+			local_i16+=8;
+		}	
+
+		// Put the player just outside the door they entered.
+		player1.pos_x = FP_WHOLE(16);
+		cam.pos_x = 0;
+	}
 
 	if (pad_all & PAD_RIGHT)
 	{
@@ -827,6 +900,93 @@ PROFILE_POKE(PROF_B)
 PROFILE_POKE(PROF_W)
 }
 
+// TODO: Can the full and timesliced versions of these functions be combined
+//       to avoid duplicate code?
+void vram_buffer_load_column_full()
+{
+	// TODO: Remove int is a significant perf improvment.
+	static unsigned char local_x;
+	static unsigned char local_y;
+	static unsigned char local_i;
+	static unsigned int local_index16;
+	static unsigned int local_att_index16;
+	static unsigned char nametable_index;
+	static unsigned char tile_offset;
+	static unsigned char tile_offset2;
+
+	static unsigned char array_temp8;
+
+	nametable_index = (in_x_tile / 16) % 2;
+
+	// TILES
+
+PROFILE_POKE(PROF_G)
+
+	tile_offset = (in_x_pixel % 16) / 8;
+	tile_offset2 = tile_offset+2;
+
+	local_index16 = GRID_XY_TO_ROOM_INDEX(in_x_tile, 0);
+
+	for (local_i = 0; local_i < 30; )
+	{
+		local_att_index16 = current_room[local_index16] * META_TILE_NUM_BYTES;
+
+		// single column of tiles
+		array_temp8 = metatiles_temp[local_att_index16 + tile_offset];
+		nametable_col[local_i] = array_temp8;
+		local_i++;
+		array_temp8 = metatiles_temp[local_att_index16 + tile_offset2];
+		nametable_col[local_i] = array_temp8;
+		local_i++;
+
+		local_index16 += cur_room_width_tiles;
+	}
+
+	multi_vram_buffer_vert(nametable_col, (unsigned char)30, get_ppu_addr(nametable_index, in_x_pixel, 0));
+
+
+	// ATTRIBUTES
+
+PROFILE_POKE(PROF_B)
+
+	// Attributes are in 2x2 meta tile chunks, so we need to round down to the nearest,
+	// multiple of 2 (eg. if you pass in index 5, we want to start on 4).
+	local_x = (in_x_tile & 0xFFFE);//local_x = (in_x_tile / 2) * 2;
+	//local_x = (in_x_tile / 2) * 2;
+
+	for (local_y = 0; local_y < (15); local_y+=2)
+	{
+		local_i = 0;
+
+		// room index.
+		local_index16 = GRID_XY_TO_ROOM_INDEX(local_x, local_y);
+		// meta tile palette index.
+		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
+		local_att_index16+=4;
+		// bit shift amount
+		local_i |= (metatiles_temp[local_att_index16]);
+
+		local_index16++;//local_index16 = local_index16 + 1; //(local_y * 16) + (local_x + 1);
+		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
+		local_att_index16+=4;
+		local_i |= (metatiles_temp[local_att_index16]) << 2;
+
+		local_index16 = local_index16 + cur_room_width_tiles; //((local_y + 1) * 16) + (local_x);
+		local_index16--;
+		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
+		local_att_index16+=4;
+		local_i |= (metatiles_temp[local_att_index16]) << 4;
+
+		local_index16++;// = local_index16 + 1; //((local_y + 1) * 16) + (local_x + 1);
+		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
+		local_att_index16+=4;
+		local_i |= (metatiles_temp[local_att_index16]) << 6;	
+
+		one_vram_buffer(local_i, get_at_addr(nametable_index, (local_x) * CELL_SIZE, ((local_y * CELL_SIZE))));
+	}
+PROFILE_POKE(PROF_W)
+}
+
 void go_to_state(unsigned char new_state)
 {
 	cur_state = new_state;
@@ -880,19 +1040,19 @@ void go_to_state(unsigned char new_state)
 
 			pal_bg(palette);
 			pal_spr(palette);
-#if DEBUG_ENABLED
-			player1.pos_x = FP_WHOLE(debug_pos_start);
-			debug_pos_start += 128;
-			if (debug_pos_start >= cur_room_width_pixels)
-			{
-				debug_pos_start = 0;
-			}
-#else
+// #if DEBUG_ENABLED
+// 			player1.pos_x = FP_WHOLE(debug_pos_start);
+// 			debug_pos_start += 128;
+// 			if (debug_pos_start >= cur_room_width_pixels)
+// 			{
+// 				debug_pos_start = 0;
+// 			}
+// #else
 			// TODO: This should come from the map or from
 			//       a destination when coming through a 
 			//		 door.
-			player1.pos_x = FP_WHOLE(32);
-#endif // DEBUG_ENABLED
+			player1.pos_x = FP_WHOLE(0);
+//#endif // DEBUG_ENABLED
 			player1.pos_y = FP_WHOLE((6<<4));
 			player1.vel_y = 0;
 			player1.facing_left = 0;

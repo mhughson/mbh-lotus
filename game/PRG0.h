@@ -10,6 +10,7 @@ unsigned char update_anim();
 void copy_current_map_to_nametable();
 void vram_buffer_load_2x2_metatile();
 void vram_buffer_load_column();
+void vram_buffer_load_column_full();
 void go_to_state(unsigned char new_state);
 
 #endif /* D12B32D3_39DD_4865_9236_3AEDEF9ACEDE */

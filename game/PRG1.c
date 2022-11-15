@@ -88,8 +88,11 @@ void draw_player()
 	global_working_anim = &player1.sprite.anim;
 	update_anim();
 
-	//cur_cam_x = high_2byte(player1.pos_x) - 128;
+	draw_player_static();
+}
 
+void draw_player_static()
+{
 	if (high_2byte(player1.pos_y) < 240 || high_2byte(player1.pos_y) > (0xffff - 16))
 	{
 		oam_meta_spr(
@@ -97,8 +100,4 @@ void draw_player()
 			high_2byte(player1.pos_y) - 1 - cam.pos_y,
 			meta_player_list[sprite_anims[player1.sprite.anim.anim_current]->frames[player1.sprite.anim.anim_frame]]);
 	}
-
-	// Update animation.
-	//++player1.sprite.anim.anim_ticks;
-
 }
