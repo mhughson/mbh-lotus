@@ -516,24 +516,15 @@ void update_player()
 		// view before giving control back to the player.
 		banked_call(BANK_2, copy_bg_to_current_room);
 
+		// We need to do this once before entering the loop so that the 
+		// first frame is not missing the player.
+		banked_call(BANK_1, draw_player_static);
+
 		// We know that the camera is right at the edge of the screen, just by the
 		// nature of the camera system, and so as a result, we know that we need to
 		// scroll 256 pixels to scroll the next room fully into view.
 		for (local_i16 = 0; local_i16 < 256; local_i16+=SCROLL_SPEED)
 		{
-			// desired distance (216) / 64 steps = 3.375
-			// Is dependant on SCROLL_SPEED being 4. If that changes,
-			// then the number of "steps" should be re-calculated.
-			player1.pos_x -= (FP_WHOLE(3) + FP_0_18 + FP_0_18);
-
-			// Draw the player without updating the animation, as it looks
-			// weird if they "moon walk" across the screen.
-			banked_call(BANK_1, draw_player_static);
-
-			index16 += SCROLL_SPEED;
-			// Scroll the camera without affecting "cam" struct.
-			scroll(index16,0);
-
 			// Load in a full column of tile data. Don't time slice in this case
 			// as perf shouldn't be an issue, and time slicing would furth complicate
 			// this sequence.
@@ -546,6 +537,22 @@ void update_player()
 			ppu_wait_nmi();
 			oam_clear();
 			clear_vram_buffer();
+
+			// Start moving stuff after streaming in 1 column so that we don't see 
+			// the first column appear after the camera has already moved.
+
+			// desired distance (216) / 64 steps = 3.375
+			// Is dependant on SCROLL_SPEED being 4. If that changes,
+			// then the number of "steps" should be re-calculated.
+			player1.pos_x -= (FP_WHOLE(3) + FP_0_18 + FP_0_18);
+
+			// Draw the player without updating the animation, as it looks
+			// weird if they "moon walk" across the screen.
+			banked_call(BANK_1, draw_player_static);
+
+			index16 += SCROLL_SPEED;
+			// Scroll the camera without affecting "cam" struct.
+			scroll(index16,0);			
 		}
 
 		// Load in 3 extra columns, as the default scrolling logic will miss those.
