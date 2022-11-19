@@ -4,14 +4,21 @@
             "fileName": "map_gym_01.json",
             "height": 240,
             "width": 1024,
-            "x": 0,
+            "x": 768,
             "y": 0
         },
         {
             "fileName": "map_gym_02.json",
             "height": 240,
             "width": 512,
-            "x": -512,
+            "x": 256,
+            "y": 0
+        },
+        {
+            "fileName": "map_gym_03.json",
+            "height": 240,
+            "width": 256,
+            "x": 0,
             "y": 0
         }
     ],

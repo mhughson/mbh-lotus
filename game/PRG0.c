@@ -497,10 +497,27 @@ void update_player()
 		}
 	}
 
-	// Store the camera position as in a temp variable, as we don't want
-	// affect the actual camera during this sequence, as the player rendering
-	// will attemp to "offset" that camera.
-	index16 = cam.pos_x;
+
+/*
+	How to support scrolling in levels not divisible by 512:
+	eg. A B A | A | A B A B A
+
+	1) Halt - Stream in next level into *next* nametable. (A is visible)
+	2) Scroll into view. (B is now visible)
+	-- If scrolling B -> A skip to #5
+	3) Halt - Stream same level data into nametable A (B is still visible)
+	4) Pop camera to Nametable A
+	5) Pop Player to proper starting position.
+	6) Resume gameplay
+
+	For player moving right to left, I think ti would work by getting the 
+	width of the level and figuring out if it is an odd sized room.
+
+	Up/Down transitions should copy megaman: keep mirroring the same and just
+	stream in next area at the edge of the screen. At the end, pop up to top,
+	and then if needed halt and stream into Nametable A. Figuring out if you
+	want to go to Nametable A or B might be a challenge.
+*/
 
 	// TODO: This should be from hitting a trigger, not hard coded like this.
 	if (high_2byte(player1.pos_x) > cur_room_width_pixels - 24)
@@ -509,6 +526,18 @@ void update_player()
 		++cur_room_index;
 		
 #define SCROLL_SPEED (4)
+
+		// Store the camera position as in a temp variable, as we don't want
+		// affect the actual camera during this sequence, as the player rendering
+		// will attemp to "offset" that camera.
+		index16 = cam.pos_x;
+
+		// Hack: Testing a fix for single screen transitions.
+		if (high_2byte(player1.pos_x) < 256)
+		{
+			player1.pos_x += FP_WHOLE(256);
+			index16 += 256;
+		}
 
 		// Load the next room. NOTE: This is loading OVER top of the room in RAM 
 		// that will be visible during scroll, but does NOT override VRAM. This is
@@ -818,6 +847,7 @@ void vram_buffer_load_2x2_metatile()
 	one_vram_buffer(local_i, get_at_addr(nametable_index, (local_x) * CELL_SIZE, (local_y) * CELL_SIZE));
 }
 */
+
 void vram_buffer_load_column()
 {
 	// TODO: Remove int is a significant perf improvment.
