@@ -532,13 +532,6 @@ void update_player()
 		// will attemp to "offset" that camera.
 		index16 = cam.pos_x;
 
-		// Hack: Testing a fix for single screen transitions.
-		if (high_2byte(player1.pos_x) < 256)
-		{
-			player1.pos_x += FP_WHOLE(256);
-			index16 += 256;
-		}
-
 		// Load the next room. NOTE: This is loading OVER top of the room in RAM 
 		// that will be visible during scroll, but does NOT override VRAM. This is
 		// a point of not return though, and the old remove must be scrolled out of
@@ -559,6 +552,7 @@ void update_player()
 			// this sequence.
 			in_x_tile = local_i16 / 16;
 			in_x_pixel = local_i16;
+			in_flip_nt = 0;
 			vram_buffer_load_column_full();
 
 			// Wait for the frame to be drawn, clear out the sprite data and vram buffer
@@ -573,7 +567,7 @@ void update_player()
 			// desired distance (216) / 64 steps = 3.375
 			// Is dependant on SCROLL_SPEED being 4. If that changes,
 			// then the number of "steps" should be re-calculated.
-			player1.pos_x -= (FP_WHOLE(3) + FP_0_18 + FP_0_18);
+			player1.pos_x -= (FP_WHOLE(3) + FP_0_18 + FP_0_18 + FP_0_05);
 
 			// Draw the player without updating the animation, as it looks
 			// weird if they "moon walk" across the screen.
@@ -584,25 +578,50 @@ void update_player()
 			scroll(index16,0);			
 		}
 
+		// This point we have loaded the first nametable of content from the new level,
+		// and scrolled it into view.
+		// The chunk of code does the same thing, but for the OTHER nametable, and does
+		// NOT scroll the camera.
+		for (local_i16 = 0; local_i16 < 256; local_i16+=8)
+		{
+			// Load in a full column of tile data. Don't time slice in this case
+			// as perf shouldn't be an issue, and time slicing would furth complicate
+			// this sequence.
+			in_x_tile = local_i16 / 16;
+			in_x_pixel = local_i16;
+			in_flip_nt = 1;
+			vram_buffer_load_column_full();	
+
+			// Wait for the frame to be drawn, clear out the sprite data and vram buffer
+			// for the next frame, all within this tight loop.
+			ppu_wait_nmi();
+			oam_clear();
+			clear_vram_buffer();
+
+			// Draw the player without updating the animation, as it looks
+			// weird if they "moon walk" across the screen.
+			banked_call(BANK_1, draw_player_static);
+		}
+
+		// Move the cam now we we don't see the extra 3 tiles pop in.
+		player1.pos_x = FP_WHOLE(16);
+		cam.pos_x = 0;
+		// Both nametables are identicle so this camera pop should be completely
+		// unnoticed.
+		scroll(cam.pos_x,0);	
+
 		// Load in 3 extra columns, as the default scrolling logic will miss those.
-		for (i = 0; i < 3; ++i)
+		for (local_i16 = 256; local_i16 < (256+32); local_i16+=8)
 		{
 			in_x_tile = local_i16 / 16;
 			in_x_pixel = local_i16;
+			in_flip_nt = 0;
 			vram_buffer_load_column_full();
 			banked_call(BANK_1, draw_player_static);
 			ppu_wait_nmi();
 			oam_clear();
 			clear_vram_buffer();
-
-			// NOTE: local_i16 starts with the value it was left with at the end of the 
-			//       loop above this intentionally.
-			local_i16+=8;
 		}	
-
-		// Put the player just outside the door they entered.
-		player1.pos_x = FP_WHOLE(16);
-		cam.pos_x = 0;
 	}
 
 	if (pad_all & PAD_RIGHT)
@@ -953,7 +972,17 @@ void vram_buffer_load_column_full()
 
 	static unsigned char array_temp8;
 
-	nametable_index = (in_x_tile / 16) % 2;
+	// Slightly hacky logic to determine which nametable to load into
+	// and potentially REVERSE the logic, if asked to. Very specific
+	// to the level transition logic.
+	if (cam.pos_x % 512 < 256)
+	{
+		nametable_index = in_flip_nt ? 0 : 1; // in A, show B
+	}
+	else
+	{
+		nametable_index = in_flip_nt ? 1 : 0; // in B, show A
+	}
 
 	// TILES
 

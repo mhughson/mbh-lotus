@@ -172,6 +172,8 @@ extern unsigned int in_y_tile;
 
 extern unsigned int in_x_pixel;
 
+extern unsigned char in_flip_nt;
+
 // Used by the anim functions to avoid passing in a parameter.
 extern anim_info* global_working_anim;
 

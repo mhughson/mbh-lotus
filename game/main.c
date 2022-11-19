@@ -39,6 +39,7 @@ unsigned char current_room_page_reserve[ROOM_PAGE_SIZE];
 unsigned int in_x_tile;
 unsigned int in_y_tile;
 unsigned int in_x_pixel;
+unsigned char in_flip_nt;
 
 anim_info* global_working_anim;
 game_actor player1;
