@@ -46,6 +46,7 @@
 
 // Constants
 #define HALF_POS_BIT_COUNT (16ul)
+#define FP_0_01 ((unsigned long)655ul) // approx
 #define FP_0_05 ((unsigned long)3277ul) // approx
 #define FP_0_18 ((unsigned long)11796ul) // aprrox
 #define FP_0_25 ((unsigned long)16384ul)

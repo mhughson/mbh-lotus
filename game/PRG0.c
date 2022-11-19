@@ -498,131 +498,7 @@ void update_player()
 	}
 
 
-/*
-	How to support scrolling in levels not divisible by 512:
-	eg. A B A | A | A B A B A
-
-	1) Halt - Stream in next level into *next* nametable. (A is visible)
-	2) Scroll into view. (B is now visible)
-	-- If scrolling B -> A skip to #5
-	3) Halt - Stream same level data into nametable A (B is still visible)
-	4) Pop camera to Nametable A
-	5) Pop Player to proper starting position.
-	6) Resume gameplay
-
-	For player moving right to left, I think ti would work by getting the 
-	width of the level and figuring out if it is an odd sized room.
-
-	Up/Down transitions should copy megaman: keep mirroring the same and just
-	stream in next area at the edge of the screen. At the end, pop up to top,
-	and then if needed halt and stream into Nametable A. Figuring out if you
-	want to go to Nametable A or B might be a challenge.
-*/
-
-	// TODO: This should be from hitting a trigger, not hard coded like this.
-	if (high_2byte(player1.pos_x) > cur_room_width_pixels - 24)
-	{
-		// TODO: Destination should be data-drive not hard coded to ++.
-		++cur_room_index;
-		
-#define SCROLL_SPEED (4)
-
-		// Store the camera position as in a temp variable, as we don't want
-		// affect the actual camera during this sequence, as the player rendering
-		// will attemp to "offset" that camera.
-		index16 = cam.pos_x;
-
-		// Load the next room. NOTE: This is loading OVER top of the room in RAM 
-		// that will be visible during scroll, but does NOT override VRAM. This is
-		// a point of not return though, and the old remove must be scrolled out of
-		// view before giving control back to the player.
-		banked_call(BANK_2, copy_bg_to_current_room);
-
-		// We need to do this once before entering the loop so that the 
-		// first frame is not missing the player.
-		banked_call(BANK_1, draw_player_static);
-
-		// We know that the camera is right at the edge of the screen, just by the
-		// nature of the camera system, and so as a result, we know that we need to
-		// scroll 256 pixels to scroll the next room fully into view.
-		for (local_i16 = 0; local_i16 < 256; local_i16+=SCROLL_SPEED)
-		{
-			// Load in a full column of tile data. Don't time slice in this case
-			// as perf shouldn't be an issue, and time slicing would furth complicate
-			// this sequence.
-			in_x_tile = local_i16 / 16;
-			in_x_pixel = local_i16;
-			in_flip_nt = 0;
-			vram_buffer_load_column_full();
-
-			// Wait for the frame to be drawn, clear out the sprite data and vram buffer
-			// for the next frame, all within this tight loop.
-			ppu_wait_nmi();
-			oam_clear();
-			clear_vram_buffer();
-
-			// Start moving stuff after streaming in 1 column so that we don't see 
-			// the first column appear after the camera has already moved.
-
-			// desired distance (216) / 64 steps = 3.375
-			// Is dependant on SCROLL_SPEED being 4. If that changes,
-			// then the number of "steps" should be re-calculated.
-			player1.pos_x -= (FP_WHOLE(3) + FP_0_18 + FP_0_18 + FP_0_05);
-
-			// Draw the player without updating the animation, as it looks
-			// weird if they "moon walk" across the screen.
-			banked_call(BANK_1, draw_player_static);
-
-			index16 += SCROLL_SPEED;
-			// Scroll the camera without affecting "cam" struct.
-			scroll(index16,0);			
-		}
-
-		// This point we have loaded the first nametable of content from the new level,
-		// and scrolled it into view.
-		// The chunk of code does the same thing, but for the OTHER nametable, and does
-		// NOT scroll the camera.
-		for (local_i16 = 0; local_i16 < 256; local_i16+=8)
-		{
-			// Load in a full column of tile data. Don't time slice in this case
-			// as perf shouldn't be an issue, and time slicing would furth complicate
-			// this sequence.
-			in_x_tile = local_i16 / 16;
-			in_x_pixel = local_i16;
-			in_flip_nt = 1;
-			vram_buffer_load_column_full();	
-
-			// Wait for the frame to be drawn, clear out the sprite data and vram buffer
-			// for the next frame, all within this tight loop.
-			ppu_wait_nmi();
-			oam_clear();
-			clear_vram_buffer();
-
-			// Draw the player without updating the animation, as it looks
-			// weird if they "moon walk" across the screen.
-			banked_call(BANK_1, draw_player_static);
-		}
-
-		// Move the cam now we we don't see the extra 3 tiles pop in.
-		player1.pos_x = FP_WHOLE(16);
-		cam.pos_x = 0;
-		// Both nametables are identicle so this camera pop should be completely
-		// unnoticed.
-		scroll(cam.pos_x,0);	
-
-		// Load in 3 extra columns, as the default scrolling logic will miss those.
-		for (local_i16 = 256; local_i16 < (256+32); local_i16+=8)
-		{
-			in_x_tile = local_i16 / 16;
-			in_x_pixel = local_i16;
-			in_flip_nt = 0;
-			vram_buffer_load_column_full();
-			banked_call(BANK_1, draw_player_static);
-			ppu_wait_nmi();
-			oam_clear();
-			clear_vram_buffer();
-		}	
-	}
+	banked_call(BANK_2, try_stream_in_next_level);
 
 	if (pad_all & PAD_RIGHT)
 	{
@@ -1117,7 +993,7 @@ void go_to_state(unsigned char new_state)
 			// TODO: This should come from the map or from
 			//       a destination when coming through a 
 			//		 door.
-			player1.pos_x = FP_WHOLE(0);
+			player1.pos_x = FP_WHOLE(24);
 //#endif // DEBUG_ENABLED
 			player1.pos_y = FP_WHOLE((6<<4));
 			player1.vel_y = 0;
