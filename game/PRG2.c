@@ -313,7 +313,7 @@ void try_stream_in_next_level()
 		// We know that the camera is right at the edge of the screen, just by the
 		// nature of the camera system, and so as a result, we know that we need to
 		// scroll 256 pixels to scroll the next room fully into view.
-		for (local_i16 = 255; local_i16 <= 255; local_i16-=SCROLL_SPEED)
+		for (local_i16 = cur_room_width_pixels; local_i16 > (cur_room_width_pixels - 256); local_i16-=SCROLL_SPEED)
 		{
 			// Load in a full column of tile data. Don't time slice in this case
 			// as perf shouldn't be an issue, and time slicing would furth complicate
@@ -350,7 +350,7 @@ void try_stream_in_next_level()
 		// and scrolled it into view.
 		// The chunk of code does the same thing, but for the OTHER nametable, and does
 		// NOT scroll the camera.
-		for (local_i16 = 255; local_i16 <= 255; local_i16-=8)
+		for (local_i16 = cur_room_width_pixels; local_i16 > (cur_room_width_pixels - 256); local_i16-=8)
 		{
 			// Load in a full column of tile data. Don't time slice in this case
 			// as perf shouldn't be an issue, and time slicing would furth complicate
@@ -373,22 +373,12 @@ void try_stream_in_next_level()
 
 		// Move the cam now we we don't see the extra 3 tiles pop in.
 		player1.pos_x = FP_WHOLE(cur_room_width_pixels - 32);
-		cam.pos_x = 0;
+		cam.pos_x = cur_room_width_pixels - 256;
 		// Both nametables are identicle so this camera pop should be completely
 		// unnoticed.
-		scroll(cam.pos_x,0);	
+		scroll(cam.pos_x,0);
 
-		// Load in 3 extra columns, as the default scrolling logic will miss those.
-		for (local_i16 = 256; local_i16 < (256+32); local_i16+=8)
-		{
-			in_x_tile = local_i16 / 16;
-			in_x_pixel = local_i16;
-			in_flip_nt = 0;
-			banked_call(BANK_0, vram_buffer_load_column_full);
-			banked_call(BANK_1, draw_player_static);
-			ppu_wait_nmi();
-			oam_clear();
-			clear_vram_buffer();
-		}	
+		// We don't need the 3 extra columns for the left side, because natural
+		// scrolling doesn't have the issue with missing columns.
 	}
 }
