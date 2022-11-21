@@ -30,6 +30,9 @@
 // start of XRAM to confirm that this is valid save data.
 #define NUM_SAVE_VERSION_VALIDATION 4
 
+// Flag used to signify the end of a metasprites data.
+#define END_OF_META (0x80)
+
 #define CELL_SIZE (16)
 #define META_TILE_NUM_BYTES (8)
 #define GRID_XY_TO_ROOM_INDEX(x,y) (((y) << cur_room_width_tiles_shift_factor) + (x))
@@ -69,19 +72,10 @@
 
 enum
 {
-	ANIM_PLAYER_IDLE_RIGHT = 0,
-	ANIM_PLAYER_IDLE_LEFT = 1, 
-	ANIM_PLAYER_RUN_RIGHT = 2,
-	ANIM_PLAYER_RUN_LEFT = 3, 
-	ANIM_PLAYER_JUMP_RIGHT = 4,
-	ANIM_PLAYER_JUMP_LEFT = 5, 
-	ANIM_PLAYER_FALL_RIGHT = 6,
-	ANIM_PLAYER_FALL_LEFT = 7, 
-	ANIM_PLAYER_IDLE_CROUCH_RIGHT = 8,
-	ANIM_PLAYER_IDLE_CROUCH_LEFT = 9,
-	// ANIM_PLAYER_IDLE_ATTACK_RIGHT = 10,
-	// ANIM_PLAYER_JUMP_ATTACK_RIGHT = 11,
-	// ANIM_PLAYER_WALK_ATTACK_RIGHT = 12,
+	ANIM_PLAYER_IDLE = 0,
+	ANIM_PLAYER_RUN,
+	ANIM_PLAYER_JUMP,
+	ANIM_PLAYER_FALL,
 
 	NUM_ANIMS,
 };
@@ -175,6 +169,10 @@ extern unsigned int in_x_pixel;
 
 extern unsigned char in_flip_nt;
 
+extern unsigned char in_oam_x;
+extern unsigned char in_oam_y;
+extern const unsigned char *in_oam_data;
+
 // Used by the anim functions to avoid passing in a parameter.
 extern anim_info* global_working_anim;
 
@@ -215,6 +213,7 @@ extern unsigned char current_room[MAX_ROOM_NUM_TILES];
 
 void queue_next_anim(unsigned char next_anim_index);
 void commit_next_anim();
+void c_oam_meta_spr_flipped(void);
 
 #define FADE_DELAY 2
 void fade_to_black();

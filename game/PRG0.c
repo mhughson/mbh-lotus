@@ -18,15 +18,15 @@
 #include "NES_ST/screen_gameover.h"
 
 const unsigned char palette[16]={ 0x0f,0x14,0x24,0x35,0x0f,0x0c,0x1c,0x3c,0x0f,0x07,0x17,0x3d,0x0f,0x09,0x19,0x29 };
-const unsigned char palette_spr[16]={ 0x0f,0x05,0x23,0x37,0x0f,0x01,0x21,0x31,0x0f,0x06,0x16,0x26,0x0f,0x19,0x2a,0x3a };
+const unsigned char palette_spr[16]={ 0x0f,0x04,0x23,0x38,0x0f,0x16,0x26,0x36,0x0f,0x17,0x27,0x37,0x0f,0x18,0x28,0x38 };
 const unsigned char palette_title[16]={ 0x0f,0x15,0x25,0x30,0x0f,0x13,0x25,0x30,0x0f,0x06,0x16,0x26,0x0f,0x09,0x19,0x29 };
 
 
 
 #define NUM_Y_COLLISION_OFFSETS 3
-const unsigned char y_collision_offsets[NUM_Y_COLLISION_OFFSETS] = { 1, 16, 31 };
+const unsigned char y_collision_offsets[NUM_Y_COLLISION_OFFSETS] = { 1, 10, 19 };
 #define NUM_X_COLLISION_OFFSETS 2
-const unsigned char x_collision_offsets[NUM_X_COLLISION_OFFSETS] = { 4, 12 };
+const unsigned char x_collision_offsets[NUM_X_COLLISION_OFFSETS] = { 0, 12 };
 
 const unsigned char bg_banks[4] = { 3, 8, 9, 10 };
 
@@ -445,7 +445,7 @@ void update_player()
 		for (i = 0; i < NUM_X_COLLISION_OFFSETS; ++i)
 		{
 			x = (high_2byte(player1.pos_x) + x_collision_offsets[i]) >> 4;
-			y = (high_2byte(player1.pos_y) + 32) >> 4; // feet
+			y = (high_2byte(player1.pos_y) + 20) >> 4; // feet
 
 			if (y > 15 && y < 20)
 			{
@@ -459,7 +459,7 @@ void update_player()
 				{
 					jump_count = 0;
 					grounded = 1;
-					player1.pos_y = (unsigned long)((y << 4) - 32) << HALF_POS_BIT_COUNT;
+					player1.pos_y = (unsigned long)((y << 4) - 20) << HALF_POS_BIT_COUNT;
 					player1.vel_y = 0;
 					airtime = 0;
 					hit_kill_box = 0;
@@ -467,7 +467,7 @@ void update_player()
 				}
 
 				// We want the kill check to be more forgiving.
-				y = (high_2byte(player1.pos_y) + 24) >> 4; // feet
+				y = (high_2byte(player1.pos_y) + 12) >> 4; // feet
 				// Make sure the new y value is also on screen.
 				if (y < 15)
 				{
@@ -513,38 +513,23 @@ void update_player()
 	{
 		if (player1.vel_y > 0)
 		{
-			anim_index = player1.facing_left ? ANIM_PLAYER_FALL_LEFT : ANIM_PLAYER_FALL_RIGHT;
+			anim_index = ANIM_PLAYER_FALL;
 			global_working_anim = &player1.sprite.anim;
 			queue_next_anim(anim_index);
 			commit_next_anim();
 		}
 		else
 		{
-			anim_index = player1.facing_left ? ANIM_PLAYER_JUMP_LEFT : ANIM_PLAYER_JUMP_RIGHT;
+			anim_index = ANIM_PLAYER_JUMP;
 			global_working_anim = &player1.sprite.anim;
 			queue_next_anim(anim_index);
 			commit_next_anim();
 		}
 	}
-	else if (pad_all & PAD_RIGHT)
+	else if (pad_all & (PAD_RIGHT | PAD_LEFT))
 	{
 		//player1.facing_left = 0;
-		anim_index = ANIM_PLAYER_RUN_RIGHT;
-		global_working_anim = &player1.sprite.anim;
-		queue_next_anim(anim_index);
-		commit_next_anim();
-	}
-	else if (pad_all & PAD_LEFT)
-	{
-		//player1.facing_left = 1;
-		anim_index = ANIM_PLAYER_RUN_LEFT;
-		global_working_anim = &player1.sprite.anim;
-		queue_next_anim(anim_index);
-		commit_next_anim();
-	}
-	else if (pad_all & PAD_DOWN)
-	{
-		anim_index = player1.facing_left ? ANIM_PLAYER_IDLE_CROUCH_LEFT : ANIM_PLAYER_IDLE_CROUCH_RIGHT;
+		anim_index = ANIM_PLAYER_RUN;
 		global_working_anim = &player1.sprite.anim;
 		queue_next_anim(anim_index);
 		commit_next_anim();
@@ -552,7 +537,7 @@ void update_player()
 	else
 	{		
 		//anim_index = (ticks_since_attack < ATTACK_LEN) ? ANIM_PLAYER_IDLE_ATTACK_RIGHT : (player1.facing_left ? ANIM_PLAYER_IDLE_LEFT : ANIM_PLAYER_IDLE_RIGHT);
-		anim_index = (player1.facing_left ? ANIM_PLAYER_IDLE_LEFT : ANIM_PLAYER_IDLE_RIGHT);
+		anim_index = ANIM_PLAYER_IDLE;
 		global_working_anim = &player1.sprite.anim;
 		queue_next_anim(anim_index);
 		commit_next_anim();

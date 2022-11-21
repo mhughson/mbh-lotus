@@ -24,40 +24,20 @@ typedef struct anim_def
 	unsigned char frames[17];
 } anim_def;
 
-const anim_def idle_right = { 5, 3, { 0, 1, 2 } };
-const anim_def walk_right = { 5, 6, { 5, 6, 7, 8, 9, 10 } };
-const anim_def jump_right = { 60, 1, { 3 } };
-const anim_def fall_right = { 60, 1, { 4 } };
-const anim_def idle_left = { 5, 3, { 11, 12, 13 } };
-const anim_def walk_left = { 5, 6, { 16, 17, 18, 19, 20, 21 } };
-const anim_def jump_left = { 60, 1, { 14 } };
-const anim_def fall_left = { 60, 1, { 15 } };
-const anim_def idle_crouch_right = { 60, 1, { 22 } };
-const anim_def idle_crouch_left = { 60, 1, { 23 } };
-// const anim_def idle_attack_right = { 60, 1, { 24 } };
-// const anim_def jump_attack_right = { 60, 1, { 25 } };
-// const anim_def walk_attack_right = { 5, 6, { 26, 27, 28, 29, 30, 31 } };
+const anim_def idle_right = { 20, 4, { 0, 1, 2, 3 } };
+const anim_def walk_right = { 7, 4, { 4, 5, 6, 5 } };
+const anim_def jump_right = { 255, 1, { 7 } };
+const anim_def fall_right = { 255, 1, { 8 } };
 
 const struct anim_def* sprite_anims[] =
 {
 	&idle_right,
-	&idle_left,
 
 	&walk_right,
-	&walk_left,
 
 	&jump_right,
-	&jump_left,
 
 	&fall_right,
-	&fall_left,
-
-	&idle_crouch_right,
-	&idle_crouch_left,
-
-	// &idle_attack_right,
-	// &jump_attack_right,
-	// &walk_attack_right,
 };
 
 unsigned char update_anim()
@@ -95,9 +75,19 @@ void draw_player_static()
 {
 	if (high_2byte(player1.pos_y) < 240 || high_2byte(player1.pos_y) > (0xffff - 16))
 	{
-		oam_meta_spr(
-			high_2byte(player1.pos_x) - cam.pos_x, 
-			high_2byte(player1.pos_y) - 1 - cam.pos_y,
-			meta_player_list[sprite_anims[player1.sprite.anim.anim_current]->frames[player1.sprite.anim.anim_frame]]);
+		if (player1.facing_left == 1)
+		{
+			in_oam_x = high_2byte(player1.pos_x) - cam.pos_x;
+			in_oam_y = high_2byte(player1.pos_y) - 1 - cam.pos_y;
+			in_oam_data = meta_player_list[sprite_anims[player1.sprite.anim.anim_current]->frames[player1.sprite.anim.anim_frame]];
+			c_oam_meta_spr_flipped();
+		}
+		else
+		{		
+			oam_meta_spr(
+				high_2byte(player1.pos_x) - cam.pos_x, 
+				high_2byte(player1.pos_y) - 1 - cam.pos_y,
+				meta_player_list[sprite_anims[player1.sprite.anim.anim_current]->frames[player1.sprite.anim.anim_frame]]);
+		}
 	}
 }
