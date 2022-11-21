@@ -250,7 +250,6 @@ void update_player()
 	// static unsigned int high_x;
 	// static unsigned int high_y;
 	static const unsigned int high_walk_speed = (WALK_SPEED >> 16);
-	static unsigned int local_i16;
 
 //	PROFILE_POKE(PROF_G);
 
