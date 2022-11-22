@@ -394,7 +394,7 @@ void update_player()
 	{
 		// if (ticks_down > 0 && ticks_down < 5)
 		// {
-		// 	player1.vel_y >>= 2;
+		//  	player1.vel_y >>= 2;
 		// }
 		ticks_down = 0;
 		jump_held_count = 0;
