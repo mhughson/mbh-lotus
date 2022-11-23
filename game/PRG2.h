@@ -13,9 +13,17 @@ void copy_bg_to_current_room();
 void copy_original_room_to_current();
 
 // cur_room_index
-// x
+// IN:  in_obj_index
 // OUT: loaded_obj_id
 void get_obj_id();
+
+// IN:  in_obj_index
+//      cur_room_index
+// OUT: loaded_obj_id
+//      loaded_obj_x;
+//      loaded_obj_y;
+//      loaded_obj_payload;
+void get_next_object();
 
 //void build_room_delta();
 

@@ -1004,6 +1004,42 @@ void go_to_state(unsigned char new_state)
 			// Copy the map data to nametables based on the player position.
 			copy_current_map_to_nametable();
 
+			in_obj_index = 0;
+			do
+			{
+				banked_call(BANK_2, get_obj_id);
+
+				switch (loaded_obj_id)
+				{
+					default:
+					{
+
+					}
+				}
+
+			} while (loaded_obj_id != 0xff);
+			
+			memfill(trig_objs, 0, MAX_TRIGGERS * sizeof(trigger_object));
+
+			do
+			{
+				banked_call(BANK_2, get_next_object);
+
+				switch (loaded_obj_id)
+				{
+					case TRIG_PLAYER_SPAWN_POINT:
+					{
+						player1.pos_x = FP_WHOLE(loaded_obj_x * 16);
+						player1.pos_y = FP_WHOLE(loaded_obj_y * 16);
+						break;
+					}
+					
+					default:
+						break;
+				}
+			} while (loaded_obj_id != 0xff);
+			
+
 			ppu_on_all();
 	
 			// pre-adjust scroll, and wait for that to get 

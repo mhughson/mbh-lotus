@@ -54,10 +54,22 @@ void copy_original_room_to_current_a()
 
 void get_obj_id_a()
 {
-	loaded_obj_index = rooms_maps_a[cur_room_index][cur_room_size_tiles + x + NUM_CUSTOM_PROPS];
-	++x;
-	loaded_obj_id = rooms_maps_a[cur_room_index][cur_room_size_tiles + x + NUM_CUSTOM_PROPS];
-	++x;
+	loaded_obj_index = rooms_maps_a[cur_room_index][cur_room_size_tiles + in_obj_index + NUM_CUSTOM_PROPS];
+	++in_obj_index;
+	loaded_obj_id = rooms_maps_a[cur_room_index][cur_room_size_tiles + in_obj_index + NUM_CUSTOM_PROPS];
+	++in_obj_index;
+}
+
+void get_next_object_a()
+{
+	loaded_obj_id = rooms_maps_a[cur_room_index][cur_room_size_tiles + in_obj_index + NUM_CUSTOM_PROPS];
+	++in_obj_index;
+	loaded_obj_x = rooms_maps_a[cur_room_index][cur_room_size_tiles + in_obj_index + NUM_CUSTOM_PROPS];
+	++in_obj_index;
+	loaded_obj_y = rooms_maps_a[cur_room_index][cur_room_size_tiles + in_obj_index + NUM_CUSTOM_PROPS];
+	++in_obj_index;
+	loaded_obj_payload = rooms_maps_a[cur_room_index][cur_room_size_tiles + in_obj_index + NUM_CUSTOM_PROPS];
+	++in_obj_index;
 }
 
 void get_cur_room_palettes_a()
@@ -126,6 +138,11 @@ void copy_original_room_to_current()
 void get_obj_id()
 {
 	MAP_BANK_SWAP(get_obj_id_a, get_obj_id_b, get_obj_id_c)
+}
+
+void get_next_object()
+{
+	MAP_BANK_SWAP(get_next_object_a, get_obj_id_b, get_obj_id_c)
 }
 
 void get_cur_room_palettes()

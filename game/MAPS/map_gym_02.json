@@ -25,12 +25,34 @@
          "width":32,
          "x":0,
          "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":3,
+         "name":"Objects",
+         "objects":[
+                {
+                 "height":16,
+                 "id":1,
+                 "name":"",
+                 "rotation":0,
+                 "type":"player_spawn_point",
+                 "visible":true,
+                 "width":16,
+                 "x":64,
+                 "y":112
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
         }],
- "nextlayerid":3,
- "nextobjectid":1,
+ "nextlayerid":4,
+ "nextobjectid":2,
  "orientation":"orthogonal",
  "renderorder":"right-down",
- "tiledversion":"1.6.0",
+ "tiledversion":"1.7.0",
  "tileheight":16,
  "tilesets":[
         {

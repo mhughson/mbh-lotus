@@ -43,6 +43,10 @@ tileset_to_sprpal_index_mapping = {
     "nametable_temp.json" : "0",
 }
 
+object_type_name_mapping = {
+    "player_spawn_point" : "0",
+}
+
 flag_names = [
     "flag0_enable_grav_flip", 
     "flag1_enable_room_flip",
@@ -136,6 +140,12 @@ def GenerateHeader(file_name, world_files):
                     # index and tile id
                     counter += 2
 
+            # Could now many dynamic objects there are, multiplied by the number of bytes
+            # written out for each one, and then +4 for the trailing 0xff
+            layer = [x for x in layers if x["name"].lower()=="objects"][0] # layers[1] 
+            counter += (len(layer["objects"]) * 4) + 4
+                
+
             # The map array will be 960 for the BG + the index and tile id for each
             # dynamic object. The extra +2 is for ending characters 0xff,0xff.
             # +3 more for palette overrides and tileset.
@@ -219,7 +229,24 @@ def GenerateHeader(file_name, world_files):
                     newfile.write(str(counter) + ", " + str(d - 1) + ", ")
                 counter += 1
             # Signals the end of the Dynamics data.
-            newfile.write("0xff, 0xff \n};\n\n")
+            newfile.write("0xff, 0xff, \n")
+
+            newfile.write("\n//Objects: (type, tile_x, tile_y, payload) \n")
+            counter = 0
+            # Objects layer
+            layer = [x for x in layers if x["name"].lower()=="objects"][0] # layers[1] 
+            for objs in layer["objects"]:
+                payload = 0
+                if "properties" in objs and len(objs["properties"]) > 0:
+                    payload = objs["properties"][0]["value"]
+                newfile.write(
+                    object_type_name_mapping[objs["type"]] + ", " + 
+                    str(int(objs["x"] / 16)) + ", " + 
+                    str(int(objs["y"] / 16)) + ", " +
+                    str(payload) + ",\n") #warning: assumes first property is payload
+                counter += 1
+            # Signals the end of the Object data.
+            newfile.write("0xff, 0xff, 0xff, 0xff \n};\n\n")            
         
         num_worlds += 1
         

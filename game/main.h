@@ -135,6 +135,20 @@ typedef struct game_actor
 	unsigned char facing_left;
 } game_actor;
 
+typedef enum TRIGGER_OBJECT_TYPES
+{
+	TRIG_PLAYER_SPAWN_POINT = 0,
+	TRIG_TRANS_POINT,
+} TRIGGER_OBJECT_TYPES;
+
+typedef struct trigger_object
+{
+	TRIGGER_OBJECT_TYPES type;
+	unsigned char pos_x_tile;
+	unsigned char pos_y_tile;
+
+} trigger_object;
+
 
 // RAM
 //
@@ -178,6 +192,8 @@ extern anim_info* global_working_anim;
 
 extern game_actor player1;
 extern camera cam;
+#define MAX_TRIGGERS (8)
+extern trigger_object trig_objs[MAX_TRIGGERS];
 
 extern unsigned char cur_state;
 
@@ -185,9 +201,14 @@ extern unsigned char cur_state;
 extern unsigned char cur_room_index;
 // Input to copy_original_room_to_current
 extern unsigned char tile_index_param;
-// Input to get_obj_id
+// Output from get_obj_id
 extern unsigned char loaded_obj_id;
 extern unsigned char loaded_obj_index;
+// Output from get_next_object
+extern unsigned char loaded_obj_x;
+extern unsigned char loaded_obj_y;
+extern unsigned char loaded_obj_payload;
+extern unsigned char in_obj_index;
 // Output from get_cur_room_metatile_set
 extern unsigned int cur_room_metatile_index;
 

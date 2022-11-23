@@ -48,12 +48,17 @@ const unsigned char *in_oam_data;
 anim_info* global_working_anim;
 game_actor player1;
 camera cam;
+trigger_object trig_objs[MAX_TRIGGERS];
 
 unsigned char cur_state;
 unsigned char cur_room_index;
 unsigned char tile_index_param;
 unsigned char loaded_obj_id;
 unsigned char loaded_obj_index;
+unsigned char loaded_obj_x;
+unsigned char loaded_obj_y;
+unsigned char loaded_obj_payload;
+unsigned char in_obj_index;
 unsigned int cur_room_metatile_index;
 
 unsigned int cur_room_width_pixels;
