@@ -5,15 +5,15 @@
 #ifndef ONCE_MAIN_H
 #define ONCE_MAIN_H
 
-#define DEBUG_ENABLED 1
+#define DEBUG_ENABLED 0
 
 #if DEBUG_ENABLED
-#define PROFILE_POKE(val) //POKE((0x2001),(val));
+#define PROFILE_POKE(val) POKE((0x2001),(val));
 #else
 #define PROFILE_POKE(val)
 #endif
 
-#define PROF_CLEAR 0x1e // none
+#define PROF_CLEAR (0x1e & 0b11111001) // none
 #define PROF_R_TINT 0x3e // red
 #define PROF_G_TINT 0x5e // green
 #define PROF_B_TINT 0x9e // blue
@@ -139,15 +139,18 @@ typedef enum TRIGGER_OBJECT_TYPES
 {
 	TRIG_PLAYER_SPAWN_POINT = 0,
 	TRIG_TRANS_POINT,
+
+	TRIG_UNUSED = 0xff,
 } TRIGGER_OBJECT_TYPES;
 
-typedef struct trigger_object
+#define MAX_TRIGGERS (8)
+typedef struct trigger_objects
 {
-	TRIGGER_OBJECT_TYPES type;
-	unsigned char pos_x_tile;
-	unsigned char pos_y_tile;
-
-} trigger_object;
+	TRIGGER_OBJECT_TYPES type[MAX_TRIGGERS];
+	unsigned char pos_x_tile[MAX_TRIGGERS];
+	unsigned char pos_y_tile[MAX_TRIGGERS];
+	unsigned char payload[MAX_TRIGGERS];	
+} trigger_objects;
 
 
 // RAM
@@ -187,13 +190,15 @@ extern unsigned char in_oam_x;
 extern unsigned char in_oam_y;
 extern const unsigned char *in_oam_data;
 
+extern unsigned char in_is_streaming;
+extern unsigned char in_destination_spawn_id;
+
 // Used by the anim functions to avoid passing in a parameter.
 extern anim_info* global_working_anim;
 
 extern game_actor player1;
 extern camera cam;
-#define MAX_TRIGGERS (8)
-extern trigger_object trig_objs[MAX_TRIGGERS];
+extern trigger_objects trig_objs;
 
 extern unsigned char cur_state;
 

@@ -15,6 +15,7 @@
 
 void copy_bg_to_current_room_a()
 {
+	static unsigned char local_index;
     cur_room_width_tiles = rooms_maps_a[cur_room_index][8];
 
     switch (cur_room_width_tiles)
@@ -39,7 +40,62 @@ void copy_bg_to_current_room_a()
     cur_room_size_tiles = cur_room_width_tiles * rooms_maps_a[cur_room_index][9];
 
 	// NUM_CUSTOM_PROPS because the level data starts after the custom props
-	memcpy(current_room, &rooms_maps_a[cur_room_index][NUM_CUSTOM_PROPS], cur_room_size_tiles);	    
+	memcpy(current_room, &rooms_maps_a[cur_room_index][NUM_CUSTOM_PROPS], cur_room_size_tiles);
+
+	in_obj_index = 0;
+	do
+	{
+		get_obj_id();
+
+		switch (loaded_obj_id)
+		{
+			default:
+			{
+
+			}
+		}
+
+	} while (loaded_obj_id != 0xff);
+	
+	// TODO: Confirm that sizeof() is returning the size of all elements.
+	memfill(&trig_objs, 0, sizeof(trig_objs));
+
+	// track the index of the last added object to fill the array up.
+	local_index = 0;
+	do
+	{
+		get_next_object();
+
+		switch (loaded_obj_id)
+		{
+			case TRIG_PLAYER_SPAWN_POINT:
+			{
+				if (!in_is_streaming)
+				{
+					if (loaded_obj_payload == in_destination_spawn_id)
+					{
+						player1.pos_x = FP_WHOLE(loaded_obj_x * 16);
+						player1.pos_y = FP_WHOLE((loaded_obj_y * 16) - 4);
+					}
+				}
+				break;
+			}
+
+			case TRIG_TRANS_POINT:
+			{
+				trig_objs.type[local_index] = loaded_obj_id;
+				trig_objs.pos_x_tile[local_index] = loaded_obj_x;
+				trig_objs.pos_y_tile[local_index] = loaded_obj_y;
+				trig_objs.payload[local_index]	= loaded_obj_payload;
+
+				++local_index;
+				break;
+			}
+			
+			default:
+				break;
+		}
+	} while (loaded_obj_id != 0xff);	
 }
 
 // tile_index_param
@@ -218,6 +274,7 @@ void try_stream_in_next_level()
 		// that will be visible during scroll, but does NOT override VRAM. This is
 		// a point of not return though, and the old remove must be scrolled out of
 		// view before giving control back to the player.
+		in_is_streaming = 1;
 		copy_bg_to_current_room();
 
 		// We need to do this once before entering the loop so that the 
@@ -321,6 +378,7 @@ void try_stream_in_next_level()
 		// that will be visible during scroll, but does NOT override VRAM. This is
 		// a point of not return though, and the old remove must be scrolled out of
 		// view before giving control back to the player.
+		in_is_streaming = 1;
 		copy_bg_to_current_room();
 
 		// We need to do this once before entering the loop so that the 

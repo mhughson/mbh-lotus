@@ -44,11 +44,13 @@ unsigned char in_flip_nt;
 unsigned char in_oam_x;
 unsigned char in_oam_y;
 const unsigned char *in_oam_data;
+unsigned char in_is_streaming;
+unsigned char in_destination_spawn_id;
 
 anim_info* global_working_anim;
 game_actor player1;
 camera cam;
-trigger_object trig_objs[MAX_TRIGGERS];
+trigger_objects trig_objs;
 
 unsigned char cur_state;
 unsigned char cur_room_index;

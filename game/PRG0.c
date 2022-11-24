@@ -60,6 +60,7 @@ void main_real()
 {
 	unsigned int old_cam_x;
 	unsigned char cur_bg_bank;
+	unsigned char local_i;
 
 	set_mirroring(MIRROR_VERTICAL);
 
@@ -118,7 +119,7 @@ void main_real()
 		++tick_count;
 
 		ppu_wait_nmi(); // wait till beginning of the frame
-		PROFILE_POKE(PROF_R)
+PROFILE_POKE(PROF_R)
 
 		oam_clear();
 
@@ -152,6 +153,37 @@ void main_real()
 				old_cam_x = cam.pos_x;
 
 				update_player();
+
+PROFILE_POKE(PROF_B);
+				// update the trigger objects.
+				for (local_i = 0; local_i < MAX_TRIGGERS; ++local_i)
+				{
+					if (trig_objs.type[local_i] != TRIG_UNUSED)
+					{
+						switch (trig_objs.type[local_i])
+						{
+							case TRIG_TRANS_POINT:
+							{
+								if (pad_all_new & PAD_UP &&
+									(high_2byte(player1.pos_x) + y_collision_offsets[1] ) / 16 == trig_objs.pos_x_tile[local_i] &&
+									high_2byte(player1.pos_y) / 16 == trig_objs.pos_y_tile[local_i])
+								{
+									cur_state = 0xff;
+									// right 5 bits are destination level (max value 31)
+									cur_room_index = (trig_objs.payload[local_i]) & 0b00011111;
+									// left 3 bits are the destination spawn point (max value 7)
+									in_destination_spawn_id = (trig_objs.payload[local_i] >> 5);
+									go_to_state(STATE_GAME);
+									// avoid trigger a transition back from the newly loaded level.
+									goto skip_remaining;
+								}
+								break;
+							}
+						}
+					}
+				}
+				skip_remaining:
+PROFILE_POKE(PROF_R);				
 
 				// Handle case where the state changed in update_player()
 				// We want to make sure that the state changes hold (eg. scroll)
@@ -235,7 +267,7 @@ void main_real()
 		}
 
 
-		PROFILE_POKE(PROF_CLEAR)
+PROFILE_POKE(PROF_CLEAR)
 	}
 }
 
@@ -251,7 +283,7 @@ void update_player()
 	// static unsigned int high_y;
 	static const unsigned int high_walk_speed = (WALK_SPEED >> 16);
 
-//	PROFILE_POKE(PROF_G);
+PROFILE_POKE(PROF_G);
 
 	// high_x = high_2byte(player1.pos_x);
 	// high_y = high_2byte(player1.pos_y);
@@ -545,7 +577,7 @@ void update_player()
 
 	//draw_player();
 
-	PROFILE_POKE(PROF_R);
+PROFILE_POKE(PROF_R);
 }
 
 void copy_current_map_to_nametable()
@@ -985,6 +1017,7 @@ void go_to_state(unsigned char new_state)
 			player1.facing_left = 0;
 
 			// Load the room first so that we know it's size.
+			in_is_streaming = 0;
 			banked_call(BANK_2, copy_bg_to_current_room);
 
 			// Move the camera to the player, but clamp to the edges.
@@ -1003,41 +1036,6 @@ void go_to_state(unsigned char new_state)
 
 			// Copy the map data to nametables based on the player position.
 			copy_current_map_to_nametable();
-
-			in_obj_index = 0;
-			do
-			{
-				banked_call(BANK_2, get_obj_id);
-
-				switch (loaded_obj_id)
-				{
-					default:
-					{
-
-					}
-				}
-
-			} while (loaded_obj_id != 0xff);
-			
-			memfill(trig_objs, 0, MAX_TRIGGERS * sizeof(trigger_object));
-
-			do
-			{
-				banked_call(BANK_2, get_next_object);
-
-				switch (loaded_obj_id)
-				{
-					case TRIG_PLAYER_SPAWN_POINT:
-					{
-						player1.pos_x = FP_WHOLE(loaded_obj_x * 16);
-						player1.pos_y = FP_WHOLE(loaded_obj_y * 16);
-						break;
-					}
-					
-					default:
-						break;
-				}
-			} while (loaded_obj_id != 0xff);
 			
 
 			ppu_on_all();

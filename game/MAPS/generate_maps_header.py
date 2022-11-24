@@ -45,6 +45,7 @@ tileset_to_sprpal_index_mapping = {
 
 object_type_name_mapping = {
     "player_spawn_point" : "0",
+    "trans_point" : "1",
 }
 
 flag_names = [
