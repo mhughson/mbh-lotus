@@ -51,6 +51,7 @@
 #define HALF_POS_BIT_COUNT (16ul)
 #define FP_0_01 ((unsigned long)655ul) // approx
 #define FP_0_05 ((unsigned long)3277ul) // approx
+#define FP_0_15 ((unsigned long)9831ul) // approx
 #define FP_0_18 ((unsigned long)11796ul) // aprrox
 #define FP_0_25 ((unsigned long)16384ul)
 #define FP_0_5 ((unsigned long)32768ul)
@@ -139,6 +140,7 @@ typedef enum TRIGGER_OBJECT_TYPES
 {
 	TRIG_PLAYER_SPAWN_POINT = 0,
 	TRIG_TRANS_POINT,
+	TRIG_TRANS_EDGE,
 
 	TRIG_UNUSED = 0xff,
 } TRIGGER_OBJECT_TYPES;
@@ -192,6 +194,7 @@ extern const unsigned char *in_oam_data;
 
 extern unsigned char in_is_streaming;
 extern unsigned char in_destination_spawn_id;
+extern unsigned char in_stream_direction;
 
 // Used by the anim functions to avoid passing in a parameter.
 extern anim_info* global_working_anim;

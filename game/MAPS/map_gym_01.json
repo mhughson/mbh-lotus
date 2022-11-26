@@ -92,6 +92,23 @@
                  "width":16,
                  "x":192,
                  "y":96
+                }, 
+                {
+                 "height":16,
+                 "id":5,
+                 "name":"trans_edge",
+                 "properties":[
+                        {
+                         "name":"payload",
+                         "type":"int",
+                         "value":1
+                        }],
+                 "rotation":0,
+                 "type":"trans_edge",
+                 "visible":true,
+                 "width":16,
+                 "x":0,
+                 "y":96
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -100,7 +117,7 @@
          "y":0
         }],
  "nextlayerid":4,
- "nextobjectid":5,
+ "nextobjectid":6,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.7.0",

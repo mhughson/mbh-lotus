@@ -82,6 +82,7 @@ void copy_bg_to_current_room_a()
 			}
 
 			case TRIG_TRANS_POINT:
+			case TRIG_TRANS_EDGE:
 			{
 				trig_objs.type[local_index] = loaded_obj_id;
 				trig_objs.pos_x_tile[local_index] = loaded_obj_x;
@@ -232,7 +233,7 @@ void get_cur_room_world_and_level()
 }
 
 
-void try_stream_in_next_level()
+void stream_in_next_level()
 {
 	/*
 	How to support scrolling in levels not divisible by 512:
@@ -258,11 +259,10 @@ void try_stream_in_next_level()
 	static unsigned int local_i16;
 
 	// TODO: This should be from hitting a trigger, not hard coded like this.
-	if (high_2byte(player1.pos_x) > cur_room_width_pixels - 24)
+	//if (high_2byte(player1.pos_x) > cur_room_width_pixels - 24)
+	if (in_stream_direction == 1)
 	{
-		// TODO: Destination should be data-drive not hard coded to ++.
-		++cur_room_index;
-		
+	
 #define SCROLL_SPEED (4)
 
 		// Store the camera position as in a temp variable, as we don't want
@@ -306,7 +306,7 @@ void try_stream_in_next_level()
 			// desired distance (216) / 64 steps = 3.375
 			// Is dependant on SCROLL_SPEED being 4. If that changes,
 			// then the number of "steps" should be re-calculated.
-			player1.pos_x -= (FP_WHOLE(3) + FP_0_18 + FP_0_18 + FP_0_05);
+			player1.pos_x -= (FP_WHOLE(3) + FP_0_18 + FP_0_15);
 
 			// Draw the player without updating the animation, as it looks
 			// weird if they "moon walk" across the screen.
@@ -362,11 +362,9 @@ void try_stream_in_next_level()
 			clear_vram_buffer();
 		}	
 	}
-	else if (high_2byte(player1.pos_x) < (10))
+	else if (in_stream_direction == 0)
 	{
-		// TODO: Destination should be data-drive not hard coded to ++.
-		--cur_room_index;
-		
+	
 #define SCROLL_SPEED (4)
 
 		// Store the camera position as in a temp variable, as we don't want
@@ -410,7 +408,7 @@ void try_stream_in_next_level()
 			// desired distance (216) / 64 steps = 3.375
 			// Is dependant on SCROLL_SPEED being 4. If that changes,
 			// then the number of "steps" should be re-calculated.
-			player1.pos_x += (FP_WHOLE(3) + FP_0_18 + FP_0_05 + FP_0_05 + FP_0_05 + FP_0_05 - FP_0_01);
+			player1.pos_x += (FP_WHOLE(3) + FP_0_18 + FP_0_05 + FP_0_05);
 
 			// Draw the player without updating the animation, as it looks
 			// weird if they "moon walk" across the screen.

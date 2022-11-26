@@ -179,6 +179,37 @@ PROFILE_POKE(PROF_B);
 								}
 								break;
 							}
+
+							case TRIG_TRANS_EDGE:
+							{
+								// 1 for right size, 0 for left side.
+								// Left side is different from right because the left most pixels
+								// are hidden so it needs to collide sooner.
+								index = 1;
+								if (pad_all & PAD_LEFT) index = 0;
+								if ((high_2byte(player1.pos_x) + y_collision_offsets[index] ) / 16 == trig_objs.pos_x_tile[local_i] &&
+									high_2byte(player1.pos_y) / 16 == trig_objs.pos_y_tile[local_i])
+								{
+									// Figure out if we are headed left or right based on the position in world.
+									if (trig_objs.pos_x_tile[local_i] > 8)
+									{
+										in_stream_direction = 1;
+									}
+									else if (trig_objs.pos_x_tile[local_i] <= 8)
+									{
+										in_stream_direction = 0;
+									}
+
+									// Right 5 bits are the destination level.
+									// Left 3 bits are currently unused.
+									cur_room_index = (trig_objs.payload[local_i]) & 0b00011111;
+
+									banked_call(BANK_2, stream_in_next_level);
+									// Avoid triggering additional things in the newly loaded level.
+									goto skip_remaining;
+								}
+								break;
+							}
 						}
 					}
 				}
@@ -528,9 +559,6 @@ PROFILE_POKE(PROF_G);
 			jump_count++;
 		}
 	}
-
-
-	banked_call(BANK_2, try_stream_in_next_level);
 
 	if (pad_all & PAD_RIGHT)
 	{

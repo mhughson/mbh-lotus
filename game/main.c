@@ -46,6 +46,7 @@ unsigned char in_oam_y;
 const unsigned char *in_oam_data;
 unsigned char in_is_streaming;
 unsigned char in_destination_spawn_id;
+unsigned char in_stream_direction;
 
 anim_info* global_working_anim;
 game_actor player1;

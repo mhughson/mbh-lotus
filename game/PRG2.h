@@ -48,6 +48,6 @@ void get_cur_room_music_track();
 // OUT: index2  : cur sub level
 void get_cur_room_world_and_level();
 
-void try_stream_in_next_level();
+void stream_in_next_level();
 
 #endif /* A5B8504C_1172_4833_9D38_027FF7BA3DBB */
