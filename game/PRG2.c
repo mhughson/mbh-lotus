@@ -12,6 +12,15 @@
 #pragma code-name ("BANK2")
 
 #include "maps_a.h"
+#include "meta_tiles_temp.h"
+
+// List of all the meta tiles sets. When a new tileset is added, this list
+// should be extended.
+// NOTE: NEW_TILESET_CHANGE_REQUIRED
+const unsigned char (* const metatile_sets[9])[128*META_TILE_NUM_BYTES] =
+{
+	&metatiles_temp,
+};
 
 void copy_bg_to_current_room_a()
 {
@@ -38,6 +47,8 @@ void copy_bg_to_current_room_a()
     } 
     cur_room_width_pixels = cur_room_width_tiles * 16;
     cur_room_size_tiles = cur_room_width_tiles * rooms_maps_a[cur_room_index][9];
+
+	set_metatile_set();
 
 	// NUM_CUSTOM_PROPS because the level data starts after the custom props
 	memcpy(current_room, &rooms_maps_a[cur_room_index][NUM_CUSTOM_PROPS], cur_room_size_tiles);
@@ -161,7 +172,6 @@ void get_cur_room_world_and_level_a()
 	index2 = rooms_maps_a[cur_room_index][7];
 }
 
-
 ///////////////////////////
 
 #define MAP_BANK_SWAP(func_name_a, func_name_b, func_name_c) 	if (cur_room_index < ROOM_SPLIT_INDEX_B) \
@@ -231,7 +241,6 @@ void get_cur_room_world_and_level()
 {
 	MAP_BANK_SWAP(get_cur_room_world_and_level_a, get_cur_room_world_and_level_b, get_cur_room_world_and_level_c)
 }
-
 
 void stream_in_next_level()
 {
@@ -454,4 +463,10 @@ void stream_in_next_level()
 		// We don't need the 3 extra columns for the left side, because natural
 		// scrolling doesn't have the issue with missing columns.
 	}
+}
+
+void set_metatile_set()
+{
+	get_cur_room_metatile_set();
+	memcpy(cur_metatiles, metatile_sets[cur_room_metatile_index], META_TILE_SET_NUM_BYTES);
 }

@@ -1,6 +1,7 @@
 #include "PRG0.h"
 #include "PRG1.h"
 #include "PRG2.h"
+#include "PRG3.h"
 #include "main.h"
 #include "LIB/neslib.h"
 #include "LIB/nesdoug.h"
@@ -13,7 +14,6 @@
 // Const data
 //
 
-#include "meta_tiles_temp.h"
 #include "NES_ST/screen_title.h"
 #include "NES_ST/screen_gameover.h"
 
@@ -30,20 +30,7 @@ const unsigned char x_collision_offsets[NUM_X_COLLISION_OFFSETS] = { 0, 12 };
 
 const unsigned char bg_banks[4] = { 3, 8, 9, 10 };
 
-// TODO: Move to player
-unsigned char anim_index;
-unsigned char grounded;
-unsigned char jump_held_count;
-unsigned char can_jump;
-unsigned char airtime;
-unsigned char ticks_down;
-unsigned char jump_count;
-unsigned char on_ground;
-unsigned char new_jump_btn;
-unsigned int scroll_y;
-
 unsigned char irq_array[32];
-unsigned char double_buffer[32];
 
 #if DEBUG_ENABLED
 // Debug hack to test teleporting around a map.
@@ -148,11 +135,12 @@ PROFILE_POKE(PROF_R)
 					set_chr_mode_5(bg_banks[cur_bg_bank]);
 				}
 
-				// store the camera position at the start of the framem, so that
+				// store the camera position at the start of the frame, so that
 				// we can detect if it moved by the end of the frame.
 				old_cam_x = cam.pos_x;
 
-				update_player();
+				banked_call(BANK_3, update_player_td);
+				//update_player();
 
 PROFILE_POKE(PROF_B);
 				// update the trigger objects.
@@ -306,6 +294,8 @@ void kill_player()
 {
 	go_to_state(STATE_OVER);
 }
+
+
 
 void update_player()
 {
@@ -640,9 +630,9 @@ void copy_current_map_to_nametable()
 			index16 = GRID_XY_TO_ROOM_INDEX(start_x + x, y);
 			index16 = current_room[index16] * META_TILE_NUM_BYTES;
 			vram_adr(NTADR(nt,x*2,y*2));	
-			vram_write(&metatiles_temp[index16], 2);
+			vram_write(&cur_metatiles[index16], 2);
 			vram_adr(NTADR(nt,x*2,(y*2)+1));	
-			vram_write(&metatiles_temp[index16+2], 2);
+			vram_write(&cur_metatiles[index16+2], 2);
 		}
 	}
  	
@@ -658,9 +648,9 @@ void copy_current_map_to_nametable()
 			index16 = GRID_XY_TO_ROOM_INDEX(start_x + x + 16, y);
 			index16 = current_room[index16] * META_TILE_NUM_BYTES;
 			vram_adr(NTADR(nt,x*2,y*2));	
-			vram_write(&metatiles_temp[index16], 2);
+			vram_write(&cur_metatiles[index16], 2);
 			vram_adr(NTADR(nt,x*2,(y*2)+1));	
-			vram_write(&metatiles_temp[index16+2], 2);
+			vram_write(&cur_metatiles[index16+2], 2);
 		}
 	}
 
@@ -678,19 +668,19 @@ void copy_current_map_to_nametable()
 			// meta tile palette index.
 			index16 = (current_room[index16] * META_TILE_NUM_BYTES) + 4;
 			// bit shift amount
-			i |= (metatiles_temp[index16]);
+			i |= (cur_metatiles[index16]);
 
 			index16 = (y * cur_room_width_tiles) + (start_x + x + 1);
 			index16 = (current_room[index16] * META_TILE_NUM_BYTES) + 4;
-			i |= (metatiles_temp[index16]) << 2;
+			i |= (cur_metatiles[index16]) << 2;
 
 			index16 = ((y + 1) * cur_room_width_tiles) + (start_x + x);
 			index16 = (current_room[index16] * META_TILE_NUM_BYTES) + 4;
-			i |= (metatiles_temp[index16]) << 4;
+			i |= (cur_metatiles[index16]) << 4;
 
 			index16 = ((y + 1) * cur_room_width_tiles) + (start_x + x + 1);
 			index16 = (current_room[index16] * META_TILE_NUM_BYTES) + 4;
-			i |= (metatiles_temp[index16]) << 6;	
+			i |= (cur_metatiles[index16]) << 6;	
 
 			vram_adr(nt + 960 + index);	
 			vram_write(&i, 1);
@@ -711,19 +701,19 @@ void copy_current_map_to_nametable()
 			// meta tile palette index.
 			index16 = (current_room[index16] * META_TILE_NUM_BYTES) + 4;
 			// bit shift amount
-			i |= (metatiles_temp[index16]);
+			i |= (cur_metatiles[index16]);
 
 			index16 = (y * cur_room_width_tiles) + (start_x + x + 1 + 16);
 			index16 = (current_room[index16] * META_TILE_NUM_BYTES) + 4;
-			i |= (metatiles_temp[index16]) << 2;
+			i |= (cur_metatiles[index16]) << 2;
 
 			index16 = ((y + 1) * cur_room_width_tiles) + (start_x + x + 16);
 			index16 = (current_room[index16] * META_TILE_NUM_BYTES) + 4;
-			i |= (metatiles_temp[index16]) << 4;
+			i |= (cur_metatiles[index16]) << 4;
 
 			index16 = ((y + 1) * cur_room_width_tiles) + (start_x + x + 1 + 16);
 			index16 = (current_room[index16] * META_TILE_NUM_BYTES) + 4;
-			i |= (metatiles_temp[index16]) << 6;	
+			i |= (cur_metatiles[index16]) << 6;	
 
 			vram_adr(nt + 960 + index);	
 			vram_write(&i, 1);
@@ -751,8 +741,8 @@ void vram_buffer_load_2x2_metatile()
 
 	local_index16 = GRID_XY_TO_ROOM_INDEX(in_x_tile, in_y_tile);
 	local_att_index16 = current_room[local_index16] * META_TILE_NUM_BYTES;
-	multi_vram_buffer_horz(&metatiles_temp[local_att_index16], 2, get_ppu_addr(nametable_index, in_x_tile * CELL_SIZE, in_y_tile * CELL_SIZE));
-	multi_vram_buffer_horz(&metatiles_temp[local_att_index16+2], 2, get_ppu_addr(nametable_index, in_x_tile * CELL_SIZE, (in_y_tile * CELL_SIZE) + 8));
+	multi_vram_buffer_horz(&cur_metatiles[local_att_index16], 2, get_ppu_addr(nametable_index, in_x_tile * CELL_SIZE, in_y_tile * CELL_SIZE));
+	multi_vram_buffer_horz(&cur_metatiles[local_att_index16+2], 2, get_ppu_addr(nametable_index, in_x_tile * CELL_SIZE, (in_y_tile * CELL_SIZE) + 8));
 
 	// ATTRIBUTES
 
@@ -770,19 +760,19 @@ void vram_buffer_load_2x2_metatile()
 	// meta tile palette index.
 	local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES) + 4;
 	// bit shift amount
-	local_i |= (metatiles_temp[local_att_index16]);
+	local_i |= (cur_metatiles[local_att_index16]);
 
 	local_index16 = local_index16 + 1; //(local_y * 16) + (local_x + 1);
 	local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES) + 4;
-	local_i |= (metatiles_temp[local_att_index16]) << 2;
+	local_i |= (cur_metatiles[local_att_index16]) << 2;
 
 	local_index16 = local_index16 + 15; //((local_y + 1) * 16) + (local_x);
 	local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES) + 4;
-	local_i |= (metatiles_temp[local_att_index16]) << 4;
+	local_i |= (cur_metatiles[local_att_index16]) << 4;
 
 	local_index16 = local_index16 + 1; //((local_y + 1) * 16) + (local_x + 1);
 	local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES) + 4;
-	local_i |= (metatiles_temp[local_att_index16]) << 6;	
+	local_i |= (cur_metatiles[local_att_index16]) << 6;	
 
 	one_vram_buffer(local_i, get_at_addr(nametable_index, (local_x) * CELL_SIZE, (local_y) * CELL_SIZE));
 }
@@ -818,10 +808,10 @@ PROFILE_POKE(PROF_G)
 		local_att_index16 = current_room[local_index16] * META_TILE_NUM_BYTES;
 
 		// single column of tiles
-		array_temp8 = metatiles_temp[local_att_index16 + tile_offset];
+		array_temp8 = cur_metatiles[local_att_index16 + tile_offset];
 		nametable_col[local_i] = array_temp8;
 		local_i++;
-		array_temp8 = metatiles_temp[local_att_index16 + tile_offset2];
+		array_temp8 = cur_metatiles[local_att_index16 + tile_offset2];
 		nametable_col[local_i] = array_temp8;
 		local_i++;
 
@@ -854,23 +844,23 @@ PROFILE_POKE(PROF_B)
 		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
 		local_att_index16+=4;
 		// bit shift amount
-		local_i |= (metatiles_temp[local_att_index16]);
+		local_i |= (cur_metatiles[local_att_index16]);
 
 		local_index16++;//local_index16 = local_index16 + 1; //(local_y * 16) + (local_x + 1);
 		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
 		local_att_index16+=4;
-		local_i |= (metatiles_temp[local_att_index16]) << 2;
+		local_i |= (cur_metatiles[local_att_index16]) << 2;
 
 		local_index16 = local_index16 + cur_room_width_tiles; //((local_y + 1) * 16) + (local_x);
 		local_index16--;
 		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
 		local_att_index16+=4;
-		local_i |= (metatiles_temp[local_att_index16]) << 4;
+		local_i |= (cur_metatiles[local_att_index16]) << 4;
 
 		local_index16++;// = local_index16 + 1; //((local_y + 1) * 16) + (local_x + 1);
 		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
 		local_att_index16+=4;
-		local_i |= (metatiles_temp[local_att_index16]) << 6;	
+		local_i |= (cur_metatiles[local_att_index16]) << 6;	
 
 		one_vram_buffer(local_i, get_at_addr(nametable_index, (local_x) * CELL_SIZE, ((local_y * CELL_SIZE) + (cur_nametable_y * 8))));
 	}
@@ -919,10 +909,10 @@ PROFILE_POKE(PROF_G)
 		local_att_index16 = current_room[local_index16] * META_TILE_NUM_BYTES;
 
 		// single column of tiles
-		array_temp8 = metatiles_temp[local_att_index16 + tile_offset];
+		array_temp8 = cur_metatiles[local_att_index16 + tile_offset];
 		nametable_col[local_i] = array_temp8;
 		local_i++;
-		array_temp8 = metatiles_temp[local_att_index16 + tile_offset2];
+		array_temp8 = cur_metatiles[local_att_index16 + tile_offset2];
 		nametable_col[local_i] = array_temp8;
 		local_i++;
 
@@ -951,23 +941,23 @@ PROFILE_POKE(PROF_B)
 		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
 		local_att_index16+=4;
 		// bit shift amount
-		local_i |= (metatiles_temp[local_att_index16]);
+		local_i |= (cur_metatiles[local_att_index16]);
 
 		local_index16++;//local_index16 = local_index16 + 1; //(local_y * 16) + (local_x + 1);
 		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
 		local_att_index16+=4;
-		local_i |= (metatiles_temp[local_att_index16]) << 2;
+		local_i |= (cur_metatiles[local_att_index16]) << 2;
 
 		local_index16 = local_index16 + cur_room_width_tiles; //((local_y + 1) * 16) + (local_x);
 		local_index16--;
 		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
 		local_att_index16+=4;
-		local_i |= (metatiles_temp[local_att_index16]) << 4;
+		local_i |= (cur_metatiles[local_att_index16]) << 4;
 
 		local_index16++;// = local_index16 + 1; //((local_y + 1) * 16) + (local_x + 1);
 		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
 		local_att_index16+=4;
-		local_i |= (metatiles_temp[local_att_index16]) << 6;	
+		local_i |= (cur_metatiles[local_att_index16]) << 6;	
 
 		one_vram_buffer(local_i, get_at_addr(nametable_index, (local_x) * CELL_SIZE, ((local_y * CELL_SIZE))));
 	}

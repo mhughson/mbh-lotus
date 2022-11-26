@@ -36,13 +36,15 @@
 #define CELL_SIZE (16)
 #define META_TILE_NUM_BYTES (8)
 #define GRID_XY_TO_ROOM_INDEX(x,y) (((y) << cur_room_width_tiles_shift_factor) + (x))
+#define META_TILE_SET_NUM_BYTES (128*META_TILE_NUM_BYTES)
 
 #define NUM_CUSTOM_PROPS (10)
 #define META_TILE_FLAGS_OFFSET (5)
-#define GET_META_TILE_FLAGS(room_table_index) metatiles_temp[current_room[(room_table_index)] * META_TILE_NUM_BYTES + META_TILE_FLAGS_OFFSET]
+#define GET_META_TILE_FLAGS(room_table_index) cur_metatiles[current_room[(room_table_index)] * META_TILE_NUM_BYTES + META_TILE_FLAGS_OFFSET]
 // TODO: These should be needed anymore.
-//#define GET_META_TILE_FLAGS_NEXT(room_table_index) GET_META_TILE_FLAGS(room_table_index) //metatiles_temp[next_room[(room_table_index)] * META_TILE_NUM_BYTES + META_TILE_FLAGS_OFFSET]
-//#define GET_META_TILE_FLAGS_SCROLL(room_number, room_table_index) metatiles_temp[rooms[(room_number)][(room_table_index)] * META_TILE_NUM_BYTES + META_TILE_FLAGS_OFFSET]
+//#define GET_META_TILE_FLAGS_NEXT(room_table_index) GET_META_TILE_FLAGS(room_table_index) //cur_metatiles[next_room[(room_table_index)] * META_TILE_NUM_BYTES + META_TILE_FLAGS_OFFSET]
+//#define GET_META_TILE_FLAGS_SCROLL(room_number, room_table_index) cur_metatiles[rooms[(room_number)][(room_table_index)] * META_TILE_NUM_BYTES + META_TILE_FLAGS_OFFSET]
+
 
 #define NAMETABLE_TILES_8_UPDATED_PER_FRAME (8)
 #define NAMETABLE_ATTRIBUTES_16_UPDATED_PER_FRAME (NAMETABLE_TILES_8_UPDATED_PER_FRAME / 2)
@@ -229,6 +231,18 @@ extern unsigned char cur_nametable_y;
 extern unsigned char cur_nametable_y_left;
 extern unsigned char cur_nametable_y_right;
 
+// Player
+extern unsigned char anim_index;
+extern unsigned char grounded;
+extern unsigned char jump_held_count;
+extern unsigned char can_jump;
+extern unsigned char airtime;
+extern unsigned char ticks_down;
+extern unsigned char jump_count;
+extern unsigned char on_ground;
+extern unsigned char new_jump_btn;
+extern unsigned int scroll_y;
+
 // XRAM
 //
 
@@ -236,6 +250,7 @@ extern unsigned char cur_nametable_y_right;
 #define MAX_ROOM_NUM_TILES (240 * 16)
 extern unsigned char save_version_validation[NUM_SAVE_VERSION_VALIDATION];
 extern unsigned char current_room[MAX_ROOM_NUM_TILES];
+extern unsigned char cur_metatiles[META_TILE_SET_NUM_BYTES];
 
 // Functions
 //

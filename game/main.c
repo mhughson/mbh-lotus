@@ -72,11 +72,23 @@ unsigned char cur_nametable_y;
 unsigned char cur_nametable_y_left;
 unsigned char cur_nametable_y_right;
 
+unsigned char anim_index;
+unsigned char grounded;
+unsigned char jump_held_count;
+unsigned char can_jump;
+unsigned char airtime;
+unsigned char ticks_down;
+unsigned char jump_count;
+unsigned char on_ground;
+unsigned char new_jump_btn;
+unsigned int scroll_y;
+
 #pragma bss-name(push, "XRAM")
 // extra RAM at $6000-$7fff
 //unsigned char wram_array[0x2000];
 unsigned char save_version_validation[NUM_SAVE_VERSION_VALIDATION];
 unsigned char current_room[MAX_ROOM_NUM_TILES];
+unsigned char cur_metatiles[META_TILE_SET_NUM_BYTES];
 #pragma bss-name(pop)
 
 #pragma rodata-name ("CODE")

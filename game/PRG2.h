@@ -50,4 +50,7 @@ void get_cur_room_world_and_level();
 
 void stream_in_next_level();
 
+// Copy over the metatile set to RAM.
+void set_metatile_set();
+
 #endif /* A5B8504C_1172_4833_9D38_027FF7BA3DBB */
