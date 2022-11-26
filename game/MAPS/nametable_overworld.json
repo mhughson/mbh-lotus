@@ -1,0 +1,14 @@
+{ "columns":16,
+ "image":"..\/NES_ST\/nametable_overworld.bmp",
+ "imageheight":240,
+ "imagewidth":256,
+ "margin":0,
+ "name":"nametable_overworld",
+ "spacing":0,
+ "tilecount":240,
+ "tiledversion":"1.7.0",
+ "tileheight":16,
+ "tilewidth":16,
+ "type":"tileset",
+ "version":"1.6"
+}
