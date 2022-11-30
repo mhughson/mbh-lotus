@@ -26,10 +26,10 @@ PRG1.o:
     BANK1             Offs=000000  Size=000619  Align=00001  Fill=0000
 PRG2.o:
     BSS               Offs=00030F  Size=000004  Align=00001  Fill=0000
-    BANK2             Offs=000000  Size=001838  Align=00001  Fill=0000
+    BANK2             Offs=000000  Size=001BF8  Align=00001  Fill=0000
 PRG3.o:
     BSS               Offs=000313  Size=000032  Align=00001  Fill=0000
-    BANK3             Offs=000000  Size=001367  Align=00001  Fill=0000
+    BANK3             Offs=000000  Size=001371  Align=00001  Fill=0000
 PRG4.o:
     BANK4             Offs=000000  Size=00018B  Align=00001  Fill=0000
 ..\lib/nes.lib(addysp.o):
@@ -127,8 +127,8 @@ XRAM                  006000  007303  001304  00001
 BANK0                 008000  0098CF  0018D0  00001
 BANK1                 008000  008618  000619  00001
 BANK12                008000  00945E  00145F  00001
-BANK2                 008000  009837  001838  00001
-BANK3                 008000  009366  001367  00001
+BANK2                 008000  009BF7  001BF8  00001
+BANK3                 008000  009370  001371  00001
 BANK4                 008000  00818A  00018B  00001
 CODE                  00A000  00B40D  00140E  00001
 STARTUP               00E000  00E913  000914  00001
@@ -147,7 +147,7 @@ _airtime                  0005D0 RLA    _anim_index               0005CC RLA
 _bank_bg                  00E59B RLA    _bank_spr                 00E58B RLA    
 _banked_call              00E8BF RLA    _c_oam_meta_spr_flipped   00AF06 RLA    
 _cam                      00058D RLA    _clear_vram_buffer        00A070 RLA    
-_commit_next_anim         00AE8C RLA    _copy_bg_to_current_room  008EE6 RLA    
+_commit_next_anim         00AE8C RLA    _copy_bg_to_current_room  0092A6 RLA    
 _cur_metatiles            006F04 RLA    _cur_nametable_x          0005C8 RLA    
 _cur_nametable_y          0005C5 RLA    _cur_nametable_y_left     0005C6 RLA    
 _cur_nametable_y_right    0005C7 RLA    _cur_room_height_pixels   0005BF RLA    
@@ -195,7 +195,7 @@ _set_chr_mode_4           00E159 RLA    _set_chr_mode_5           00E162 RLA
 _set_irq_ptr              00E18F RLA    _set_mirroring            00E180 RLA    
 _set_prg_8000             00E11C RLA    _set_scroll_x             00A11C RLA    
 _set_vram_buffer          00A000 RLA    _sfx_play                 00E634 RLA    
-_stream_in_next_level     008FAE RLA    _temp32                   000343 RLA    
+_stream_in_next_level     00936E RLA    _temp32                   000343 RLA    
 _tempFlags                000347 RLA    _tick_count               000339 RLA    
 _ticks_down               0005D1 RLA    _tile_index_param         0005B3 RLA    
 _trig_objs                000591 RLA    _update_cam_td            00858A RLA    
@@ -230,9 +230,9 @@ toslcmp                   00B185 RLA    tosmoda0                  00B240 RLA
 tosmula0                  00B251 RLA    tosorax                   00B29F RLA    
 tossuba0                  00B376 RLA    tossubax                  00B378 RLA    
 tossubeax                 00B1ED RLA    tosuleeax                 00B20E RLA    
-tosumoda0                 00B3DA RLA    tosumula0                 00B251 RLA    
-udiv16                    00B39C RLA    zerobss                   00B3EB RLA    
-
+tosumoda0                 00B3DA RLA    tosumodax                 00B3DC RLA    
+tosumula0                 00B251 RLA    udiv16                    00B39C RLA    
+zerobss                   00B3EB RLA    
 
 
 Exports list by value:
@@ -280,8 +280,8 @@ _update_player_td         008005 RLA    _main_real                008039 RLA
 _load_screen_title        00816F RLA    _load_screen_gameover     00817D RLA    
 _draw_player              0083CB RLA    _draw_player_static       0083DB RLA    
 _draw_player_td           0084E4 RLA    _update_cam_td            00858A RLA    
-_vram_buffer_load_column_full 008DEE RLA    _copy_bg_to_current_room  008EE6 RLA    
-_stream_in_next_level     008FAE RLA    _set_vram_buffer          00A000 RLA    
+_vram_buffer_load_column_full 008DEE RLA    _copy_bg_to_current_room  0092A6 RLA    
+_stream_in_next_level     00936E RLA    _set_vram_buffer          00A000 RLA    
 _multi_vram_buffer_horz   00A00C RLA    _multi_vram_buffer_vert   00A043 RLA    
 _one_vram_buffer          00A052 RLA    _clear_vram_buffer        00A070 RLA    
 _get_pad_new              00A07A RLA    _set_scroll_x             00A11C RLA    
@@ -315,24 +315,24 @@ shlaxy                    00B320 RLA    shrax3                    00B34C RLA
 shrax4                    00B35A RLA    stax0sp                   00B36B RLA    
 staxysp                   00B36D RLA    tossuba0                  00B376 RLA    
 tossubax                  00B378 RLA    udiv16                    00B39C RLA    
-tosumoda0                 00B3DA RLA    zerobss                   00B3EB RLA    
-__DATA_LOAD__             00B40E RLA    _set_prg_8000             00E11C RLA    
-_set_chr_mode_0           00E135 RLA    _set_chr_mode_2           00E147 RLA    
-_set_chr_mode_3           00E150 RLA    _set_chr_mode_4           00E159 RLA    
-_set_chr_mode_5           00E162 RLA    _set_mirroring            00E180 RLA    
-_set_irq_ptr              00E18F RLA    _pal_bg                   00E3B0 RLA    
-_pal_spr                  00E3BA RLA    _pal_bright               00E3FE RLA    
-_ppu_off                  00E405 RLA    _ppu_on_all               00E40E RLA    
-_oam_clear                00E42B RLA    _oam_spr                  00E457 RLA    
-_oam_meta_spr             00E481 RLA    _ppu_wait_nmi             00E4ED RLA    
-_vram_unrle               00E4F8 RLA    _scroll                   00E52F RLA    
-_bank_spr                 00E58B RLA    _bank_bg                  00E59B RLA    
-_vram_write               00E5D6 RLA    _music_play               00E5FD RLA    
-_music_stop               00E610 RLA    _sfx_play                 00E634 RLA    
-_pad_poll                 00E666 RLA    _vram_adr                 00E742 RLA    
-_memcpy                   00E783 RLA    _memfill                  00E7B6 RLA    
-_delay                    00E7E5 RLA    _banked_call              00E8BF RLA    
-
+tosumoda0                 00B3DA RLA    tosumodax                 00B3DC RLA    
+zerobss                   00B3EB RLA    __DATA_LOAD__             00B40E RLA    
+_set_prg_8000             00E11C RLA    _set_chr_mode_0           00E135 RLA    
+_set_chr_mode_2           00E147 RLA    _set_chr_mode_3           00E150 RLA    
+_set_chr_mode_4           00E159 RLA    _set_chr_mode_5           00E162 RLA    
+_set_mirroring            00E180 RLA    _set_irq_ptr              00E18F RLA    
+_pal_bg                   00E3B0 RLA    _pal_spr                  00E3BA RLA    
+_pal_bright               00E3FE RLA    _ppu_off                  00E405 RLA    
+_ppu_on_all               00E40E RLA    _oam_clear                00E42B RLA    
+_oam_spr                  00E457 RLA    _oam_meta_spr             00E481 RLA    
+_ppu_wait_nmi             00E4ED RLA    _vram_unrle               00E4F8 RLA    
+_scroll                   00E52F RLA    _bank_spr                 00E58B RLA    
+_bank_bg                  00E59B RLA    _vram_write               00E5D6 RLA    
+_music_play               00E5FD RLA    _music_stop               00E610 RLA    
+_sfx_play                 00E634 RLA    _pad_poll                 00E666 RLA    
+_vram_adr                 00E742 RLA    _memcpy                   00E783 RLA    
+_memfill                  00E7B6 RLA    _delay                    00E7E5 RLA    
+_banked_call              00E8BF RLA    
 
 
 Imports list:
@@ -669,15 +669,15 @@ aslax4 (aslax4.o):
     PRG0.o                    PRG0.s(4900)
     PRG0.o                    PRG0.s(4900)
 aslaxy (shl.o):
-    PRG3.o                    PRG3.s(3522)
-    PRG3.o                    PRG3.s(3522)
-    PRG3.o                    PRG3.s(3522)
+    PRG3.o                    PRG3.s(3526)
+    PRG3.o                    PRG3.s(3526)
+    PRG3.o                    PRG3.s(3526)
     PRG0.o                    PRG0.s(4900)
     PRG0.o                    PRG0.s(4900)
     PRG0.o                    PRG0.s(4900)
     PRG0.o                    PRG0.s(4900)
 axlong (axlong.o):
-    PRG2.o                    PRG2.s(6059)
+    PRG2.o                    PRG2.s(7019)
     PRG0.o                    PRG0.s(4900)
 boolge (makebool.o):
     lge.o                     runtime/lge.s(8)
@@ -690,20 +690,20 @@ callax (call.o):
 copydata (copydata.o):
     crt0.o                    crt0.s(30)
 decsp2 (decsp2.o):
-    PRG3.o                    PRG3.s(3522)
-    PRG3.o                    PRG3.s(3522)
-    PRG3.o                    PRG3.s(3522)
-    PRG3.o                    PRG3.s(3522)
+    PRG3.o                    PRG3.s(3526)
+    PRG3.o                    PRG3.s(3526)
+    PRG3.o                    PRG3.s(3526)
+    PRG3.o                    PRG3.s(3526)
     PRG1.o                    PRG1.s(1398)
     PRG1.o                    PRG1.s(1398)
     PRG0.o                    PRG0.s(4900)
     PRG0.o                    PRG0.s(4900)
 decsp3 (decsp3.o):
-    PRG3.o                    PRG3.s(3522)
-    PRG3.o                    PRG3.s(3522)
-    PRG3.o                    PRG3.s(3522)
-    PRG3.o                    PRG3.s(3522)
-    PRG2.o                    PRG2.s(6059)
+    PRG3.o                    PRG3.s(3526)
+    PRG3.o                    PRG3.s(3526)
+    PRG3.o                    PRG3.s(3526)
+    PRG3.o                    PRG3.s(3526)
+    PRG2.o                    PRG2.s(7019)
     PRG0.o                    PRG0.s(4900)
     PRG0.o                    PRG0.s(4900)
     PRG0.o                    PRG0.s(4900)
@@ -721,7 +721,7 @@ incsp3 (incsp3.o):
     mmc3_code.o               mmc3\mmc3_code.s(179)
 incsp4 (incsp4.o):
     lcmp.o                    runtime/lcmp.s(9)
-    PRG3.o                    PRG3.s(3522)
+    PRG3.o                    PRG3.s(3526)
 laddeq (laddeq.o):
     PRG0.o                    PRG0.s(4900)
 negax (negabs.o):
@@ -763,23 +763,23 @@ ptr4 (zeropage.o):
     shelp.o                   runtime/shelp.s(12)
     mul8.o                    runtime/mul8.s(10)
 push0 (pushax.o):
-    PRG2.o                    PRG2.s(6059)
+    PRG2.o                    PRG2.s(7019)
     PRG0.o                    PRG0.s(4900)
 pusha (pusha.o):
-    PRG3.o                    PRG3.s(3522)
-    PRG3.o                    PRG3.s(3522)
-    PRG3.o                    PRG3.s(3522)
-    PRG2.o                    PRG2.s(6059)
-    PRG2.o                    PRG2.s(6059)
-    PRG2.o                    PRG2.s(6059)
-    PRG2.o                    PRG2.s(6059)
-    PRG2.o                    PRG2.s(6059)
-    PRG2.o                    PRG2.s(6059)
-    PRG2.o                    PRG2.s(6059)
-    PRG2.o                    PRG2.s(6059)
-    PRG2.o                    PRG2.s(6059)
-    PRG2.o                    PRG2.s(6059)
-    PRG2.o                    PRG2.s(6059)
+    PRG3.o                    PRG3.s(3526)
+    PRG3.o                    PRG3.s(3526)
+    PRG3.o                    PRG3.s(3526)
+    PRG2.o                    PRG2.s(7019)
+    PRG2.o                    PRG2.s(7019)
+    PRG2.o                    PRG2.s(7019)
+    PRG2.o                    PRG2.s(7019)
+    PRG2.o                    PRG2.s(7019)
+    PRG2.o                    PRG2.s(7019)
+    PRG2.o                    PRG2.s(7019)
+    PRG2.o                    PRG2.s(7019)
+    PRG2.o                    PRG2.s(7019)
+    PRG2.o                    PRG2.s(7019)
+    PRG2.o                    PRG2.s(7019)
     PRG0.o                    PRG0.s(4900)
     PRG0.o                    PRG0.s(4900)
     PRG0.o                    PRG0.s(4900)
@@ -789,22 +789,22 @@ pusha (pusha.o):
     main.o                    main.s(806)
     main.o                    main.s(806)
 pusha0 (pushax.o):
-    PRG3.o                    PRG3.s(3522)
-    PRG3.o                    PRG3.s(3522)
-    PRG3.o                    PRG3.s(3522)
-    PRG2.o                    PRG2.s(6059)
+    PRG3.o                    PRG3.s(3526)
+    PRG3.o                    PRG3.s(3526)
+    PRG3.o                    PRG3.s(3526)
+    PRG2.o                    PRG2.s(7019)
     PRG0.o                    PRG0.s(4900)
     PRG0.o                    PRG0.s(4900)
 pushax (pushax.o):
-    PRG3.o                    PRG3.s(3522)
-    PRG3.o                    PRG3.s(3522)
-    PRG3.o                    PRG3.s(3522)
-    PRG3.o                    PRG3.s(3522)
-    PRG3.o                    PRG3.s(3522)
-    PRG3.o                    PRG3.s(3522)
-    PRG2.o                    PRG2.s(6059)
-    PRG2.o                    PRG2.s(6059)
-    PRG2.o                    PRG2.s(6059)
+    PRG3.o                    PRG3.s(3526)
+    PRG3.o                    PRG3.s(3526)
+    PRG3.o                    PRG3.s(3526)
+    PRG3.o                    PRG3.s(3526)
+    PRG3.o                    PRG3.s(3526)
+    PRG3.o                    PRG3.s(3526)
+    PRG2.o                    PRG2.s(7019)
+    PRG2.o                    PRG2.s(7019)
+    PRG2.o                    PRG2.s(7019)
     PRG0.o                    PRG0.s(4900)
     PRG0.o                    PRG0.s(4900)
     PRG0.o                    PRG0.s(4900)
@@ -812,40 +812,40 @@ pushax (pushax.o):
     mmc3_code.o               mmc3\mmc3_code.s(179)
     main.o                    main.s(806)
 pusheax (lpush.o):
-    PRG3.o                    PRG3.s(3522)
-    PRG2.o                    PRG2.s(6059)
+    PRG3.o                    PRG3.s(3526)
+    PRG2.o                    PRG2.s(7019)
     PRG0.o                    PRG0.s(4900)
 shlax3 (aslax3.o):
-    PRG3.o                    PRG3.s(3522)
-    PRG3.o                    PRG3.s(3522)
-    PRG3.o                    PRG3.s(3522)
-    PRG3.o                    PRG3.s(3522)
-    PRG3.o                    PRG3.s(3522)
+    PRG3.o                    PRG3.s(3526)
+    PRG3.o                    PRG3.s(3526)
+    PRG3.o                    PRG3.s(3526)
+    PRG3.o                    PRG3.s(3526)
+    PRG3.o                    PRG3.s(3526)
     PRG0.o                    PRG0.s(4900)
     PRG0.o                    PRG0.s(4900)
     PRG0.o                    PRG0.s(4900)
     PRG0.o                    PRG0.s(4900)
 shlax4 (aslax4.o):
-    PRG3.o                    PRG3.s(3522)
-    PRG3.o                    PRG3.s(3522)
-    PRG2.o                    PRG2.s(6059)
+    PRG3.o                    PRG3.s(3526)
+    PRG3.o                    PRG3.s(3526)
+    PRG2.o                    PRG2.s(7019)
     PRG0.o                    PRG0.s(4900)
 shlaxy (shl.o):
-    PRG3.o                    PRG3.s(3522)
-    PRG3.o                    PRG3.s(3522)
-    PRG3.o                    PRG3.s(3522)
-    PRG3.o                    PRG3.s(3522)
+    PRG3.o                    PRG3.s(3526)
+    PRG3.o                    PRG3.s(3526)
+    PRG3.o                    PRG3.s(3526)
+    PRG3.o                    PRG3.s(3526)
 shrax3 (shrax3.o):
-    PRG3.o                    PRG3.s(3522)
-    PRG3.o                    PRG3.s(3522)
+    PRG3.o                    PRG3.s(3526)
+    PRG3.o                    PRG3.s(3526)
     PRG0.o                    PRG0.s(4900)
 shrax4 (shrax4.o):
-    PRG3.o                    PRG3.s(3522)
-    PRG3.o                    PRG3.s(3522)
-    PRG3.o                    PRG3.s(3522)
-    PRG3.o                    PRG3.s(3522)
-    PRG3.o                    PRG3.s(3522)
-    PRG2.o                    PRG2.s(6059)
+    PRG3.o                    PRG3.s(3526)
+    PRG3.o                    PRG3.s(3526)
+    PRG3.o                    PRG3.s(3526)
+    PRG3.o                    PRG3.s(3526)
+    PRG3.o                    PRG3.s(3526)
+    PRG2.o                    PRG2.s(7019)
     PRG0.o                    PRG0.s(4900)
     PRG0.o                    PRG0.s(4900)
     PRG0.o                    PRG0.s(4900)
@@ -893,9 +893,9 @@ sreg (zeropage.o):
     PRG0.o                    PRG0.s(10)
     main.o                    main.s(10)
 stax0sp (staxsp.o):
-    PRG3.o                    PRG3.s(3522)
+    PRG3.o                    PRG3.s(3526)
 staxysp (staxsp.o):
-    PRG3.o                    PRG3.s(3522)
+    PRG3.o                    PRG3.s(3526)
     PRG0.o                    PRG0.s(4900)
 tmp1 (zeropage.o):
     shrax4.o                  runtime/shrax4.s(8)
@@ -917,23 +917,23 @@ tmp2 (zeropage.o):
 tosadd0ax (ladd.o):
     PRG0.o                    PRG0.s(4900)
 tosaddeax (ladd.o):
-    PRG3.o                    PRG3.s(3522)
-    PRG2.o                    PRG2.s(6059)
+    PRG3.o                    PRG3.s(3526)
+    PRG2.o                    PRG2.s(7019)
     PRG0.o                    PRG0.s(4900)
 tosgeeax (lge.o):
     PRG0.o                    PRG0.s(4900)
 tosicmp (icmp.o):
-    PRG3.o                    PRG3.s(3522)
-    PRG3.o                    PRG3.s(3522)
-    PRG3.o                    PRG3.s(3522)
-    PRG3.o                    PRG3.s(3522)
-    PRG2.o                    PRG2.s(6059)
+    PRG3.o                    PRG3.s(3526)
+    PRG3.o                    PRG3.s(3526)
+    PRG3.o                    PRG3.s(3526)
+    PRG3.o                    PRG3.s(3526)
+    PRG2.o                    PRG2.s(7019)
     PRG0.o                    PRG0.s(4900)
     PRG0.o                    PRG0.s(4900)
     PRG0.o                    PRG0.s(4900)
     PRG0.o                    PRG0.s(4900)
 tosicmp0 (icmp.o):
-    PRG2.o                    PRG2.s(6059)
+    PRG2.o                    PRG2.s(7019)
     PRG0.o                    PRG0.s(4900)
 toslcmp (lcmp.o):
     lule.o                    runtime/lule.s(8)
@@ -941,30 +941,32 @@ toslcmp (lcmp.o):
 tosmoda0 (mod.o):
     PRG0.o                    PRG0.s(4900)
 tosmula0 (mul8.o):
-    PRG3.o                    PRG3.s(3522)
+    PRG3.o                    PRG3.s(3526)
     PRG0.o                    PRG0.s(4900)
 tosorax (or.o):
     PRG0.o                    PRG0.s(4900)
 tossuba0 (sub.o):
-    PRG3.o                    PRG3.s(3522)
+    PRG3.o                    PRG3.s(3526)
 tossubax (sub.o):
-    PRG3.o                    PRG3.s(3522)
-    PRG3.o                    PRG3.s(3522)
+    PRG3.o                    PRG3.s(3526)
+    PRG3.o                    PRG3.s(3526)
     main.o                    main.s(806)
 tossubeax (lsub.o):
-    PRG3.o                    PRG3.s(3522)
-    PRG2.o                    PRG2.s(6059)
+    PRG3.o                    PRG3.s(3526)
+    PRG2.o                    PRG2.s(7019)
     PRG0.o                    PRG0.s(4900)
 tosuleeax (lule.o):
-    PRG3.o                    PRG3.s(3522)
+    PRG3.o                    PRG3.s(3526)
     PRG0.o                    PRG0.s(4900)
 tosumoda0 (umod.o):
-    PRG3.o                    PRG3.s(3522)
-    PRG3.o                    PRG3.s(3522)
-    PRG3.o                    PRG3.s(3522)
-    PRG3.o                    PRG3.s(3522)
+    PRG3.o                    PRG3.s(3526)
+    PRG3.o                    PRG3.s(3526)
+    PRG3.o                    PRG3.s(3526)
+    PRG3.o                    PRG3.s(3526)
+tosumodax (umod.o):
+    PRG3.o                    PRG3.s(3526)
 tosumula0 (mul8.o):
-    PRG2.o                    PRG2.s(6059)
+    PRG2.o                    PRG2.s(7019)
     PRG0.o                    PRG0.s(4900)
 udiv16 (udiv.o):
     umod.o                    runtime/umod.s(8)

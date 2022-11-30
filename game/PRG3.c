@@ -337,7 +337,7 @@ void update_cam_td()
 	//set_scroll_x(cam.pos_x);
 	//set_scroll_y(cam.pos_y);
 
-	scroll(cam.pos_x, cam.pos_y);
+	scroll(cam.pos_x, cam.pos_y % 480);
 }
 
 void vram_buffer_load_column_td()

@@ -23,9 +23,9 @@
         },
         {
             "fileName": "map_gym_04.json",
-            "height": 480,
-            "width": 512,
-            "x": -512,
+            "height": 960,
+            "width": 1024,
+            "x": -1024,
             "y": 0
         }
     ],
