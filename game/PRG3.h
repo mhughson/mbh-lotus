@@ -2,5 +2,6 @@
 #define BEEEEAEF_8DDE_4890_B514_EC947A3E3F16
 
 void update_player_td();
+void update_cam_td();
 
 #endif /* BEEEEAEF_8DDE_4890_B514_EC947A3E3F16 */

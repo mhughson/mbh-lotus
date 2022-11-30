@@ -26,6 +26,8 @@ void copy_bg_to_current_room_a()
 {
 	static unsigned char local_index;
     cur_room_width_tiles = rooms_maps_a[cur_room_index][8];
+	cur_room_height_tiles = rooms_maps_a[cur_room_index][9];
+	cur_room_type = rooms_maps_a[cur_room_index][4];
 
     switch (cur_room_width_tiles)
     {
@@ -46,7 +48,8 @@ void copy_bg_to_current_room_a()
         break;
     } 
     cur_room_width_pixels = cur_room_width_tiles * 16;
-    cur_room_size_tiles = cur_room_width_tiles * rooms_maps_a[cur_room_index][9];
+	cur_room_height_pixels = cur_room_height_tiles * 16;
+    cur_room_size_tiles = cur_room_width_tiles * cur_room_height_tiles;
 
 	set_metatile_set();
 

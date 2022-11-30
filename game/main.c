@@ -39,6 +39,7 @@ unsigned char current_room_page_reserve[ROOM_PAGE_SIZE];
 unsigned int in_x_tile;
 unsigned int in_y_tile;
 unsigned int in_x_pixel;
+unsigned int in_y_pixel;
 unsigned char in_flip_nt;
 
 unsigned char in_oam_x;
@@ -47,6 +48,8 @@ const unsigned char *in_oam_data;
 unsigned char in_is_streaming;
 unsigned char in_destination_spawn_id;
 unsigned char in_stream_direction;
+
+unsigned char out_num_tiles;
 
 anim_info* global_working_anim;
 game_actor player1;
@@ -66,11 +69,17 @@ unsigned int cur_room_metatile_index;
 
 unsigned int cur_room_width_pixels;
 unsigned char cur_room_width_tiles;
+unsigned int cur_room_height_pixels;
+unsigned char cur_room_height_tiles;
 unsigned int cur_room_size_tiles;
 unsigned char cur_room_width_tiles_shift_factor;
 unsigned char cur_nametable_y;
 unsigned char cur_nametable_y_left;
 unsigned char cur_nametable_y_right;
+unsigned char cur_nametable_x;
+unsigned char cur_nametable_x_top;
+unsigned char cur_nametable_x_bottom;
+unsigned char cur_room_type;
 
 unsigned char anim_index;
 unsigned char grounded;

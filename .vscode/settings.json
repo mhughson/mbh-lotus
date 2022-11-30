@@ -12,6 +12,7 @@
         "meta_tiles_temp.h": "c",
         "mmc3_code.h": "c",
         "main.h": "c",
-        "screen_title.h": "c"
+        "screen_title.h": "c",
+        "prg3.h": "c"
     }
 }

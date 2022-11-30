@@ -9,6 +9,7 @@
 #pragma code-name ("BANK1")
 
 #include "NES_ST/meta_player.h"
+#include "NES_ST/meta_player_td.h"
 
 typedef struct anim_def
 {
@@ -29,6 +30,15 @@ const anim_def walk_right = { 7, 4, { 4, 5, 6, 5 } };
 const anim_def jump_right = { 255, 1, { 7 } };
 const anim_def fall_right = { 255, 1, { 8 } };
 
+const anim_def idle_down_td 	= { 60, 2, { 2, 3 } };
+const anim_def idle_right_td 	= { 20, 2, { 7, 8 } };
+const anim_def idle_up_td 		= { 20, 2, { 12, 13 } };
+const anim_def idle_left_td 	= { 20, 2, { 17, 18 } };
+
+const anim_def walk_down_td 	= { 20, 2, { 0, 1 } };
+const anim_def walk_right_td 	= { 20, 2, { 5, 6 } };
+const anim_def walk_up_td 		= { 20, 2, { 10, 11 } };
+const anim_def walk_left_td 	= { 20, 2, { 15, 16 } };
 const struct anim_def* sprite_anims[] =
 {
 	&idle_right,
@@ -38,6 +48,15 @@ const struct anim_def* sprite_anims[] =
 	&jump_right,
 
 	&fall_right,
+
+	&idle_down_td ,
+	&idle_right_td,
+	&idle_up_td ,
+	&idle_left_td ,
+	&walk_down_td ,
+	&walk_right_td,
+	&walk_up_td ,
+	&walk_left_td ,
 };
 
 unsigned char update_anim()
@@ -90,4 +109,14 @@ void draw_player_static()
 				meta_player_list[sprite_anims[player1.sprite.anim.anim_current]->frames[player1.sprite.anim.anim_frame]]);
 		}
 	}
+}
+
+void draw_player_td()
+{
+	global_working_anim = &player1.sprite.anim;
+	update_anim();
+	oam_meta_spr(
+		high_2byte(player1.pos_x) - cam.pos_x, 
+		high_2byte(player1.pos_y) - 1 - cam.pos_y,
+		meta_player_td_list[sprite_anims[player1.sprite.anim.anim_current]->frames[player1.sprite.anim.anim_frame]]);
 }

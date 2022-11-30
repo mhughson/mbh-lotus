@@ -47,6 +47,7 @@
 
 
 #define NAMETABLE_TILES_8_UPDATED_PER_FRAME (8)
+#define NAMETABLE_TILES_8_UPDATED_PER_FRAME_TD (32)
 #define NAMETABLE_ATTRIBUTES_16_UPDATED_PER_FRAME (NAMETABLE_TILES_8_UPDATED_PER_FRAME / 2)
 
 // Constants
@@ -80,13 +81,22 @@ enum
 	ANIM_PLAYER_JUMP,
 	ANIM_PLAYER_FALL,
 
+	ANIM_IDLE_DOWN_TD ,
+	ANIM_IDLE_RIGHT_TD,
+	ANIM_IDLE_UP_TD ,
+	ANIM_IDLE_LEFT_TD ,
+	ANIM_WALK_DOWN_TD ,
+	ANIM_WALK_RIGHT_TD,
+	ANIM_WALK_UP_TD ,
+	ANIM_WALK_LEFT_TD ,
+
 	NUM_ANIMS,
 };
 
 
 enum { STATE_BOOT, STATE_TITLE, STATE_GAME, STATE_OVER };
 
-enum { BANK_0 = 0, BANK_1, BANK_2, BANK_3 };
+enum { BANK_0 = 0, BANK_1, BANK_2, BANK_3, BANK_4 };
 
 #pragma bss-name(push, "ZEROPAGE")
 #pragma bss-name(pop)
@@ -187,6 +197,7 @@ extern unsigned int in_x_tile;
 extern unsigned int in_y_tile;
 
 extern unsigned int in_x_pixel;
+extern unsigned int in_y_pixel;
 
 extern unsigned char in_flip_nt;
 
@@ -197,6 +208,8 @@ extern const unsigned char *in_oam_data;
 extern unsigned char in_is_streaming;
 extern unsigned char in_destination_spawn_id;
 extern unsigned char in_stream_direction;
+
+extern unsigned char out_num_tiles;
 
 // Used by the anim functions to avoid passing in a parameter.
 extern anim_info* global_working_anim;
@@ -224,12 +237,19 @@ extern unsigned int cur_room_metatile_index;
 
 extern unsigned int cur_room_width_pixels;
 extern unsigned char cur_room_width_tiles;
+extern unsigned int cur_room_height_pixels;
+extern unsigned char cur_room_height_tiles;
 extern unsigned char cur_room_width_tiles_shift_factor;
 extern unsigned int cur_room_size_tiles;
 
 extern unsigned char cur_nametable_y;
 extern unsigned char cur_nametable_y_left;
 extern unsigned char cur_nametable_y_right;
+extern unsigned char cur_nametable_x;
+extern unsigned char cur_nametable_x_top;
+extern unsigned char cur_nametable_x_bottom;
+
+extern unsigned char cur_room_type;
 
 // Player
 extern unsigned char anim_index;

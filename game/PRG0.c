@@ -2,6 +2,7 @@
 #include "PRG1.h"
 #include "PRG2.h"
 #include "PRG3.h"
+#include "PRG4.h"
 #include "main.h"
 #include "LIB/neslib.h"
 #include "LIB/nesdoug.h"
@@ -13,9 +14,6 @@
 
 // Const data
 //
-
-#include "NES_ST/screen_title.h"
-#include "NES_ST/screen_gameover.h"
 
 const unsigned char palette[16]={ 0x0f,0x14,0x24,0x35,0x0f,0x0c,0x1c,0x3c,0x0f,0x07,0x17,0x3d,0x0f,0x09,0x19,0x29 };
 const unsigned char palette_spr[16]={ 0x0f,0x04,0x23,0x38,0x0f,0x16,0x26,0x36,0x0f,0x17,0x27,0x37,0x0f,0x18,0x28,0x38 };
@@ -139,8 +137,14 @@ PROFILE_POKE(PROF_R)
 				// we can detect if it moved by the end of the frame.
 				old_cam_x = cam.pos_x;
 
-				banked_call(BANK_3, update_player_td);
-				//update_player();
+				if (cur_room_type == 1)
+				{
+					banked_call(BANK_3, update_player_td);
+				}
+				else
+				{
+					update_player();
+				}
 
 PROFILE_POKE(PROF_B);
 				// update the trigger objects.
@@ -213,6 +217,12 @@ PROFILE_POKE(PROF_R);
 					break;
 				}
 
+				if (cur_room_type == 1)
+				{
+					banked_call(BANK_3, update_cam_td);
+				}
+				else
+				{
 				#define CAM_DEAD_ZONE 16
 
 				// move the camera to the player if needed.
@@ -268,6 +278,7 @@ PROFILE_POKE(PROF_R);
 					go_to_state(STATE_GAME);
 				}
 #endif // DEBUG_ENABLED
+				}
 				break;
 			}
 
@@ -284,8 +295,9 @@ PROFILE_POKE(PROF_R);
 				break;
 			}
 		}
-
-
+#if DEBUG_ENALBED
+		gray_line();
+#endif // DEBUG_ENABLED
 PROFILE_POKE(PROF_CLEAR)
 	}
 }
@@ -983,6 +995,7 @@ void go_to_state(unsigned char new_state)
 ;mode 4 changes $0800-$0BFF
 ;mode 5 changes $0C00-$0FFF
 */	
+
 			set_chr_mode_2(16);
 			set_chr_mode_3(17);
 			set_chr_mode_4(18);
@@ -991,9 +1004,8 @@ void go_to_state(unsigned char new_state)
 			cur_room_index = 0;
 
 			pal_bg(palette_title);
-			pal_spr(palette_title);		
-			vram_adr(NTADR_A(0,0));
-			vram_unrle(screen_title);
+			pal_spr(palette_title);
+			banked_call(BANK_4, load_screen_title);
 			ppu_on_all();
 //			music_play(0);
 			fade_from_black();
@@ -1038,6 +1050,16 @@ void go_to_state(unsigned char new_state)
 			in_is_streaming = 0;
 			banked_call(BANK_2, copy_bg_to_current_room);
 
+
+			if (cur_room_type == 1)
+			{
+				set_chr_mode_0(13);
+			}
+			else
+			{
+				set_chr_mode_0(4);
+			}
+
 			// Move the camera to the player, but clamp to the edges.
 			if (high_2byte(player1.pos_x) < 128)
 			{
@@ -1079,8 +1101,7 @@ void go_to_state(unsigned char new_state)
 //			set_chr_bank_0(0);	
 			pal_bg(palette_title);
 			pal_spr(palette_title);		
-			vram_adr(NTADR_A(0,0));
-			vram_unrle(screen_gameover);
+			banked_call(BANK_4, load_screen_gameover);
 			// we draw the player sprites at the start of the white fade,
 			// so now we need to clear it before fading back in or else you
 			// will see her for a few frames.
