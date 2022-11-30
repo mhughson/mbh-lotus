@@ -20,6 +20,7 @@ const unsigned char x_collision_offsets_TD[NUM_X_COLLISION_OFFSETS_TD] = { 0, 16
 
 void vram_buffer_load_column_td();
 void vram_buffer_load_row_td();
+void vram_buffer_load_inner_frame();
 
 void update_player_td()
 {
@@ -235,6 +236,11 @@ void update_cam_td()
 
 	x = old_cam_x;
 	y = cam.pos_x;
+
+
+	vram_buffer_load_inner_frame();
+
+#if 0
 	// This should really be >> 4 (every 16 pixels) but that will miss the initial
 	// row loading. Could update "load_map" but the nametable logic is kind of annoying
 	// for the non-vram version. Will dig in more later.
@@ -317,6 +323,8 @@ void update_cam_td()
 	// 	//cur_nametable_y = cur_nametable_y_left;
 	// 	vram_buffer_load_row();
 	// }
+
+#endif //0
 
 	// if top down
 	banked_call(BANK_1, draw_player_td);
@@ -551,4 +559,264 @@ PROFILE_POKE(PROF_B)
 		one_vram_buffer(local_i, get_at_addr(nametable_index, (local_x) * CELL_SIZE, ((local_y * CELL_SIZE) + (cur_nametable_y * 8))));
 	}
 PROFILE_POKE(PROF_W)
+}
+
+unsigned int cam_x;
+unsigned int cam_y;
+void draw_row()
+{
+	static unsigned int local_att_index16;
+	static unsigned int local_index16;
+	static unsigned char local_i;
+	static unsigned char array_temp8;
+
+	static unsigned char tile_offset;
+	static unsigned char tile_offset2;
+
+	static unsigned char dist_to_nt_edge;
+	static unsigned char nametable_index;
+
+	// Figure out which index in the metatile data will be drawn on the left.
+	// Is it the top slice, or the bottom slice?
+	// Tiles go:
+	// 0 1
+	// 2 3
+	// So if we are in the top half, this will return 0 * 2
+	// Bottom half it will be 1 * 2
+	tile_offset = (((cam_y % 16) / 8) * 2);
+	// The 2nd tile is always 1 to the right of the first.
+	tile_offset2 = tile_offset+1;
+
+	local_index16 = GRID_XY_TO_ROOM_INDEX(cam_x / 16, cam_y / 16);
+
+	local_i = 0;
+
+	nametable_index = (cam_x / 256) % 2;
+
+	// We are half way through a meta-tile.
+	if (cam_x % 16 >= 8)
+	{
+		local_att_index16 = current_room[local_index16] * META_TILE_NUM_BYTES;
+
+		// Just the second tile and move on.
+		array_temp8 = cur_metatiles[local_att_index16 + tile_offset2];
+		nametable_col[local_i] = array_temp8;
+		local_i++;
+
+		// next tile in the row.
+		++local_index16;		
+	}
+
+	dist_to_nt_edge = (256 - (cam_x % 256)) / 8;
+
+	while (local_i < dist_to_nt_edge)
+	{
+		local_att_index16 = current_room[local_index16] * META_TILE_NUM_BYTES;
+
+		// single column of tiles
+		array_temp8 = cur_metatiles[local_att_index16 + tile_offset];
+		nametable_col[local_i] = array_temp8;
+		local_i++;
+		array_temp8 = cur_metatiles[local_att_index16 + tile_offset2];
+		nametable_col[local_i] = array_temp8;
+		local_i++;
+
+		// next tile in the row.
+		++local_index16;
+	}
+
+	multi_vram_buffer_horz(nametable_col, local_i, get_ppu_addr(nametable_index, cam_x, cam_y % 240));
+
+	// Stopped at a nametable edge. Do the second half.
+	if (local_i < 32)
+	{
+		++nametable_index;
+		cam_x = nametable_index * 256;
+		dist_to_nt_edge = 32 - local_i;
+
+		local_index16 = GRID_XY_TO_ROOM_INDEX(cam_x / 16, cam_y / 16);
+
+		local_i = 0;
+
+		// We are half way through a meta-tile.
+		// if (cam_x % 16 >= 8)
+		// {
+		// 	local_att_index16 = current_room[local_index16] * META_TILE_NUM_BYTES;
+
+		// 	// Just the second tile and move on.
+		// 	array_temp8 = cur_metatiles[local_att_index16 + tile_offset2];
+		// 	nametable_col[local_i] = array_temp8;
+		// 	local_i++;
+
+		// 	// next tile in the row.
+		// 	++local_index16;		
+		// }
+
+		while (local_i < dist_to_nt_edge)
+		{
+			local_att_index16 = current_room[local_index16] * META_TILE_NUM_BYTES;
+
+			// single column of tiles
+			array_temp8 = cur_metatiles[local_att_index16 + tile_offset];
+			nametable_col[local_i] = array_temp8;
+			local_i++;
+
+			// TODO: Check for going over edge here too if needed for
+			// 		 case where we started on an odd tile.
+			array_temp8 = cur_metatiles[local_att_index16 + tile_offset2];
+			nametable_col[local_i] = array_temp8;
+			local_i++;
+
+			// next tile in the row.
+			++local_index16;
+		}
+
+		multi_vram_buffer_horz(nametable_col, local_i, get_ppu_addr(nametable_index, cam_x, cam_y % 240));
+	}
+}
+
+void draw_col()
+{
+	static unsigned int local_att_index16;
+	static unsigned int local_index16;
+	static unsigned char local_i;
+	static unsigned char array_temp8;
+
+	static unsigned char tile_offset;
+	static unsigned char tile_offset2;
+
+	static unsigned char dist_to_nt_edge;
+	static unsigned char nametable_index;
+
+	// Figure out which index in the metatile data will be drawn on the left.
+	// Is it the left slice, or the right slice?
+	// Tiles go:
+	// 0 1
+	// 2 3
+	// So if we are in the left half, it returns 0
+	// Right half it will be 1
+	tile_offset = ((cam_x % 16) / 8);
+	// The 2nd tile is always 1 below (+2).
+	tile_offset2 = tile_offset+2;
+
+	local_index16 = GRID_XY_TO_ROOM_INDEX(cam_x / 16, cam_y / 16);
+
+	local_i = 0;
+
+	nametable_index = ((cam_x / 256) % 2);
+
+	// We are half way through a meta-tile.
+	if (cam_y % 16 >= 8)
+	{
+		local_att_index16 = current_room[local_index16] * META_TILE_NUM_BYTES;
+
+		// Just the second tile and move on.
+		array_temp8 = cur_metatiles[local_att_index16 + tile_offset2];
+		nametable_col[local_i] = array_temp8;
+		local_i++;
+
+		// next tile in the col.
+		local_index16 += cur_room_width_tiles;
+	}
+
+	dist_to_nt_edge = (240 - (cam_y % 240)) / 8;
+
+	while (local_i < dist_to_nt_edge)
+	{
+		local_att_index16 = current_room[local_index16] * META_TILE_NUM_BYTES;
+
+		// single column of tiles
+		array_temp8 = cur_metatiles[local_att_index16 + tile_offset];
+		nametable_col[local_i] = array_temp8;
+		local_i++;
+		array_temp8 = cur_metatiles[local_att_index16 + tile_offset2];
+		nametable_col[local_i] = array_temp8;
+		local_i++;
+
+		// next tile in the col.
+		local_index16 += cur_room_width_tiles;
+	}
+
+	// TODO: Is %240 needed since it's capped above?
+	multi_vram_buffer_vert(nametable_col, local_i, get_ppu_addr(nametable_index, cam_x, cam_y % 240));
+
+	// Stopped at a nametable edge. Do the second half.
+	if (local_i < 30)
+	{
+		nametable_index += 2;
+		cam_y = (nametable_index / 2) * 240;
+		dist_to_nt_edge = 30 - local_i;
+
+		local_index16 = GRID_XY_TO_ROOM_INDEX(cam_x / 16, cam_y / 16);
+
+		local_i = 0;
+
+		// We are half way through a meta-tile.
+		// if (cam_x % 16 >= 8)
+		// {
+		// 	local_att_index16 = current_room[local_index16] * META_TILE_NUM_BYTES;
+
+		// 	// Just the second tile and move on.
+		// 	array_temp8 = cur_metatiles[local_att_index16 + tile_offset2];
+		// 	nametable_col[local_i] = array_temp8;
+		// 	local_i++;
+
+		// 	// next tile in the row.
+		// 	++local_index16;		
+		// }
+
+		while (local_i < dist_to_nt_edge)
+		{
+			local_att_index16 = current_room[local_index16] * META_TILE_NUM_BYTES;
+
+			// single row of tiles
+			array_temp8 = cur_metatiles[local_att_index16 + tile_offset];
+			nametable_col[local_i] = array_temp8;
+			local_i++;
+
+			// TODO: Check for going over edge here too if needed for
+			// 		 case where we started on an odd tile.
+			if (local_i < dist_to_nt_edge)
+			{
+				array_temp8 = cur_metatiles[local_att_index16 + tile_offset2];
+				nametable_col[local_i] = array_temp8;
+				local_i++;
+			}
+
+			// next tile in the row.
+			local_index16 += cur_room_width_tiles;
+		}
+
+		multi_vram_buffer_vert(nametable_col, local_i, get_ppu_addr(nametable_index, cam_x, cam_y % 240));
+	}
+}
+
+void vram_buffer_load_inner_frame()
+{
+
+	if (pad_all & PAD_UP)
+	{
+		cam_x = cam.pos_x;
+		cam_y = cam.pos_y;
+		draw_row();
+	}
+	else if (pad_all & PAD_DOWN)
+	{
+		cam_x = cam.pos_x;
+		cam_y = cam.pos_y + 232;
+		draw_row();
+	}
+
+	if (pad_all & PAD_LEFT)
+	{
+		cam_x = cam.pos_x - 8;
+		cam_y = cam.pos_y;
+		draw_col();
+	}
+	else if (pad_all & PAD_RIGHT)
+	{
+		cam_x = cam.pos_x + 256;
+		cam_y = cam.pos_y;
+		draw_col();
+	}
 }

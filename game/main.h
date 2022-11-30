@@ -183,8 +183,8 @@ extern unsigned long temp32;
 extern unsigned char tempFlags;
 extern unsigned char ticks_since_attack;
 // temp used for working with a single vertical row of tiles.
-extern unsigned char nametable_col[30];
-extern unsigned char nametable_col_b[30];
+extern unsigned char nametable_col[32];
+extern unsigned char nametable_col_b[32];
 
 // At some point I think I will need to keep the current 2 nametables of level data in RAM, so that I can
 // edit it on the fly (eg. destructable blocks). Reserving it for now, since this is a large chunk of memory
