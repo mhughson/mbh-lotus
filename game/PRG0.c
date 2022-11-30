@@ -156,7 +156,7 @@ PROFILE_POKE(PROF_B);
 						{
 							case TRIG_TRANS_POINT:
 							{
-								if (pad_all_new & PAD_UP &&
+								if ((pad_all_new & PAD_UP || cur_room_type == 1) &&
 									(high_2byte(player1.pos_x) + y_collision_offsets[1] ) / 16 == trig_objs.pos_x_tile[local_i] &&
 									high_2byte(player1.pos_y) / 16 == trig_objs.pos_y_tile[local_i])
 								{
