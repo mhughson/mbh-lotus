@@ -744,7 +744,8 @@ void draw_col()
 	if (local_i < 30)
 	{
 		nametable_index += 2;
-		cam_y = (nametable_index / 2) * 240;
+		// Move the camera to the edge of the next nametable.
+		cam_y += (240 - (cam_y % 240));
 		dist_to_nt_edge = 30 - local_i;
 
 		local_index16 = GRID_XY_TO_ROOM_INDEX(cam_x / 16, cam_y / 16);
