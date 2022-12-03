@@ -31,8 +31,15 @@ unsigned char temp;
 unsigned long temp32;
 unsigned char tempFlags;
 unsigned char ticks_since_attack = 0xff;
-unsigned char nametable_col[32];
-unsigned char nametable_col_b[32];
+unsigned char nametable_col[36];
+unsigned char nametable_col_b[36];
+unsigned int cam_x;
+unsigned int cam_y;
+unsigned int old_cam_x;
+unsigned int old_cam_y;
+unsigned char draw_queue_index;
+unsigned char draw_dequeue_index;
+unsigned int draw_queue[DRAW_QUEUE_SIZE];
 
 unsigned char current_room_page_reserve[ROOM_PAGE_SIZE];
 

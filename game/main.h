@@ -13,6 +13,12 @@
 #define PROFILE_POKE(val)
 #endif
 
+#if DEBUG_ENABLED
+#define DEBUG_ASSERT(x) if(!(x)) assert();
+#else
+#define DEBUG_ASSERT(x)
+#endif
+
 #define PROF_CLEAR (0x1e & 0b11111001) // none
 #define PROF_R_TINT 0x3e // red
 #define PROF_G_TINT 0x5e // green
@@ -73,6 +79,15 @@
 // Induvidual flag meanings.
 #define FLAG_SOLID (1 << 0)
 #define FLAG_KILL  (1 << 1)
+
+// TODO: We should be able to reduce this size to the number of commands that can fire in a single frame
+//		 because if it grows over time, we likely have a death spiral.
+#define DRAW_QUEUE_SIZE 64
+#define QUEUE_UNUSED 0
+#define QUEUE_DRAW_ROW 1
+#define QUEUE_DRAW_COL 2
+#define QUEUE_DRAW_ROW_ATTR 3
+#define QUEUE_DRAW_COL_ATTR 4
 
 enum
 {
@@ -183,8 +198,21 @@ extern unsigned long temp32;
 extern unsigned char tempFlags;
 extern unsigned char ticks_since_attack;
 // temp used for working with a single vertical row of tiles.
-extern unsigned char nametable_col[32];
-extern unsigned char nametable_col_b[32];
+extern unsigned char nametable_col[36];
+extern unsigned char nametable_col_b[36];
+
+// inputs for cached camera positions. see "cam" struct for *actual* camera.
+extern unsigned int cam_x;
+extern unsigned int cam_y;
+extern unsigned int old_cam_x;
+extern unsigned int old_cam_y;
+
+extern unsigned char draw_queue_index;
+extern unsigned char draw_dequeue_index;
+extern unsigned int draw_queue[DRAW_QUEUE_SIZE];
+
+
+
 
 // At some point I think I will need to keep the current 2 nametables of level data in RAM, so that I can
 // edit it on the fly (eg. destructable blocks). Reserving it for now, since this is a large chunk of memory

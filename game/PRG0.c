@@ -43,7 +43,7 @@ void update_player();
 
 void main_real()
 {
-	unsigned int old_cam_x;
+	unsigned int local_old_cam_x;
 	unsigned char cur_bg_bank;
 	unsigned char local_i;
 
@@ -135,7 +135,7 @@ PROFILE_POKE(PROF_R)
 
 				// store the camera position at the start of the frame, so that
 				// we can detect if it moved by the end of the frame.
-				old_cam_x = cam.pos_x;
+				local_old_cam_x = cam.pos_x;
 
 				if (cur_room_type == 1)
 				{
@@ -205,7 +205,6 @@ PROFILE_POKE(PROF_B);
 						}
 					}
 				}
-				skip_remaining:
 PROFILE_POKE(PROF_R);				
 
 				// Handle case where the state changed in update_player()
@@ -234,15 +233,15 @@ PROFILE_POKE(PROF_R);
 				{
 					// TODO: There is probably a chance the rolls over to -1 if the player doesn't start at 0,0. Can't clamp
 					//		 because pos_x is unsigned. Need to detect roll over and clamp to 0.
-					old_cam_x = cam.pos_x;
+					local_old_cam_x = cam.pos_x;
 					cam.pos_x = high_2byte(player1.pos_x) - (128 - CAM_DEAD_ZONE);
-					if (old_cam_x < cam.pos_x) cam.pos_x = 0;
+					if (local_old_cam_x < cam.pos_x) cam.pos_x = 0;
 				}
 
 				// This should really be >> 4 (every 16 pixels) but that will miss the initial
 				// row loading. Could update "load_map" but the nametable logic is kind of annoying
 				// for the non-vram version. Will dig in more later.
-				if ((old_cam_x >> 3) < (cam.pos_x >> 3) || cur_nametable_y_right != 0)
+				if ((local_old_cam_x >> 3) < (cam.pos_x >> 3) || cur_nametable_y_right != 0)
 				{
 					in_x_tile = 1 + (cam.pos_x + 256) / 16;
 					in_x_pixel = 16 + (cam.pos_x + 256);
@@ -252,7 +251,7 @@ PROFILE_POKE(PROF_R);
 					cur_nametable_y_right += NAMETABLE_TILES_8_UPDATED_PER_FRAME;
 					if (cur_nametable_y_right >= 30) cur_nametable_y_right = 0;					
 				}
-				if ((old_cam_x >> 3) > (cam.pos_x >> 3) || cur_nametable_y_left != 0)
+				if ((local_old_cam_x >> 3) > (cam.pos_x >> 3) || cur_nametable_y_left != 0)
 				{
 					in_x_tile = (cam.pos_x) / 16;
 					in_x_pixel = (cam.pos_x);
@@ -279,6 +278,14 @@ PROFILE_POKE(PROF_R);
 				}
 #endif // DEBUG_ENABLED
 				}
+				
+				// Moved this down here because I was getting a hang when transitioning
+				// from TD level to side scrolling level (leaving sprites in bad state).
+				// I suspect it has something to do with chaning game modes mid-update, 
+				// so I moved this here.
+				// It seemed be crashing inside a call to draw_player->oam_spr. The call
+				// stack looked suspect.
+				skip_remaining:
 				break;
 			}
 

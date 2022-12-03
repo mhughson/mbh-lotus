@@ -67,7 +67,7 @@
                         {
                          "name":"payload",
                          "type":"int",
-                         "value":0
+                         "value":1
                         }],
                  "rotation":0,
                  "type":"trans_edge",
@@ -84,7 +84,7 @@
                         {
                          "name":"payload",
                          "type":"int",
-                         "value":2
+                         "value":3
                         }],
                  "rotation":0,
                  "type":"trans_edge",

@@ -11,10 +11,10 @@
 #pragma rodata-name ("BANK3")
 #pragma code-name ("BANK3")
 
-#define NUM_Y_COLLISION_OFFSETS_TD 3
-const unsigned char y_collision_offsets_TD[NUM_Y_COLLISION_OFFSETS_TD] = { 1, 8, 15 };
+#define NUM_Y_COLLISION_OFFSETS_TD 2
+const unsigned char y_collision_offsets_TD[NUM_Y_COLLISION_OFFSETS_TD] = { 8, 15 };
 #define NUM_X_COLLISION_OFFSETS_TD 2
-const unsigned char x_collision_offsets_TD[NUM_X_COLLISION_OFFSETS_TD] = { 0, 16 };
+const unsigned char x_collision_offsets_TD[NUM_X_COLLISION_OFFSETS_TD] = { 5, 11 };
 
 #define WALK_SPEED_TD (FP_WHOLE(1))
 
@@ -33,7 +33,7 @@ PROFILE_POKE(PROF_G);
 
 	if (pad_all & PAD_LEFT && 
 		//((cam.pos_x) / 256) <= (( high_2byte((player1.pos_x)) - (WALK_SPEED_TD >> 16)) / 256) && 
-		high_2byte(player1.pos_x) - cam.pos_x >= (high_walk_speed + 8) &&
+		//high_2byte(player1.pos_x) - cam.pos_x >= (high_walk_speed + 8) &&
 		player1.pos_x >= WALK_SPEED_TD + FP_WHOLE(8))
 	{
 		temp32 = player1.pos_x;
@@ -129,7 +129,7 @@ PROFILE_POKE(PROF_G);
 		for (i = 0; i < NUM_X_COLLISION_OFFSETS_TD; ++i)
 		{
 			x = (high_2byte(player1.pos_x) + x_collision_offsets_TD[i]) >> 4;
-			y = (high_2byte(player1.pos_y)) >> 4; // head
+			y = (high_2byte(player1.pos_y) + y_collision_offsets_TD[0]) >> 4; // head
 			//if (y < 15)
 			{
 				index16 = GRID_XY_TO_ROOM_INDEX(x, y);
@@ -144,7 +144,7 @@ PROFILE_POKE(PROF_G);
 	}
 
 	if (pad_all & PAD_DOWN &&
-		(player1.pos_y + WALK_SPEED_TD + FP_WHOLE(y_collision_offsets_TD[2]) ) <= FP_WHOLE(cur_room_height_pixels))
+		(player1.pos_y + WALK_SPEED_TD + FP_WHOLE(y_collision_offsets_TD[NUM_Y_COLLISION_OFFSETS_TD-1]) ) <= FP_WHOLE(cur_room_height_pixels))
 	{
 		temp32 = player1.pos_y;
 		player1.pos_y += WALK_SPEED_TD;// + FP_0_5;
@@ -152,7 +152,7 @@ PROFILE_POKE(PROF_G);
 		for (i = 0; i < NUM_X_COLLISION_OFFSETS_TD; ++i)
 		{
 			x = (high_2byte(player1.pos_x) + x_collision_offsets_TD[i]) >> 4;
-			y = (high_2byte(player1.pos_y) + y_collision_offsets_TD[2]) >> 4; // foot
+			y = (high_2byte(player1.pos_y) + y_collision_offsets_TD[NUM_Y_COLLISION_OFFSETS_TD-1]) >> 4; // foot
 			//if (y < 15)
 			{
 				index16 = GRID_XY_TO_ROOM_INDEX(x, y);
@@ -200,369 +200,31 @@ PROFILE_POKE(PROF_G);
 PROFILE_POKE(PROF_R);	
 }
 
+
 void update_cam_td()
 {
-	unsigned int old_cam_x = cam.pos_x;
-	unsigned int old_cam_y = cam.pos_y;
+	old_cam_x = cam.pos_x;
+	old_cam_y = cam.pos_y;
 
-#define CAM_DEAD_ZONE 16
-
-	// move the camera to the player if needed.
-	if (high_2byte(player1.pos_x) > cam.pos_x + (128 + CAM_DEAD_ZONE) && cam.pos_x < cur_room_width_pixels-256)
-	{
-		cam.pos_x = MIN(cur_room_width_pixels-256, high_2byte(player1.pos_x) - (128 + CAM_DEAD_ZONE));
-	}
-	else if (high_2byte(player1.pos_x) < cam.pos_x + (128 - CAM_DEAD_ZONE) && cam.pos_x > 0 ) //(cam.pos_x / 256) == ((high_2byte(player1.pos_x) - 64) / 256))
-	{
-		// TODO: There is probably a chance the rolls over to -1 if the player doesn't start at 0,0. Can't clamp
-		//		 because pos_x is unsigned. Need to detect roll over and clamp to 0.
-		old_cam_x = cam.pos_x;
-		cam.pos_x = high_2byte(player1.pos_x) - (128 - CAM_DEAD_ZONE);
-		if (old_cam_x < cam.pos_x) cam.pos_x = 0;
-	}
-
-	if (high_2byte(player1.pos_y) > cam.pos_y + (120 + CAM_DEAD_ZONE) && cam.pos_y < cur_room_height_pixels-240)
-	{
-		cam.pos_y = MIN(cur_room_height_pixels-240, high_2byte(player1.pos_y) - (120 + CAM_DEAD_ZONE));
-	}
-	else if (high_2byte(player1.pos_y) < cam.pos_y + (120 - CAM_DEAD_ZONE) && cam.pos_y > 0 ) //(cam.pos_x / 256) == ((high_2byte(player1.pos_x) - 64) / 256))
-	{
-		// TODO: There is probably a chance the rolls over to -1 if the player doesn't start at 0,0. Can't clamp
-		//		 because pos_x is unsigned. Need to detect roll over and clamp to 0.
-		old_cam_y = cam.pos_y;
-		cam.pos_y = high_2byte(player1.pos_y) - (120 - CAM_DEAD_ZONE);
-		if (old_cam_y < cam.pos_y) cam.pos_y = 0;
-	}
-
-	x = old_cam_x;
-	y = cam.pos_x;
+	cam.pos_x = high_2byte(player1.pos_x);
+	if (cam.pos_x < 128) cam.pos_x = 0;
+	else if (cam.pos_x > (cur_room_width_pixels - 128)) cam.pos_x = cur_room_width_pixels - 256;
+	else cam.pos_x -= 128;
+	cam.pos_y = high_2byte(player1.pos_y);
+	if (cam.pos_y < 120) cam.pos_y = 0;
+	else if (cam.pos_y > (cur_room_height_pixels - 120)) cam.pos_y = cur_room_height_pixels - 240;
+	else cam.pos_y -= 120;	
 
 
 	vram_buffer_load_inner_frame();
 
-#if 0
-	// This should really be >> 4 (every 16 pixels) but that will miss the initial
-	// row loading. Could update "load_map" but the nametable logic is kind of annoying
-	// for the non-vram version. Will dig in more later.
-	if (((old_cam_x + 7) >> 3) < ((cam.pos_x + 7) >> 3) || cur_nametable_y_right != 0)
-	{
-		in_x_tile = (cam.pos_x + 256) / 16;
-		in_x_pixel = (cam.pos_x + 256);
-
-		in_y_tile =((cam.pos_y) / 16);
-		in_y_pixel = (cam.pos_y);
-
-		cur_nametable_y = cur_nametable_y_right;
-		vram_buffer_load_column_td();
-
-		cur_nametable_y_right += out_num_tiles;
-		if (cur_nametable_y_right >= 30) cur_nametable_y_right = 0;					
-	}
-	if ((old_cam_x >> 3) > (cam.pos_x >> 3) || cur_nametable_y_left != 0)
-	{
-		in_x_tile = (cam.pos_x) / 16;
-		in_x_pixel = (cam.pos_x);
-
-		in_y_tile =((cam.pos_y) / 16);
-		in_y_pixel = (cam.pos_y);
-		
-		cur_nametable_y = cur_nametable_y_left;
-		vram_buffer_load_column_td();
-
-		cur_nametable_y_left += out_num_tiles;
-		if (cur_nametable_y_left >= 30) cur_nametable_y_left = 0;		
-	}
-
-	if (((old_cam_y + 7) >> 3) < ((cam.pos_y + 7) >> 3) || cur_nametable_x_bottom != 0)
-	{
-
-		in_x_tile = (cam.pos_x) / 16;
-		in_x_pixel = (cam.pos_x);
-		in_y_tile =((cam.pos_y + 232) / 16);
-		in_y_pixel = (cam.pos_y + 232);
-		cur_nametable_x = cur_nametable_x_bottom;
-		vram_buffer_load_row_td();
-
-		in_y_tile =((cam.pos_y + 232 - 8) / 16);
-		in_y_pixel = (cam.pos_y + 232 - 8);
-		cur_nametable_x = cur_nametable_x_top;
-		vram_buffer_load_row_td();								
-
-		cur_nametable_x_bottom += out_num_tiles;
-		if (cur_nametable_x_bottom >= 34) cur_nametable_x_bottom = 0;	
-
-		// done inside load_row for now
-		// cur_nametable_x_bottom += NAMETABLE_TILES_8_UPDATED_PER_FRAME;
-		// if (cur_nametable_x_bottom >= 32) cur_nametable_x_bottom = 0;
-	}
-
-	if (((old_cam_y) >> 3) > ((cam.pos_y) >> 3) || cur_nametable_x_top != 0)
-	{
-
-		in_x_tile = (cam.pos_x) / 16;
-		in_x_pixel = (cam.pos_x);
-		in_y_tile =((cam.pos_y + 8) / 16);
-		in_y_pixel = (cam.pos_y) + 8;
-		cur_nametable_x = cur_nametable_x_top;
-		vram_buffer_load_row_td();
-
-		in_y_tile =((cam.pos_y) / 16);
-		in_y_pixel = (cam.pos_y);
-		cur_nametable_x = cur_nametable_x_top;
-		vram_buffer_load_row_td();					
-
-		cur_nametable_x_top += out_num_tiles;
-		if (cur_nametable_x_top >= 34) cur_nametable_x_top = 0;	
-	}							
-
-	// if (pad_all & PAD_START)
-	// {
-	// 	in_x_tile = (cam.pos_x) / 16;
-	// 	in_x_pixel = (cam.pos_x);
-	// 	cur_nametable_y = 0;
-	// 	//cur_nametable_y = cur_nametable_y_left;
-	// 	vram_buffer_load_row();
-	// }
-
-#endif //0
-
-	// if top down
 	banked_call(BANK_1, draw_player_td);
-	// else
-	//banked_call(BANK_1, draw_player);
 
-	// cur_col is the last column to be loaded, aka the right
-	// hand side of the screen. The scroll amount is relative to the 
-	// left hand side of the screen, so offset by 256.
-	//set_scroll_x(cam.pos_x);
-	//set_scroll_y(cam.pos_y);
 
 	scroll(cam.pos_x, cam.pos_y % 480);
 }
 
-void vram_buffer_load_column_td()
-{
-	// TODO: Remove int is a significant perf improvment.
-	static unsigned char local_x;
-	static unsigned char local_y;
-	static unsigned char local_i;
-	static unsigned int local_index16;
-	static unsigned int local_att_index16;
-	static unsigned char nametable_index;
-	static unsigned char tile_offset;
-	static unsigned char tile_offset2;
 
-	// Track the tile that was the starting point for this update pass.
-	static unsigned int starting_y_tile;
-
-	static unsigned char array_temp8;
-
-	nametable_index = (in_x_tile / 16) % 2;
-
-	// TILES
-
-PROFILE_POKE(PROF_G)
-
-	tile_offset = (in_x_pixel % 16) / 8;
-	tile_offset2 = tile_offset+2;
-
-	// Get the index of the tile based on the fixed x starting tile, and the 
-	// time sliced y tile. cur_nametable_y is in 8x8 tiles, so /2 puts it into
-	// 16/16 metatiles.
-	local_index16 = GRID_XY_TO_ROOM_INDEX(in_x_tile, in_y_tile + (cur_nametable_y/2));
-
-	// We will need the starting tile in order to calculate if we have gone over
-	// a full screen height of data, to avoid wrapping back to the top.
-	starting_y_tile = in_y_tile + (cur_nametable_y/2);
-
-	for (local_i = 0; local_i < NAMETABLE_TILES_8_UPDATED_PER_FRAME_TD; )
-	{
-		local_att_index16 = current_room[local_index16] * META_TILE_NUM_BYTES;
-
-		// single column of tiles
-		array_temp8 = cur_metatiles[local_att_index16 + tile_offset];
-		nametable_col[local_i] = array_temp8;
-		local_i++;
-		array_temp8 = cur_metatiles[local_att_index16 + tile_offset2];
-		nametable_col[local_i] = array_temp8;
-		local_i++;
-
-		local_index16 += cur_room_width_tiles;
-	}
-
-	// The screen is only 30 tiles high, which doesn't always divide nicely into out metatile updates, so map sure we don't
-	// update beyond the bottom of the screen.
-	//array_temp8 = MIN(NAMETABLE_TILES_8_UPDATED_PER_FRAME, 30 - cur_nametable_y);
-
-	// Only update to the edge of the nametable to avoid writing into the attribute table data.
-	out_num_tiles = MIN(NAMETABLE_TILES_8_UPDATED_PER_FRAME_TD, (15 - ((starting_y_tile) % 15)) * 2 );
-	// Also, make sure that we only write 30 tiles total. We could do more if the "updates per frame"
-	// doesn't divide evenly into the number of meta tiles.
-	out_num_tiles = MIN(out_num_tiles, 30 - (cur_nametable_y));
-
-	multi_vram_buffer_vert(nametable_col, (unsigned char)out_num_tiles, get_ppu_addr(nametable_index, in_x_pixel, (((in_y_pixel / 16) * 16) + (cur_nametable_y * 8)) % 240));
-
-// Not handling attributes yet.
-return;
-
-	// ATTRIBUTES
-
-PROFILE_POKE(PROF_B)
-
-	// Attributes are in 2x2 meta tile chunks, so we need to round down to the nearest,
-	// multiple of 2 (eg. if you pass in index 5, we want to start on 4).
-	local_x = (in_x_tile & 0xFFFE);//local_x = (in_x_tile / 2) * 2;
-	//local_x = (in_x_tile / 2) * 2;
-
-	for (local_y = 0; local_y < (NAMETABLE_ATTRIBUTES_16_UPDATED_PER_FRAME); local_y+=2)
-	{
-		local_i = 0;
-
-		// room index.
-		local_index16 = GRID_XY_TO_ROOM_INDEX(local_x, local_y + (cur_nametable_y / 2));
-		// meta tile palette index.
-		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
-		local_att_index16+=4;
-		// bit shift amount
-		local_i |= (cur_metatiles[local_att_index16]);
-
-		local_index16++;//local_index16 = local_index16 + 1; //(local_y * 16) + (local_x + 1);
-		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
-		local_att_index16+=4;
-		local_i |= (cur_metatiles[local_att_index16]) << 2;
-
-		local_index16 = local_index16 + cur_room_width_tiles; //((local_y + 1) * 16) + (local_x);
-		local_index16--;
-		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
-		local_att_index16+=4;
-		local_i |= (cur_metatiles[local_att_index16]) << 4;
-
-		local_index16++;// = local_index16 + 1; //((local_y + 1) * 16) + (local_x + 1);
-		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
-		local_att_index16+=4;
-		local_i |= (cur_metatiles[local_att_index16]) << 6;	
-
-		one_vram_buffer(local_i, get_at_addr(nametable_index, (local_x) * CELL_SIZE, ((local_y * CELL_SIZE) + (cur_nametable_y * 8))));
-	}
-PROFILE_POKE(PROF_W)
-}
-
-void vram_buffer_load_row_td()
-{
-	// TODO: Remove int is a significant perf improvment.
-	static unsigned char local_x;
-	static unsigned char local_y;
-	static unsigned char local_i;
-	static unsigned int local_index16;
-	static unsigned int local_att_index16;
-	static unsigned char nametable_index;
-	static unsigned char tile_offset;
-	static unsigned char tile_offset2;
-
-	// Track which tile we started updating horizontally.
-	static unsigned int starting_x_tile;
-
-	static unsigned char array_temp8;
-
-	// The nametable is figured out by calculating the starting X tile,
-	// dividing that into the nametable width (16 meta tiles). Odd number
-	// means nametable 1, even nametable 0.
-	nametable_index = ((in_x_tile + (cur_nametable_x / 2)) / 16) % 2;
-
-	// TILES
-
-PROFILE_POKE(PROF_G)
-
-	// Figure out which index in the metatile data will be drawn on the left.
-	// Is it the top slice, or the bottom slice?
-	// Tiles go:
-	// 0 1
-	// 2 3
-	// So if we are in the top half, this will return 0 * 2
-	// Bottom half it will be 1 * 2
-	tile_offset = ((in_y_pixel % 16) / 8) * 2;
-	// The 2nd tile is always 1 to the right of the first.
-	tile_offset2 = tile_offset+1;
-
-	// Get the index into the current_room table. This accounts for y scroll, but also
-	// x scroll and the timesliced "cur_gametable_x" sliding update.
-	local_index16 = GRID_XY_TO_ROOM_INDEX((in_x_tile + (cur_nametable_x / 2)), in_y_tile);
-
-	// Save this for later so that we can figure out how many tiles we actually want to 
-	// write out, to keep it within the visible window width.
-	starting_x_tile = local_index16;
-
-	for (local_i = 0; local_i < NAMETABLE_TILES_8_UPDATED_PER_FRAME_TD; )
-	{
-		local_att_index16 = current_room[local_index16] * META_TILE_NUM_BYTES;
-
-		// single column of tiles
-		array_temp8 = cur_metatiles[local_att_index16 + tile_offset];
-		nametable_col[local_i] = array_temp8;
-		local_i++;
-		array_temp8 = cur_metatiles[local_att_index16 + tile_offset2];
-		nametable_col[local_i] = array_temp8;
-		local_i++;
-
-		// next tile in the row.
-		++local_index16;
-	}
-
-	// Stop at the end of nametables. The next update will continue from here but on the next
-	// nametable.
-	out_num_tiles = MIN(NAMETABLE_TILES_8_UPDATED_PER_FRAME, (16 - ((starting_x_tile) % 16)) * 2 );
-	// TODO: What about going past the edge?
-
-	// The VRAM for the screen goes up to 240 in the y before switching to attribute data. %240 to move
-	// to the next nametable rather than writing to attribute data.
-	multi_vram_buffer_horz(nametable_col, out_num_tiles, get_ppu_addr(nametable_index, (cur_nametable_x * 8) + ((in_x_pixel / 16) * 16), in_y_pixel % 240));
-
-return;
-
-	// ATTRIBUTES
-
-PROFILE_POKE(PROF_B)
-
-	// Attributes are in 2x2 meta tile chunks, so we need to round down to the nearest,
-	// multiple of 2 (eg. if you pass in index 5, we want to start on 4).
-	local_x = (in_x_tile & 0xFFFE);//local_x = (in_x_tile / 2) * 2;
-	//local_x = (in_x_tile / 2) * 2;
-
-	for (local_y = 0; local_y < (NAMETABLE_ATTRIBUTES_16_UPDATED_PER_FRAME); local_y+=2)
-	{
-		local_i = 0;
-
-		// room index.
-		local_index16 = GRID_XY_TO_ROOM_INDEX(local_x, local_y + (cur_nametable_y / 2));
-		// meta tile palette index.
-		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
-		local_att_index16+=4;
-		// bit shift amount
-		local_i |= (cur_metatiles[local_att_index16]);
-
-		local_index16++;//local_index16 = local_index16 + 1; //(local_y * 16) + (local_x + 1);
-		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
-		local_att_index16+=4;
-		local_i |= (cur_metatiles[local_att_index16]) << 2;
-
-		local_index16 = local_index16 + cur_room_width_tiles; //((local_y + 1) * 16) + (local_x);
-		local_index16--;
-		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
-		local_att_index16+=4;
-		local_i |= (cur_metatiles[local_att_index16]) << 4;
-
-		local_index16++;// = local_index16 + 1; //((local_y + 1) * 16) + (local_x + 1);
-		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
-		local_att_index16+=4;
-		local_i |= (cur_metatiles[local_att_index16]) << 6;	
-
-		one_vram_buffer(local_i, get_at_addr(nametable_index, (local_x) * CELL_SIZE, ((local_y * CELL_SIZE) + (cur_nametable_y * 8))));
-	}
-PROFILE_POKE(PROF_W)
-}
-
-unsigned int cam_x;
-unsigned int cam_y;
 void draw_row()
 {
 	static unsigned int local_att_index16;
@@ -628,11 +290,11 @@ void draw_row()
 	multi_vram_buffer_horz(nametable_col, local_i, get_ppu_addr(nametable_index, cam_x, cam_y % 240));
 
 	// Stopped at a nametable edge. Do the second half.
-	if (local_i < 32)
+	if (local_i < 36)
 	{
 		++nametable_index;
 		cam_x = nametable_index * 256;
-		dist_to_nt_edge = 32 - local_i;
+		dist_to_nt_edge = 36 - local_i;
 
 		local_index16 = GRID_XY_TO_ROOM_INDEX(cam_x / 16, cam_y / 16);
 
@@ -672,6 +334,138 @@ void draw_row()
 		}
 
 		multi_vram_buffer_horz(nametable_col, local_i, get_ppu_addr(nametable_index, cam_x, cam_y % 240));
+	}
+}
+
+void draw_row_attr()
+{
+	static unsigned int local_att_index16;
+	static unsigned int local_index16;
+	static unsigned char local_i;
+
+	static unsigned char dist_to_nt_edge;
+	static unsigned char nametable_index;
+
+	static unsigned char local_x;
+	static unsigned char local_y;
+
+	static unsigned char cam_y_mod_240;
+
+	//static unsigned char cam_x_mod_256;
+
+	static unsigned int attr_address;
+
+	cam_x = (cam_x / 32) * 32;
+	//cam_y = (cam_y / 32) * 32;
+
+	cam_y_mod_240 = cam_y % 240;
+
+	// Is the camera in the 2nd half of a 32x32 attribute entry?
+	// If so, we need to adjust the camera so that the top most
+	// meta tile visible to the "camera" is also the top of an attribute
+	// cluster.
+	if ((cam_y_mod_240 % 32) >= 16)
+	{
+		// Clamp the camera back to the closest 32x32 cluster.
+		cam_y = ((cam_y) / 32) * 32;
+
+		// However, the screen is not divisible by 32 (it's 240) which means
+		// for every other vertical screen, the logic for determining if a 
+		// meta tile is the top or bottom of a attribute cluster flips!
+		if (cam_y % 480 >= 240)
+		{
+			// odd screen. The first meta tile is going to be offset by 16 pixels
+			cam_y -= 16;
+		}
+
+		// Recalculate based on new camera position.
+		cam_y_mod_240 = cam_y % 240;
+	}
+
+	nametable_index = ((cam_x / 256) % 2);
+
+	// Attributes are in 2x2 meta tile chunks, so we need to round down to the nearest,
+	// multiple of 2 (eg. if you pass in index 5, we want to start on 4).
+	local_y = (cam_y / 16);
+
+	
+
+	dist_to_nt_edge = (256 - (cam_x % 256)) / 16;
+
+	attr_address = get_at_addr(nametable_index, cam_x, cam_y % 240);
+
+	for (local_x = 0; local_x < dist_to_nt_edge; local_x+=2)
+	{
+		local_i = 0;
+
+		// room index.
+		local_index16 = GRID_XY_TO_ROOM_INDEX(local_x + (cam_x / 16), local_y);
+		// meta tile palette index.
+		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
+		local_att_index16+=4;
+		// bit shift amount
+		local_i |= (cur_metatiles[local_att_index16]);
+
+		local_index16++;//local_index16 = local_index16 + 1; //(local_y * 16) + (local_x + 1);
+		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
+		local_att_index16+=4;
+		local_i |= (cur_metatiles[local_att_index16]) << 2;
+
+		local_index16 = local_index16 + cur_room_width_tiles; //((local_y + 1) * 16) + (local_x);
+		local_index16--;
+		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
+		local_att_index16+=4;
+		local_i |= (cur_metatiles[local_att_index16]) << 4;
+
+		local_index16++;// = local_index16 + 1; //((local_y + 1) * 16) + (local_x + 1);
+		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
+		local_att_index16+=4;
+		local_i |= (cur_metatiles[local_att_index16]) << 6;	
+
+		one_vram_buffer(local_i, attr_address);
+		++attr_address;
+	}
+
+	if (local_x < 17)
+	{
+		++nametable_index;
+		// Move the camera to the edge of the next nametable.
+		cam_x += (256 - (cam_x % 256));
+		dist_to_nt_edge = 17 - local_x;
+
+		attr_address = get_at_addr(nametable_index, cam_x, cam_y % 240);
+
+		for (local_x = 0; local_x < dist_to_nt_edge; local_x+=2)
+		{
+			local_i = 0;
+
+			// room index.
+			local_index16 = GRID_XY_TO_ROOM_INDEX(local_x + (cam_x / 16), local_y);
+			// meta tile palette index.
+			local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
+			local_att_index16+=4;
+			// bit shift amount
+			local_i |= (cur_metatiles[local_att_index16]);
+
+			local_index16++;//local_index16 = local_index16 + 1; //(local_y * 16) + (local_x + 1);
+			local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
+			local_att_index16+=4;
+			local_i |= (cur_metatiles[local_att_index16]) << 2;
+
+			local_index16 = local_index16 + cur_room_width_tiles; //((local_y + 1) * 16) + (local_x);
+			local_index16--;
+			local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
+			local_att_index16+=4;
+			local_i |= (cur_metatiles[local_att_index16]) << 4;
+
+			local_index16++;// = local_index16 + 1; //((local_y + 1) * 16) + (local_x + 1);
+			local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
+			local_att_index16+=4;
+			local_i |= (cur_metatiles[local_att_index16]) << 6;	
+
+			one_vram_buffer(local_i, attr_address);
+			++attr_address;
+		}
 	}
 }
 
@@ -792,32 +586,336 @@ void draw_col()
 	}
 }
 
+void draw_col_attr()
+{
+	static unsigned int local_att_index16;
+	static unsigned int local_index16;
+	static unsigned char local_i;
+
+	static unsigned char dist_to_nt_edge;
+	static unsigned char nametable_index;
+
+	static unsigned char local_x;
+	static unsigned char local_y;
+
+	static unsigned char cam_y_mod_240;
+	static unsigned char is_bottom_half;
+
+	static unsigned int attr_address;
+
+	cam_x = (cam_x / 32) * 32;
+
+	nametable_index = ((cam_x / 256) % 2);
+
+	// % 240 then % 32 >= 16 detect second half
+
+	// put camera in 32x32 space (to match attribute table). This allows the following
+	// logic to all assume that the tiles are coming in at correct location.
+	//cam_y = ((cam_y) / 32) * 32;
+
+	// Cache for quick reference.
+	// cam_y is the top of the camera in world space.
+	cam_y_mod_240 = cam_y % 240;
+
+	// Is the camera in the 2nd half of a 32x32 attribute entry?
+	// If so, we need to adjust the camera so that the top most
+	// meta tile visible to the "camera" is also the top of an attribute
+	// cluster.
+	is_bottom_half = 0;
+	if ((cam_y_mod_240 % 32) >= 16)
+	{
+		// Clamp the camera back to the closest 32x32 cluster.
+		cam_y = ((cam_y) / 32) * 32;
+
+		// However, the screen is not divisible by 32 (it's 240) which means
+		// for every other vertical screen, the logic for determining if a 
+		// meta tile is the top or bottom of a attribute cluster flips!
+		if (cam_y % 480 >= 240)
+		{
+			// odd screen. The first meta tile is going to be offset by 16 pixels
+			cam_y -= 16;
+		}
+
+		// Recalculate based on new camera position.
+		cam_y_mod_240 = cam_y % 240;
+	}
+
+	// Attributes are in 2x2 meta tile chunks, so we need to round down to the nearest,
+	// multiple of 2 (eg. if you pass in index 5, we want to start on 4).
+	local_x = ((cam_x / 16) & 0xFFFE); // / 2) * 2;//local_x = (in_x_tile / 2) * 2;
+
+	//dist_to_nt_edge = (256 - (cam_y % 256)) / 16;
+
+	dist_to_nt_edge = (240 - ((cam_y / 16 * 16) % 240)) / 16;
+
+	attr_address = get_at_addr(nametable_index, (local_x) * 16, cam_y_mod_240);
+
+	for (local_y = 0; local_y < dist_to_nt_edge; local_y+=2)
+	{
+		local_i = 0;
+
+		// room index.
+		local_index16 = GRID_XY_TO_ROOM_INDEX(local_x, local_y + (cam_y / 16));
+		// meta tile palette index.
+		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
+		local_att_index16+=4;
+		// bit shift amount
+		local_i |= (cur_metatiles[local_att_index16]);
+
+		local_index16++;//local_index16 = local_index16 + 1; //(local_y * 16) + (local_x + 1);
+		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
+		local_att_index16+=4;
+		local_i |= (cur_metatiles[local_att_index16]) << 2;
+
+		local_index16 = local_index16 + cur_room_width_tiles; //((local_y + 1) * 16) + (local_x);
+		local_index16--;
+		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
+		local_att_index16+=4;
+		local_i |= (cur_metatiles[local_att_index16]) << 4;
+
+		local_index16++;// = local_index16 + 1; //((local_y + 1) * 16) + (local_x + 1);
+		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
+		local_att_index16+=4;
+		local_i |= (cur_metatiles[local_att_index16]) << 6;	
+
+		one_vram_buffer(local_i, attr_address);
+		attr_address += 8;
+	}
+
+	// TODO: I think we need to go further than 15.
+	if (local_y < 16)
+	{
+		nametable_index += 2;
+		// Move the camera to the edge of the next nametable.
+		cam_y += (240 - (cam_y_mod_240));
+		cam_y_mod_240 = cam_y % 240;
+		dist_to_nt_edge = 16 - local_y;
+
+		//local_index16 = GRID_XY_TO_ROOM_INDEX(cam_x / 16, cam_y / 16);
+
+		attr_address = get_at_addr(nametable_index, (local_x) * 16, cam_y_mod_240);
+
+		for (local_y = 0; local_y < dist_to_nt_edge; local_y+=2)
+		{
+			local_i = 0;
+
+			// room index.
+			local_index16 = GRID_XY_TO_ROOM_INDEX(local_x, local_y + (cam_y / 16));
+			// meta tile palette index.
+			local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
+			local_att_index16+=4;
+			// bit shift amount
+			local_i |= (cur_metatiles[local_att_index16]);
+
+			local_index16++;//local_index16 = local_index16 + 1; //(local_y * 16) + (local_x + 1);
+			local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
+			local_att_index16+=4;
+			local_i |= (cur_metatiles[local_att_index16]) << 2;
+
+			local_index16 = local_index16 + cur_room_width_tiles; //((local_y + 1) * 16) + (local_x);
+			local_index16--;
+			local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
+			local_att_index16+=4;
+			local_i |= (cur_metatiles[local_att_index16]) << 4;
+
+			local_index16++;// = local_index16 + 1; //((local_y + 1) * 16) + (local_x + 1);
+			local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
+			local_att_index16+=4;
+			local_i |= (cur_metatiles[local_att_index16]) << 6;	
+
+			one_vram_buffer(local_i, attr_address);
+			attr_address += 8;
+		}
+	}
+}
+
 void vram_buffer_load_inner_frame()
 {
 
-	if (pad_all & PAD_UP)
+	if (pad_all & PAD_UP && ((old_cam_y / 8) != (cam.pos_y / 8)))
 	{
-		cam_x = cam.pos_x;
-		cam_y = cam.pos_y;
-		draw_row();
+		DEBUG_ASSERT(1 == 2)
+		// cam_x = cam.pos_x;
+		// cam_y = cam.pos_y;
+		// draw_row();
+
+		draw_queue[draw_queue_index] = QUEUE_DRAW_ROW;
+		++draw_queue_index;
+		draw_queue[draw_queue_index] = (cam.pos_x >= 16) ? cam.pos_x - 16 : 0;
+		++draw_queue_index;
+		draw_queue[draw_queue_index] = cam.pos_y;
+		++draw_queue_index;
+		++draw_queue_index;
+		draw_queue_index = draw_queue_index % DRAW_QUEUE_SIZE;
+		DEBUG_ASSERT(draw_queue_index != draw_dequeue_index);
+
+
+		// cam_x = cam.pos_x;
+		// cam_y = cam.pos_y;
+		// draw_row_attr();
+
+		draw_queue[draw_queue_index] = QUEUE_DRAW_ROW_ATTR;
+		++draw_queue_index;
+		draw_queue[draw_queue_index] = cam.pos_x;
+		++draw_queue_index;
+		draw_queue[draw_queue_index] = cam.pos_y;
+		++draw_queue_index;
+		++draw_queue_index;
+		draw_queue_index = draw_queue_index % DRAW_QUEUE_SIZE;
+		DEBUG_ASSERT(draw_queue_index != draw_dequeue_index);
 	}
-	else if (pad_all & PAD_DOWN)
+	else if (pad_all & PAD_DOWN && (((old_cam_y + 232) / 8) != ((cam.pos_y + 232) / 8)))
 	{
-		cam_x = cam.pos_x;
-		cam_y = cam.pos_y + 232;
-		draw_row();
+		// cam_x = cam.pos_x;
+		// cam_y = cam.pos_y + 232;
+		// draw_row();
+
+		draw_queue[draw_queue_index] = QUEUE_DRAW_ROW;
+		++draw_queue_index;
+		draw_queue[draw_queue_index] = (cam.pos_x >= 16) ? cam.pos_x - 16 : 0;;
+		++draw_queue_index;
+		draw_queue[draw_queue_index] = cam.pos_y + 232;
+		++draw_queue_index;
+		++draw_queue_index;
+		draw_queue_index = draw_queue_index % DRAW_QUEUE_SIZE;
+
+		DEBUG_ASSERT(draw_queue_index != draw_dequeue_index);
+
+		// cam_x = cam.pos_x;
+		// cam_y = cam.pos_y + 239;
+		// draw_row_attr();
+
+		draw_queue[draw_queue_index] = QUEUE_DRAW_ROW_ATTR;
+		++draw_queue_index;
+		draw_queue[draw_queue_index] = cam.pos_x;
+		++draw_queue_index;
+		draw_queue[draw_queue_index] = cam.pos_y + 239;
+		++draw_queue_index;
+		++draw_queue_index;
+		draw_queue_index = draw_queue_index % DRAW_QUEUE_SIZE;
+
+		DEBUG_ASSERT(draw_queue_index != draw_dequeue_index);
 	}
 
-	if (pad_all & PAD_LEFT)
+	if (pad_all & PAD_LEFT && (((old_cam_x - 8) / 8) != ((cam.pos_x - 8) / 8)))
 	{
-		cam_x = cam.pos_x - 8;
-		cam_y = cam.pos_y;
-		draw_col();
+		// cam_x = cam.pos_x - 8;
+		// cam_y = cam.pos_y;
+		// draw_col();
+
+		draw_queue[draw_queue_index] = QUEUE_DRAW_COL;
+		++draw_queue_index;
+		draw_queue[draw_queue_index] = cam.pos_x - 8;
+		++draw_queue_index;
+		draw_queue[draw_queue_index] = cam.pos_y;
+		++draw_queue_index;
+		++draw_queue_index;
+		draw_queue_index = draw_queue_index % DRAW_QUEUE_SIZE;
+		DEBUG_ASSERT(draw_queue_index != draw_dequeue_index);
+
+		// cam_x = cam.pos_x - 8;
+		// cam_y = cam.pos_y;
+		// draw_col_attr();
+
+		draw_queue[draw_queue_index] = QUEUE_DRAW_COL_ATTR;
+		++draw_queue_index;
+		draw_queue[draw_queue_index] = cam.pos_x - 8;
+		++draw_queue_index;
+		draw_queue[draw_queue_index] = cam.pos_y;
+		++draw_queue_index;
+		++draw_queue_index;
+		draw_queue_index = draw_queue_index % DRAW_QUEUE_SIZE;
+		DEBUG_ASSERT(draw_queue_index != draw_dequeue_index);	
 	}
-	else if (pad_all & PAD_RIGHT)
+	else if (pad_all & PAD_RIGHT && (((old_cam_x + 255) / 8) != ((cam.pos_x + 255) / 8)))
 	{
-		cam_x = cam.pos_x + 256;
-		cam_y = cam.pos_y;
-		draw_col();
+		// cam_x = cam.pos_x + 256;
+		// cam_y = cam.pos_y;
+		// draw_col();
+
+
+		draw_queue[draw_queue_index] = QUEUE_DRAW_COL;
+		++draw_queue_index;
+		draw_queue[draw_queue_index] = cam.pos_x + 255;
+		++draw_queue_index;
+		draw_queue[draw_queue_index] = cam.pos_y;
+		++draw_queue_index;
+		++draw_queue_index;
+		draw_queue_index = draw_queue_index % DRAW_QUEUE_SIZE;
+		DEBUG_ASSERT(draw_queue_index != draw_dequeue_index);
+
+		// cam_x = cam.pos_x + 256;
+		// cam_y = cam.pos_y;
+		// draw_col_attr();
+
+		draw_queue[draw_queue_index] = QUEUE_DRAW_COL_ATTR;
+		++draw_queue_index;
+		draw_queue[draw_queue_index] = cam.pos_x + 255;
+		++draw_queue_index;
+		draw_queue[draw_queue_index] = cam.pos_y;
+		++draw_queue_index;
+		++draw_queue_index;
+		draw_queue_index = draw_queue_index % DRAW_QUEUE_SIZE;
+		DEBUG_ASSERT(draw_queue_index != draw_dequeue_index);	
 	}
+
+	if (draw_dequeue_index != draw_queue_index)
+	{
+		switch (draw_queue[draw_dequeue_index])
+		{
+			case QUEUE_DRAW_COL:
+			{
+				++draw_dequeue_index;
+				cam_x = draw_queue[draw_dequeue_index];
+				++draw_dequeue_index;
+				cam_y = draw_queue[draw_dequeue_index];
+				++draw_dequeue_index;
+				++draw_dequeue_index;
+				draw_dequeue_index = draw_dequeue_index % DRAW_QUEUE_SIZE;
+				draw_col();
+				break;
+			}
+			case QUEUE_DRAW_ROW:
+			{
+				++draw_dequeue_index;
+				cam_x = draw_queue[draw_dequeue_index];
+				++draw_dequeue_index;
+				cam_y = draw_queue[draw_dequeue_index];
+				++draw_dequeue_index;
+				++draw_dequeue_index;
+				draw_dequeue_index = draw_dequeue_index % DRAW_QUEUE_SIZE;
+				draw_row();
+				break;
+			}
+			case QUEUE_DRAW_COL_ATTR:
+			{
+				++draw_dequeue_index;
+				cam_x = draw_queue[draw_dequeue_index];
+				++draw_dequeue_index;
+				cam_y = draw_queue[draw_dequeue_index];
+				++draw_dequeue_index;
+				++draw_dequeue_index;
+				draw_dequeue_index = draw_dequeue_index % DRAW_QUEUE_SIZE;
+				draw_col_attr();
+				break;				
+			}
+			case QUEUE_DRAW_ROW_ATTR:
+			{
+				++draw_dequeue_index;
+				cam_x = draw_queue[draw_dequeue_index];
+				++draw_dequeue_index;
+				cam_y = draw_queue[draw_dequeue_index];
+				++draw_dequeue_index;
+				++draw_dequeue_index;
+				draw_dequeue_index = draw_dequeue_index % DRAW_QUEUE_SIZE;
+				draw_row_attr();
+				break;				
+			}
+		
+		default:
+			break;
+		}
+	}
+
+	
 }

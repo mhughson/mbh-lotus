@@ -110,7 +110,11 @@ void copy_bg_to_current_room_a()
 			default:
 				break;
 		}
-	} while (loaded_obj_id != 0xff);	
+	} while (loaded_obj_id != 0xff);
+
+	draw_queue_index = 0;
+	draw_dequeue_index = 0;
+	memfill(draw_queue, 0, DRAW_QUEUE_SIZE);
 }
 
 // tile_index_param
