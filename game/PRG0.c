@@ -3,6 +3,7 @@
 #include "PRG2.h"
 #include "PRG3.h"
 #include "PRG4.h"
+#include "PRG5.h"
 #include "main.h"
 #include "LIB/neslib.h"
 #include "LIB/nesdoug.h"
@@ -15,18 +16,33 @@
 // Const data
 //
 
-const unsigned char palette[16]={ 0x0f,0x14,0x24,0x35,0x0f,0x0c,0x1c,0x3c,0x0f,0x07,0x17,0x3d,0x0f,0x09,0x19,0x29 };
-const unsigned char palette_spr[16]={ 0x0f,0x04,0x23,0x38,0x0f,0x16,0x26,0x36,0x0f,0x17,0x27,0x37,0x0f,0x18,0x28,0x38 };
+const unsigned char BG_palettes[][16] =
+{
+	{ 0x0f,0x14,0x24,0x35,0x0f,0x0c,0x1c,0x3c,0x0f,0x07,0x17,0x3d,0x0f,0x09,0x19,0x29 },
+	{ 0x0f,0x28,0x1a,0x2a,0x0f,0x28,0x18,0x38,0x0f,0x1c,0x0c,0x2c,0x0f,0x28,0x00,0x30 },
+};
+
+const unsigned char SPR_palettes[][16] =
+{
+	{ 0x0f,0x04,0x23,0x38,0x0f,0x16,0x26,0x36,0x0f,0x17,0x27,0x37,0x0f,0x18,0x28,0x38 }
+};
+
 const unsigned char palette_title[16]={ 0x0f,0x15,0x25,0x30,0x0f,0x13,0x25,0x30,0x0f,0x06,0x16,0x26,0x0f,0x09,0x19,0x29 };
-
-
 
 #define NUM_Y_COLLISION_OFFSETS 3
 const unsigned char y_collision_offsets[NUM_Y_COLLISION_OFFSETS] = { 1, 10, 19 };
 #define NUM_X_COLLISION_OFFSETS 2
 const unsigned char x_collision_offsets[NUM_X_COLLISION_OFFSETS] = { 0, 12 };
 
-const unsigned char bg_banks[4] = { 3, 8, 9, 10 };
+//const unsigned char bg_banks[4] = { 3, 8, 9, 10 };
+
+//const unsigned char bg_banks[4] = { 27, 28, 29, 30 };
+
+const unsigned char bg_bank_sets[NUM_BG_BANK_SETS][NUM_BG_BANKS] =
+{
+	{ 3, 8, 9, 10 },
+	{ 27, 28, 29, 30 },
+};
 
 unsigned char irq_array[32];
 
@@ -130,7 +146,7 @@ PROFILE_POKE(PROF_R)
 				if (tick_count % 32 == 0)
 				{
 					cur_bg_bank = (cur_bg_bank + 1) % 4;
-					set_chr_mode_5(bg_banks[cur_bg_bank]);
+					set_chr_mode_5(bg_bank_sets[cur_room_metatile_index][cur_bg_bank]);
 				}
 
 				// store the camera position at the start of the frame, so that
@@ -1027,15 +1043,7 @@ void go_to_state(unsigned char new_state)
 			music_stop();
 			scroll(0,0);
 			cam.pos_x = 0;
-//			set_chr_bank_0(0);
 
-			set_chr_mode_2(0);
-			set_chr_mode_3(1);
-			set_chr_mode_4(2);
-			set_chr_mode_5(3);
-
-			pal_bg(palette);
-			pal_spr(palette_spr);
 // #if DEBUG_ENABLED
 // 			player1.pos_x = FP_WHOLE(debug_pos_start);
 // 			debug_pos_start += 128;
@@ -1055,7 +1063,7 @@ void go_to_state(unsigned char new_state)
 
 			// Load the room first so that we know it's size.
 			in_is_streaming = 0;
-			banked_call(BANK_2, copy_bg_to_current_room);
+			banked_call(BANK_5, copy_bg_to_current_room);
 
 
 			if (cur_room_type == 1)
@@ -1117,4 +1125,36 @@ void go_to_state(unsigned char new_state)
 			fade_from_white();
 		}
 	}
+}
+
+void set_chr_bank_for_current_room()
+{
+	switch(cur_room_metatile_index)
+	{
+		case 0:
+		{
+			set_chr_mode_2(0);
+			set_chr_mode_3(1);
+			set_chr_mode_4(2);
+			set_chr_mode_5(3);
+			break;
+		}
+
+		case 1:
+		{
+			set_chr_mode_2(24);
+			set_chr_mode_3(25);
+			set_chr_mode_4(26);
+			set_chr_mode_5(27);	
+			break;
+		}
+	}	
+}
+
+void load_level_pal()
+{
+	banked_call(BANK_5, get_cur_room_palettes);
+
+	pal_bg(BG_palettes[index]);
+	pal_spr(SPR_palettes[index2]);
 }

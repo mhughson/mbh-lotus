@@ -67,7 +67,7 @@
                         {
                          "name":"payload",
                          "type":"int",
-                         "value":1
+                         "value":2
                         }],
                  "rotation":0,
                  "type":"trans_edge",
@@ -84,7 +84,7 @@
                         {
                          "name":"payload",
                          "type":"int",
-                         "value":3
+                         "value":4
                         }],
                  "rotation":0,
                  "type":"trans_edge",
@@ -103,7 +103,7 @@
  "nextobjectid":5,
  "orientation":"orthogonal",
  "renderorder":"right-down",
- "tiledversion":"1.7.0",
+ "tiledversion":"1.6.0",
  "tileheight":16,
  "tilesets":[
         {

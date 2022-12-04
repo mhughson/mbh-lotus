@@ -36,6 +36,9 @@
 // start of XRAM to confirm that this is valid save data.
 #define NUM_SAVE_VERSION_VALIDATION 4
 
+#define NUM_BG_BANKS 4 // MUST BE POWER OF 2
+#define NUM_BG_BANK_SETS 2
+
 // Flag used to signify the end of a metasprites data.
 #define END_OF_META (0x80)
 
@@ -111,7 +114,7 @@ enum
 
 enum { STATE_BOOT, STATE_TITLE, STATE_GAME, STATE_OVER };
 
-enum { BANK_0 = 0, BANK_1, BANK_2, BANK_3, BANK_4 };
+enum { BANK_0 = 0, BANK_1, BANK_2, BANK_3, BANK_4, BANK_5 };
 
 #pragma bss-name(push, "ZEROPAGE")
 #pragma bss-name(pop)

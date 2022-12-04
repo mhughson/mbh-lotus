@@ -23,6 +23,7 @@ IF DEFINED audio (
 
 IF DEFINED maps (
 	py NES_ST/meta.py tiles_temp.nam ..\maps\nametable_temp.json temp
+	py NES_ST/meta.py tiles_overworld.nam ..\maps\nametable_overworld.json overworld
 	py MAPS\generate_maps_header.py
 )
 
@@ -35,6 +36,7 @@ IF DEFINED code (
 	cc65 -g -Oirs PRG2.c --add-source
 	cc65 -g -Oirs PRG3.c --add-source
 	cc65 -g -Oirs PRG4.c --add-source
+	cc65 -g -Oirs PRG5.c --add-source
 	cc65 -g -Oirs mmc3\mmc3_code.c --add-source
 	ca65 crt0.s
 	ca65 %name%.s -g
@@ -43,10 +45,11 @@ IF DEFINED code (
 	ca65 PRG2.s -g
 	ca65 PRG3.s -g
 	ca65 PRG4.s -g
+	ca65 PRG5.s -g
 	ca65 mmc3\mmc3_code.s -g
 
 	REM -dbgfile does not impact the resulting .nes file.
-	ld65 -C mmc3_128_128.cfg --dbgfile %name%.dbg -o %name%.nes crt0.o %name%.o mmc3\mmc3_code.o PRG0.o PRG1.o PRG2.o PRG3.o PRG4.o nes.lib -Ln labels.txt -m map.txt
+	ld65 -C mmc3_128_128.cfg --dbgfile %name%.dbg -o %name%.nes crt0.o %name%.o mmc3\mmc3_code.o PRG0.o PRG1.o PRG2.o PRG3.o PRG4.o PRG5.o nes.lib -Ln labels.txt -m map.txt
 
 	del *.o
 	del mmc3\*.o
@@ -62,6 +65,7 @@ IF DEFINED code (
 	move /Y PRG2.s BUILD\
 	move /Y PRG3.s BUILD\
 	move /Y PRG4.s BUILD\
+	move /Y PRG5.s BUILD\
 )
 
 if DEFINED run (

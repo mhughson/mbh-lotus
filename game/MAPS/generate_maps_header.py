@@ -29,18 +29,22 @@ print("CWD: " + os.getcwd())
 # NOTE: NEW_TILESET_CHANGE_REQUIRED
 tileset_to_index_mapping = {
     "nametable_temp.json" : "0",
+    "nametable_overworld.json" : "1",
 }
 
 tileset_to_music_index_mapping = {
     "nametable_temp.json" : "0",
+    "nametable_overworld.json" : "0",
 }
 
 tileset_to_bgpal_index_mapping = {
     "nametable_temp.json" : "0",
+    "nametable_overworld.json" : "1",
 }
 
 tileset_to_sprpal_index_mapping = {
     "nametable_temp.json" : "0",
+    "nametable_overworld.json" : "0",
 }
 
 object_type_name_mapping = {

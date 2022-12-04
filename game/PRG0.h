@@ -12,5 +12,7 @@ void vram_buffer_load_2x2_metatile();
 void vram_buffer_load_column();
 void vram_buffer_load_column_full();
 void go_to_state(unsigned char new_state);
+void set_chr_bank_for_current_room();
+void load_level_pal();
 
 #endif /* D12B32D3_39DD_4865_9236_3AEDEF9ACEDE */
