@@ -294,7 +294,15 @@ void draw_row()
 	{
 		++nametable_index;
 		cam_x = nametable_index * 256;
+
 		dist_to_nt_edge = 36 - local_i;
+
+		// Don't go past the next name table either. This can happen when are are perfectly
+		// align with a nametable.
+		// TODO: This was to fix issue with 32x30 map, but I think it means that we likely will
+		//		 have issues with extra wide maps... we may need *another* loop after this for
+		//		 the remainder.
+		dist_to_nt_edge = MIN(((256 - (cam_x % 256)) / 8), (36 - local_i));
 
 		local_index16 = GRID_XY_TO_ROOM_INDEX(cam_x / 16, cam_y / 16);
 
