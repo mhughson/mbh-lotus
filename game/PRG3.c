@@ -734,7 +734,6 @@ void vram_buffer_load_inner_frame()
 
 	if (pad_all & PAD_UP && ((old_cam_y / 8) != (cam.pos_y / 8)))
 	{
-		DEBUG_ASSERT(1 == 2)
 		// cam_x = cam.pos_x;
 		// cam_y = cam.pos_y;
 		// draw_row();
