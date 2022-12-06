@@ -308,6 +308,7 @@ void draw_row()
 
 	static unsigned char dist_to_nt_edge;
 	static unsigned char nametable_index;
+	static unsigned char nametable_index_virtual;
 
 	// Figure out which index in the metatile data will be drawn on the left.
 	// Is it the top slice, or the bottom slice?
@@ -324,7 +325,8 @@ void draw_row()
 
 	local_i = 0;
 
-	nametable_index = (cam_x / 256) % 2;
+	nametable_index_virtual = (cam_x / 256);
+	nametable_index = nametable_index_virtual % 2;
 
 	// We are half way through a meta-tile.
 	if (cam_x % 16 >= 8)
@@ -364,7 +366,8 @@ void draw_row()
 	if (local_i < 36)
 	{
 		++nametable_index;
-		cam_x = nametable_index * 256;
+		++nametable_index_virtual;
+		cam_x = nametable_index_virtual * 256;
 
 		dist_to_nt_edge = 36 - local_i;
 
@@ -378,20 +381,6 @@ void draw_row()
 		local_index16 = GRID_XY_TO_ROOM_INDEX(cam_x / 16, cam_y / 16);
 
 		local_i = 0;
-
-		// We are half way through a meta-tile.
-		// if (cam_x % 16 >= 8)
-		// {
-		// 	local_att_index16 = current_room[local_index16] * META_TILE_NUM_BYTES;
-
-		// 	// Just the second tile and move on.
-		// 	array_temp8 = cur_metatiles[local_att_index16 + tile_offset2];
-		// 	nametable_col[local_i] = array_temp8;
-		// 	local_i++;
-
-		// 	// next tile in the row.
-		// 	++local_index16;		
-		// }
 
 		while (local_i < dist_to_nt_edge)
 		{
