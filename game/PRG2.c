@@ -67,7 +67,7 @@ void stream_in_next_level()
 		// a point of not return though, and the old remove must be scrolled out of
 		// view before giving control back to the player.
 		in_is_streaming = 1;
-		banked_call(BANK_5, copy_bg_to_current_room);
+		banked_call(BANK_5, load_and_process_map);
 
 		// We need to do this once before entering the loop so that the 
 		// first frame is not missing the player.
@@ -169,7 +169,7 @@ void stream_in_next_level()
 		// a point of not return though, and the old remove must be scrolled out of
 		// view before giving control back to the player.
 		in_is_streaming = 1;
-		banked_call(BANK_5, copy_bg_to_current_room);
+		banked_call(BANK_5, load_and_process_map);
 
 		// We need to do this once before entering the loop so that the 
 		// first frame is not missing the player.

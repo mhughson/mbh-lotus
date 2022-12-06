@@ -114,7 +114,7 @@ enum
 
 enum { STATE_BOOT, STATE_TITLE, STATE_GAME, STATE_OVER };
 
-enum { BANK_0 = 0, BANK_1, BANK_2, BANK_3, BANK_4, BANK_5 };
+enum { BANK_0 = 0, BANK_1, BANK_2, BANK_3, BANK_4, BANK_5, BANK_6 };
 
 #pragma bss-name(push, "ZEROPAGE")
 #pragma bss-name(pop)

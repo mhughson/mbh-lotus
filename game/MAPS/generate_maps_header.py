@@ -274,12 +274,12 @@ def GenerateHeader(file_name, world_files):
 # MAP LIST A (BANK 4)
 #"world_gym.world" 
 #GenerateHeader("maps_a", [ "world_prologue.world", "world_castle_basic.world", "world_labyrinth.world", "world_gym.world" ])
-GenerateHeader("maps_a", [ "world_gym.world" ])
+GenerateHeader("maps_a", [ "world_overworld.world" ])
 #GenerateHeader("maps_a", [ "world_custom.world"])
 room_split_b = num_rooms
 
 # MAP LIST B (BANK 3)
-#GenerateHeader("maps_b", [ "world_gravity.world", "world_mirror.world", "world_flip.world", "world_key.world" ])
+GenerateHeader("maps_b", [ "world_gym.world" ])
 #GenerateHeader("maps_b", [ ])
 room_split_c = num_rooms
 

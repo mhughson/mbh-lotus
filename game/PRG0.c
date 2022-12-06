@@ -1063,7 +1063,7 @@ void go_to_state(unsigned char new_state)
 
 			// Load the room first so that we know it's size.
 			in_is_streaming = 0;
-			banked_call(BANK_5, copy_bg_to_current_room);
+			banked_call(BANK_5, load_and_process_map);
 
 
 			if (cur_room_type == 1)

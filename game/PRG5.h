@@ -40,4 +40,6 @@ void get_cur_room_special_type();
 // OUT: index : music track to use for this level
 void get_cur_room_music_track();
 
+void load_and_process_map();
+
 #endif /* DFEECF2C_29C5_4E62_89A6_4759D563ACA5 */

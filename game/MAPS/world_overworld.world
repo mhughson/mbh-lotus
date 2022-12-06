@@ -1,0 +1,13 @@
+{
+    "maps": [
+        {
+            "fileName": "map_gym_over_02.json",
+            "height": 480,
+            "width": 512,
+            "x": 0,
+            "y": 0
+        }
+    ],
+    "onlyShowAdjacentMaps": false,
+    "type": "world"
+}
