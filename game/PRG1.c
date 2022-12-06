@@ -94,14 +94,14 @@ void draw_player_static()
 {
 	if (high_2byte(player1.pos_y) < 240 || high_2byte(player1.pos_y) > (0xffff - 16))
 	{
-		if (player1.facing_left == 1)
+		if (player1.dir_x < 0)
 		{
 			in_oam_x = high_2byte(player1.pos_x) - cam.pos_x;
 			in_oam_y = high_2byte(player1.pos_y) - 1 - cam.pos_y;
 			in_oam_data = meta_player_list[sprite_anims[player1.sprite.anim.anim_current]->frames[player1.sprite.anim.anim_frame]];
 			c_oam_meta_spr_flipped();
 		}
-		else
+		else // NOTE: This assumes left/right only.
 		{		
 			oam_meta_spr(
 				high_2byte(player1.pos_x) - cam.pos_x, 

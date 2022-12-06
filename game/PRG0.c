@@ -587,11 +587,11 @@ PROFILE_POKE(PROF_G);
 
 	if (pad_all & PAD_RIGHT)
 	{
-		player1.facing_left = 0;
+		player1.dir_x = 1;
 	}
 	else if (pad_all & PAD_LEFT)
 	{
-		player1.facing_left = 1;
+		player1.dir_x = -1;
 	}
 
 	if (!grounded)
@@ -613,15 +613,13 @@ PROFILE_POKE(PROF_G);
 	}
 	else if (pad_all & (PAD_RIGHT | PAD_LEFT))
 	{
-		//player1.facing_left = 0;
 		anim_index = ANIM_PLAYER_RUN;
 		global_working_anim = &player1.sprite.anim;
 		queue_next_anim(anim_index);
 		commit_next_anim();
 	}
 	else
-	{		
-		//anim_index = (ticks_since_attack < ATTACK_LEN) ? ANIM_PLAYER_IDLE_ATTACK_RIGHT : (player1.facing_left ? ANIM_PLAYER_IDLE_LEFT : ANIM_PLAYER_IDLE_RIGHT);
+	{
 		anim_index = ANIM_PLAYER_IDLE;
 		global_working_anim = &player1.sprite.anim;
 		queue_next_anim(anim_index);
@@ -1059,7 +1057,6 @@ void go_to_state(unsigned char new_state)
 //#endif // DEBUG_ENABLED
 			player1.pos_y = FP_WHOLE((6<<4));
 			player1.vel_y = 0;
-			player1.facing_left = 0;
 
 			// Load the room first so that we know it's size.
 			in_is_streaming = 0;

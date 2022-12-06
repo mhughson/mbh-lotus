@@ -179,6 +179,9 @@ void load_and_process_map()
 						player1.pos_x = FP_WHOLE(loaded_obj_x * 16);
 						player1.pos_y = FP_WHOLE((loaded_obj_y * 16) - 4);
 					}
+
+					player1.dir_x = 1;
+					player1.dir_y = 1;
 				}
 				break;
 			}

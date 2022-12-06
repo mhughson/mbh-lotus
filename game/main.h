@@ -146,9 +146,6 @@ typedef struct camera
 // data speciic to player game objects.
 typedef struct animated_sprite
 {
-	// Was the last horizontal move *attempted* in the left direction?
-	unsigned char facing_left;
-
 	// Stores all of the active animation info.
 	anim_info anim;
 
@@ -163,7 +160,8 @@ typedef struct game_actor
 
 	signed long vel_y;
 
-	unsigned char facing_left;
+	signed char dir_x;
+	signed char dir_y;
 } game_actor;
 
 typedef enum TRIGGER_OBJECT_TYPES

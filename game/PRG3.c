@@ -24,12 +24,23 @@ void vram_buffer_load_inner_frame();
 
 void update_player_td()
 {
+	static unsigned char new_dir_x;
+	static unsigned char new_dir_y;
+
 	static const unsigned int high_walk_speed = (WALK_SPEED_TD >> 16);
 
 PROFILE_POKE(PROF_G);
 
 	// high_x = high_2byte(player1.pos_x);
 	// high_y = high_2byte(player1.pos_y);
+
+	new_dir_x = 0;
+	new_dir_y = 0;
+
+	if (pad_all & PAD_LEFT) new_dir_x = -1;
+	else if (pad_all & PAD_RIGHT) new_dir_x = 1;
+	if (pad_all & PAD_UP) new_dir_y = -1;
+	else if (pad_all & PAD_DOWN) new_dir_y = 1;
 
 	if (pad_all & PAD_LEFT && 
 		//((cam.pos_x) / 256) <= (( high_2byte((player1.pos_x)) - (WALK_SPEED_TD >> 16)) / 256) && 
@@ -166,29 +177,89 @@ PROFILE_POKE(PROF_G);
 		}		
 	}
 
-	if (pad_all & PAD_RIGHT)
+
+	// currently moving horz
+	if (player1.dir_x !=0)
 	{
-		player1.facing_left = 1;
-		anim_index = ANIM_WALK_RIGHT_TD;
+		if (new_dir_x !=0)
+		{
+			player1.dir_x=new_dir_x;
+			if (player1.dir_x < 0)
+			{
+				anim_index = ANIM_WALK_LEFT_TD;
+			}
+			else
+			{
+				anim_index = ANIM_WALK_RIGHT_TD;
+			}
+		}
+		else if (new_dir_y != 0)
+		{
+			player1.dir_x = 0;
+			player1.dir_y = new_dir_y;
+			if (player1.dir_y < 0)
+			{
+				anim_index = ANIM_WALK_UP_TD;
+			}
+			else
+			{
+				anim_index = ANIM_WALK_DOWN_TD;
+			}
+		}
 	}
-	else if (pad_all & PAD_LEFT)
+	
+	// currently moving vert
+	if (player1.dir_y!=0)
 	{
-		player1.facing_left = 3;
-		anim_index = ANIM_WALK_LEFT_TD;
+		if (new_dir_y!=0)
+		{
+			player1.dir_y=new_dir_y;
+			if (player1.dir_y < 0)
+			{
+				anim_index = ANIM_WALK_UP_TD;
+			}
+			else
+			{
+				anim_index = ANIM_WALK_DOWN_TD;
+			}
+		}
+		else if (new_dir_x != 0)
+		{
+			player1.dir_y=0;
+			player1.dir_x=new_dir_x;
+			if (player1.dir_x < 0)
+			{
+				anim_index = ANIM_WALK_LEFT_TD;
+			}
+			else
+			{
+				anim_index = ANIM_WALK_RIGHT_TD;
+			}
+		}
 	}
-	else if (pad_all & PAD_UP)
+	
+	if (new_dir_x == 0 && new_dir_y==0)
 	{
-		player1.facing_left = 2;
-		anim_index = ANIM_WALK_UP_TD;
-	}
-	else if (pad_all & PAD_DOWN)
-	{
-		player1.facing_left = 0;
-		anim_index = ANIM_WALK_DOWN_TD;
+		if (player1.dir_x < 0)
+		{
+			anim_index = ANIM_IDLE_LEFT_TD;
+		}
+		else if (player1.dir_x > 0)
+		{
+			anim_index = ANIM_IDLE_RIGHT_TD;
+		}
+		else if (player1.dir_y < 0)
+		{
+			anim_index = ANIM_IDLE_UP_TD;
+		}
+		else if (player1.dir_y > 0)
+		{
+			anim_index = ANIM_IDLE_DOWN_TD;
+		}
 	}
 	else
 	{
-		anim_index = ANIM_IDLE_DOWN_TD;
+		//player1.moving=1
 	}
 
 	global_working_anim = &player1.sprite.anim;
