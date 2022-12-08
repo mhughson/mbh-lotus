@@ -41,7 +41,7 @@ unsigned char draw_queue_index;
 unsigned char draw_dequeue_index;
 unsigned int draw_queue[DRAW_QUEUE_SIZE];
 
-unsigned char current_room_page_reserve[ROOM_PAGE_SIZE];
+unsigned char rainy_day_ram[RAINY_DAY_RAM_SIZE];
 
 unsigned int in_x_tile;
 unsigned int in_y_tile;

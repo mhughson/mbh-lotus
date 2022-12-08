@@ -218,8 +218,8 @@ extern unsigned int draw_queue[DRAW_QUEUE_SIZE];
 // At some point I think I will need to keep the current 2 nametables of level data in RAM, so that I can
 // edit it on the fly (eg. destructable blocks). Reserving it for now, since this is a large chunk of memory
 // that will be challenging to peel back after its used.
-#define ROOM_PAGE_SIZE (16 * 15 * 2)
-extern unsigned char current_room_page_reserve[ROOM_PAGE_SIZE];
+#define RAINY_DAY_RAM_SIZE (480)
+extern unsigned char rainy_day_ram[RAINY_DAY_RAM_SIZE];
 
 
 extern unsigned int in_x_tile;
@@ -296,6 +296,7 @@ extern unsigned int scroll_y;
 //
 
 // Yup! Almost 4KB of RAM going to a copy of the current room!
+// Max square room: 64x60 tiles
 #define MAX_ROOM_NUM_TILES (240 * 16)
 extern unsigned char save_version_validation[NUM_SAVE_VERSION_VALIDATION];
 extern unsigned char current_room[MAX_ROOM_NUM_TILES];
