@@ -309,6 +309,7 @@ void draw_row()
 	static unsigned char dist_to_nt_edge;
 	static unsigned char nametable_index;
 	static unsigned char nametable_index_virtual;
+	static unsigned char num_tiles_drawn;
 
 	// Figure out which index in the metatile data will be drawn on the left.
 	// Is it the top slice, or the bottom slice?
@@ -324,6 +325,7 @@ void draw_row()
 	local_index16 = GRID_XY_TO_ROOM_INDEX(cam_x / 16, cam_y / 16);
 
 	local_i = 0;
+	num_tiles_drawn = 0;
 
 	nametable_index_virtual = (cam_x / 256);
 	nametable_index = nametable_index_virtual % 2;
@@ -337,6 +339,7 @@ void draw_row()
 		array_temp8 = cur_metatiles[local_att_index16 + tile_offset2];
 		nametable_col[local_i] = array_temp8;
 		local_i++;
+		++num_tiles_drawn;
 
 		// next tile in the row.
 		++local_index16;		
@@ -344,45 +347,16 @@ void draw_row()
 
 	dist_to_nt_edge = (256 - (cam_x % 256)) / 8;
 
-	while (local_i < dist_to_nt_edge)
+#define NUM_TILES_PER_ROW 36
+	// loop until all tiles have been drawn across multiple nametables
+	// potentially looping back on the original nametable.
+
+	// Have we draw the full amount of tiles we want to draw?
+	while (num_tiles_drawn < NUM_TILES_PER_ROW)
 	{
-		local_att_index16 = current_room[local_index16] * META_TILE_NUM_BYTES;
 
-		// single column of tiles
-		array_temp8 = cur_metatiles[local_att_index16 + tile_offset];
-		nametable_col[local_i] = array_temp8;
-		local_i++;
-		array_temp8 = cur_metatiles[local_att_index16 + tile_offset2];
-		nametable_col[local_i] = array_temp8;
-		local_i++;
-
-		// next tile in the row.
-		++local_index16;
-	}
-
-	multi_vram_buffer_horz(nametable_col, local_i, get_ppu_addr(nametable_index, cam_x, cam_y % 240));
-
-	// Stopped at a nametable edge. Do the second half.
-	if (local_i < 36)
-	{
-		++nametable_index;
-		++nametable_index_virtual;
-		cam_x = nametable_index_virtual * 256;
-
-		dist_to_nt_edge = 36 - local_i;
-
-		// Don't go past the next name table either. This can happen when are are perfectly
-		// align with a nametable.
-		// TODO: This was to fix issue with 32x30 map, but I think it means that we likely will
-		//		 have issues with extra wide maps... we may need *another* loop after this for
-		//		 the remainder.
-		dist_to_nt_edge = MIN(((256 - (cam_x % 256)) / 8), (36 - local_i));
-
-		local_index16 = GRID_XY_TO_ROOM_INDEX(cam_x / 16, cam_y / 16);
-
-		local_i = 0;
-
-		while (local_i < dist_to_nt_edge)
+		// build up buffer for current nametable
+		while (local_i < dist_to_nt_edge && num_tiles_drawn < NUM_TILES_PER_ROW)
 		{
 			local_att_index16 = current_room[local_index16] * META_TILE_NUM_BYTES;
 
@@ -390,18 +364,38 @@ void draw_row()
 			array_temp8 = cur_metatiles[local_att_index16 + tile_offset];
 			nametable_col[local_i] = array_temp8;
 			local_i++;
-
-			// TODO: Check for going over edge here too if needed for
-			// 		 case where we started on an odd tile.
+			++num_tiles_drawn;
 			array_temp8 = cur_metatiles[local_att_index16 + tile_offset2];
 			nametable_col[local_i] = array_temp8;
 			local_i++;
+			++num_tiles_drawn;
 
 			// next tile in the row.
 			++local_index16;
 		}
-
+		
+		// send buffer for this nametable
 		multi_vram_buffer_horz(nametable_col, local_i, get_ppu_addr(nametable_index, cam_x, cam_y % 240));
+
+		// Move to the next nametable index.
+		nametable_index = (nametable_index + 1) % 2;
+		// Move to the next virtual index which is the "world space"
+		// nametable, and can be used as a multipler to get the actual
+		// tile location.
+		++nametable_index_virtual;
+
+		// move the camera to the left edge of the new nametable.
+		cam_x = nametable_index_virtual * 256;
+
+		// Don't go past the next name table either. This can happen when are are perfectly
+		// align with a nametable.
+		// TODO: Is this needed now that we (I think) would always be
+		// 		 setting this to 256?
+		dist_to_nt_edge = (256 - (cam_x % 256)) / 8;
+
+		// Reset the local counter for this section of the nametable, but 
+		// don't reset the high level counter, num_tiles_drawn.
+		local_i = 0;
 	}
 }
 
