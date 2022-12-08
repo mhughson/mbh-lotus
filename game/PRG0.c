@@ -124,6 +124,17 @@ PROFILE_POKE(PROF_R)
 
 		oam_clear();
 
+		// When a VRAM update is queued, we can't do it while the screen is
+		// drawing or it will change the visuals for the *previous* frame, which
+		// are in the middle of being rendered (as these changes take place instantly).
+		if (chr_index_queued != 0xff)
+		{
+			// TODO: Eventually we might want to support setting the other parts of
+			// 		 VRAM as well.
+			set_chr_mode_0(chr_index_queued);
+			chr_index_queued = 0xff;
+		}
+
 		pad_all = pad_poll(0) | pad_poll(1); // read the first controller
 		pad_all_new = get_pad_new(0) | get_pad_new(1); // newly pressed button. do pad_poll first
 
@@ -1054,6 +1065,9 @@ void go_to_state(unsigned char new_state)
 			scroll(0,0);
 			cam.pos_x = 0;
 
+			// Clear the queue to load sprite data.
+			chr_index_queued = 0xff;
+
 // #if DEBUG_ENABLED
 // 			player1.pos_x = FP_WHOLE(debug_pos_start);
 // 			debug_pos_start += 128;
@@ -1073,16 +1087,6 @@ void go_to_state(unsigned char new_state)
 			// Load the room first so that we know it's size.
 			in_is_streaming = 0;
 			banked_call(BANK_5, load_and_process_map);
-
-
-			if (cur_room_type == 1)
-			{
-				set_chr_mode_0(13);
-			}
-			else
-			{
-				set_chr_mode_0(4);
-			}
 
 			// Move the camera to the player, but clamp to the edges.
 			if (high_2byte(player1.pos_x) < 128)

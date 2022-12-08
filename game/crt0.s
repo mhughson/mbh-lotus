@@ -398,7 +398,9 @@ sounds_data:
 
 .segment "CHARS"
 
-	.incbin "chrrom_bank0.chr"
+	.incbin "chrrom_bank0_top.chr"
+	.incbin "chrrom_bank0_a.chr"
+	.incbin "chrrom_bank0_b.chr"
 	.incbin "chrrom_bank1.chr"
 	.incbin "chrrom_bank2.chr"
 	.incbin "chrrom_bank3.chr"

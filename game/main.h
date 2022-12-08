@@ -98,6 +98,7 @@ enum
 	ANIM_PLAYER_RUN,
 	ANIM_PLAYER_JUMP,
 	ANIM_PLAYER_FALL,
+	ANIM_PLAYER_DASH,
 
 	ANIM_IDLE_DOWN_TD ,
 	ANIM_IDLE_RIGHT_TD,
@@ -291,6 +292,8 @@ extern unsigned char jump_count;
 extern unsigned char on_ground;
 extern unsigned char new_jump_btn;
 extern unsigned int scroll_y;
+
+extern unsigned char chr_index_queued;
 
 // XRAM
 //

@@ -23,22 +23,31 @@ typedef struct anim_def
 
 	// index into meta_sprites array
 	unsigned char frames[17];
+
+	// The CHR ROM to use for this animation.
+	unsigned char chr_index;
 } anim_def;
 
-const anim_def idle_right = { 20, 4, { 0, 1, 2, 3 } };
-const anim_def walk_right = { 7, 4, { 4, 5, 6, 5 } };
-const anim_def jump_right = { 255, 1, { 7 } };
-const anim_def fall_right = { 255, 1, { 8 } };
+// Helpers to make things easier to move around.
+#define CHR_SIDE 4
+#define CHR_SIDE_DASH 6
+#define CHR_TD 13
 
-const anim_def idle_down_td 	= { 60, 2, { 2, 3 } };
-const anim_def idle_right_td 	= { 20, 2, { 7, 8 } };
-const anim_def idle_up_td 		= { 20, 2, { 12, 13 } };
-const anim_def idle_left_td 	= { 20, 2, { 17, 18 } };
+const anim_def idle_right = { 20, 4, { 0, 1, 2, 3 }, CHR_SIDE };
+const anim_def walk_right = { 7, 4, { 4, 5, 6, 5 }, CHR_SIDE };
+const anim_def jump_right = { 255, 1, { 7 }, CHR_SIDE };
+const anim_def fall_right = { 255, 1, { 8 }, CHR_SIDE };
+const anim_def dash_right = { 5, 2, { 9, 10 }, CHR_SIDE_DASH };
 
-const anim_def walk_down_td 	= { 20, 2, { 0, 1 } };
-const anim_def walk_right_td 	= { 20, 2, { 5, 6 } };
-const anim_def walk_up_td 		= { 20, 2, { 10, 11 } };
-const anim_def walk_left_td 	= { 20, 2, { 15, 16 } };
+const anim_def idle_down_td 	= { 60, 2, { 2, 3 }, CHR_TD };
+const anim_def idle_right_td 	= { 20, 2, { 7, 8 }, CHR_TD };
+const anim_def idle_up_td 		= { 20, 2, { 12, 13 }, CHR_TD };
+const anim_def idle_left_td 	= { 20, 2, { 17, 18 }, CHR_TD };
+
+const anim_def walk_down_td 	= { 20, 2, { 0, 1 }, CHR_TD };
+const anim_def walk_right_td 	= { 20, 2, { 5, 6 }, CHR_TD };
+const anim_def walk_up_td 		= { 20, 2, { 10, 11 }, CHR_TD };
+const anim_def walk_left_td 	= { 20, 2, { 15, 16 }, CHR_TD };
 const struct anim_def* sprite_anims[] =
 {
 	&idle_right,
@@ -48,6 +57,8 @@ const struct anim_def* sprite_anims[] =
 	&jump_right,
 
 	&fall_right,
+
+	&dash_right,
 
 	&idle_down_td ,
 	&idle_right_td,
@@ -92,6 +103,10 @@ void draw_player()
 
 void draw_player_static()
 {
+	// At the start of the next frame, when this oam data will be display, swap to the correct
+	// sprite VRAM data.
+	chr_index_queued = sprite_anims[player1.sprite.anim.anim_current]->chr_index;
+
 	if (high_2byte(player1.pos_y) < 240 || high_2byte(player1.pos_y) > (0xffff - 16))
 	{
 		if (player1.dir_x < 0)
@@ -115,6 +130,11 @@ void draw_player_td()
 {
 	global_working_anim = &player1.sprite.anim;
 	update_anim();
+
+	// At the start of the next frame, when this oam data will be display, swap to the correct
+	// sprite VRAM data.
+	chr_index_queued = sprite_anims[player1.sprite.anim.anim_current]->chr_index;
+	
 	oam_meta_spr(
 		high_2byte(player1.pos_x) - cam.pos_x, 
 		high_2byte(player1.pos_y) - 1 - cam.pos_y,

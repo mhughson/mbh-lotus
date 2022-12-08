@@ -99,6 +99,8 @@ unsigned char on_ground;
 unsigned char new_jump_btn;
 unsigned int scroll_y;
 
+unsigned char chr_index_queued;
+
 #pragma bss-name(push, "XRAM")
 // extra RAM at $6000-$7fff
 //unsigned char wram_array[0x2000];
