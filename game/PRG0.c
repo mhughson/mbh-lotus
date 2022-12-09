@@ -346,6 +346,10 @@ void kill_player()
 void update_player()
 {
 	static unsigned char hit_kill_box;
+
+	static unsigned long old_x;
+	static unsigned long old_y;
+
 	// static unsigned int high_x;
 	// static unsigned int high_y;
 	static const unsigned int high_walk_speed = (WALK_SPEED >> 16);
@@ -355,15 +359,70 @@ PROFILE_POKE(PROF_G);
 	// high_x = high_2byte(player1.pos_x);
 	// high_y = high_2byte(player1.pos_y);
 
-	if (pad_all & PAD_LEFT && 
-		//((cam.pos_x) / 256) <= (( high_2byte((player1.pos_x)) - (WALK_SPEED >> 16)) / 256) && 
-		high_2byte(player1.pos_x) - cam.pos_x >= (high_walk_speed + 8) &&
-		player1.pos_x >= WALK_SPEED + FP_WHOLE(8))
-	{
-		temp32 = player1.pos_x;
+	old_x = player1.pos_x;
+	old_y = player1.pos_y;
 
-		// move the player left.
-		player1.pos_x -= (unsigned long)WALK_SPEED;// + FP_0_5;
+
+
+	// Only apply horizontal friction if the player is
+	// NOT dashing.
+	if (dash_time == 0)
+	{
+		if (grounded)
+		{
+			// When on the ground, stop dead. This isn't an
+			// ice rink!
+			player1.vel_x = 0;
+		}
+		else
+		{
+			// Apply air friction to the current velocity, which
+			// will be added to position later.
+			// If we are in range of 0, just right there to avoid
+			// over shooting. 
+			if (player1.vel_x > FP_AIR_FRICTION)
+			{
+				player1.vel_x -= FP_AIR_FRICTION;
+			}
+			else
+			{
+				player1.vel_x = 0;
+			}
+		}
+	}
+
+	// Only allow the player to walk left/right if they are
+	// NOT dashing.
+	if (dash_time == 0)
+	{
+		if (pad_all & PAD_LEFT && 
+			high_2byte(player1.pos_x) - cam.pos_x >= (high_walk_speed + 8) &&
+			player1.pos_x >= WALK_SPEED + FP_WHOLE(8))
+		{
+			player1.vel_x = WALK_SPEED;
+			player1.dir_x = -1;
+		}
+		// Is the right side of the sprite, after walking, going to be passed the end of the map?
+		else if (pad_all & PAD_RIGHT && (player1.pos_x + WALK_SPEED + FP_WHOLE(16) ) <= FP_WHOLE(cur_room_width_pixels))
+		{
+			player1.vel_x = WALK_SPEED;
+			player1.dir_x = 1;
+		}
+	}
+
+	// If the player has a horizontal velecity, be it from
+	// pressing the DPAD above, or because they are airborne,
+	// move the position by that velocity now.
+	if (player1.vel_x != 0)
+	{
+		if (player1.dir_x < 0)
+		{
+			player1.pos_x -= player1.vel_x;
+		}
+		else
+		{
+			player1.pos_x += player1.vel_x;
+		}
 
 		// track if the player hit a spike.
 		hit_kill_box = 0;
@@ -376,7 +435,14 @@ PROFILE_POKE(PROF_G);
 			// The position is stored using fixed point math, 
 			// where the high byte is the whole part, and the
 			// low byte is the fraction.
-			x = (high_2byte(player1.pos_x) + x_collision_offsets[0] - 1) >> 4;
+			if (player1.dir_x < 0)
+			{
+				x = (high_2byte(player1.pos_x) + x_collision_offsets[0] - 1) >> 4;
+			}
+			else
+			{
+				x = (high_2byte(player1.pos_x) + x_collision_offsets[NUM_X_COLLISION_OFFSETS - 1] + 1) >> 4;
+			}
 
 			// Player is 24 pixels high, so +12 checks middle of them.
 			// >>4 to put the position into metatile-space (16x16 chunks).
@@ -397,53 +463,9 @@ PROFILE_POKE(PROF_G);
 				if (tempFlags & FLAG_SOLID || (grounded && tempFlags & FLAG_KILL))
 				{
 					// Hit a wall, shift back to the edge of the wall.
-					player1.pos_x = temp32;
+					player1.pos_x = old_x;
+					player1.vel_x = 0;
 					hit_kill_box = 0;
-					break;
-				}
-			}
-		}
-	}
-	// Is the right side of the sprite, after walking, going to be passed the end of the map?
-	if (pad_all & PAD_RIGHT && (player1.pos_x + WALK_SPEED + FP_WHOLE(16) ) <= FP_WHOLE(cur_room_width_pixels))
-	{
-
-		temp32 = player1.pos_x;
-		player1.pos_x += WALK_SPEED;// + FP_0_5;
-
-		hit_kill_box = 0;
-
-		for (i = 0; i < NUM_Y_COLLISION_OFFSETS; ++i)
-		{
-			// take the player position, offset it a little
-			// so that the arms overlap the wall a bit (+16),
-			// convert to metatile space (16x16) (>>4).
-			// The position is stored using fixed point math, 
-			// where the high byte is the whole part, and the
-			// low byte is the fraction.
-			x = (high_2byte(player1.pos_x) + x_collision_offsets[NUM_X_COLLISION_OFFSETS - 1] + 1) >> 4;
-
-			// Player is 24 pixels high, so +12 checks middle of them.
-			// >>4 to put the position into metatile-space (16x16 chunks).
-			y = (high_2byte(player1.pos_y) + y_collision_offsets[i]) >> 4;
-
-			if (y < 15)
-			{
-				// Convert the x,y into an index into the room data array.
-				//temp16 = GRID_XY_TO_ROOM_NUMBER(x, y);
-				index16 = GRID_XY_TO_ROOM_INDEX(x, y);
-
-				tempFlags = GET_META_TILE_FLAGS(index16);
-
-				// Check if that point is in a solid metatile.
-				// Treat spikes like walls if the player is on the floor. It feels lame to 
-				// walk into a spike and die; you should need to fall into them.
-				if (tempFlags & FLAG_SOLID || (grounded && tempFlags & FLAG_KILL))
-				{
-					// Hit a wall, shift back to the edge of the wall.
-					player1.pos_x = temp32; //(unsigned long)((x << 4) - 17) << HALF_POS_BIT_COUNT;
-					hit_kill_box = 0;
-
 					break;
 				}
 			}
@@ -480,6 +502,9 @@ PROFILE_POKE(PROF_G);
 			++jump_held_count;
 			++jump_count;
 			player1.vel_y = -(JUMP_VEL);
+			// The moment you just, the dash is over, but
+			// we don't reset the dash_count until you land.
+            dash_time = 0;
 			sfx_play(5,0);
 		}
 		else if (jump_count < 1 && pad_all_new & PAD_A)
@@ -499,6 +524,25 @@ PROFILE_POKE(PROF_G);
 		jump_held_count = 0;
 	}
 
+	// Start a dash if you aren't already in one
+	if (dash_time == 0 && dash_count == 0 && pad_all_new & PAD_B)
+	{
+		// Try to make dash go exactly 4 meta tiles. Note that if dash_speed is greater than
+		// 1, it will not land exactly on point as we always move the full dash_speed every frame.
+		dash_time = DASH_LENGTH_TICKS;
+		player1.vel_x = FP_WHOLE(DASH_SPEED);
+		dash_count = 1;
+	}
+	else if (dash_time > 0)
+	{
+		--dash_time;
+		if (dash_time == 0)
+		{
+			player1.vel_y = 0;
+			player1.vel_x = FP_DASH_SPEED_EXIT;
+		}
+	}
+
 	// if (ticks_since_attack >= ATTACK_LEN)
 	// {
 	// 	if (pad_all_new & PAD_B)
@@ -511,8 +555,12 @@ PROFILE_POKE(PROF_G);
 	// 	++ticks_since_attack;
 	// }
 
-	player1.vel_y += GRAVITY;
-	player1.pos_y += player1.vel_y;
+	// Only apply gravity if you are dashing.
+	if (dash_time == 0)
+	{
+		player1.vel_y += GRAVITY;
+		player1.pos_y += player1.vel_y;
+	}
 
 	// Assume not on the ground each frame, until we detect we hit it.
 	grounded = 0;
@@ -562,6 +610,9 @@ PROFILE_POKE(PROF_G);
 					player1.vel_y = 0;
 					airtime = 0;
 					hit_kill_box = 0;
+					// Don't reset the dash count unless the player has stopped dashing,
+					// since they will hit the floor while dashing along the ground.
+					if (dash_time == 0)	dash_count = 0;
 					break;
 				}
 
@@ -596,16 +647,14 @@ PROFILE_POKE(PROF_G);
 		}
 	}
 
-	if (pad_all & PAD_RIGHT)
+	if (dash_time > 0)
 	{
-		player1.dir_x = 1;
+		anim_index = ANIM_PLAYER_DASH;
+		global_working_anim = &player1.sprite.anim;
+		queue_next_anim(anim_index);
+		commit_next_anim();
 	}
-	else if (pad_all & PAD_LEFT)
-	{
-		player1.dir_x = -1;
-	}
-
-	if (!grounded)
+	else if (!grounded)
 	{
 		if (player1.vel_y > 0)
 		{

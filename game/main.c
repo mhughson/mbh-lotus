@@ -98,6 +98,8 @@ unsigned char jump_count;
 unsigned char on_ground;
 unsigned char new_jump_btn;
 unsigned int scroll_y;
+unsigned char dash_time;
+unsigned char dash_count;
 
 unsigned char chr_index_queued;
 
