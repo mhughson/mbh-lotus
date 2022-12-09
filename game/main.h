@@ -71,9 +71,9 @@
 #define FP_WHOLE(x) ((unsigned long)(x)<<HALF_POS_BIT_COUNT)
 
 // Tunables
-#define JUMP_VEL (FP_WHOLE(3ul) + FP_0_5)
+#define JUMP_VEL (FP_WHOLE(2ul) + FP_0_5)
 #define JUMP_HOLD_MAX (15ul) // 10 = 3 tiles, 12 = 3.5 tiles, 15 = 4 tiles
-#define GRAVITY (FP_0_25)
+#define GRAVITY (FP_0_18)
 #define GRAVITY_LOW (FP_0_05)
 #define WALK_SPEED (FP_WHOLE(1ul) + FP_0_5)
 #define JUMP_COYOTE_DELAY (8)

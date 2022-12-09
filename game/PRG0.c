@@ -464,8 +464,21 @@ PROFILE_POKE(PROF_G);
 				{
 					// Hit a wall, shift back to the edge of the wall.
 					player1.pos_x = old_x;
-					player1.vel_x = 0;
 					hit_kill_box = 0;
+
+					if (dash_time > 0)
+					{
+						player1.vel_x = FP_WHOLE(1) + FP_0_5 + FP_0_25;
+						player1.dir_x *= -1;
+						player1.vel_y = FP_WHOLE(-5);
+						dash_time = 0;
+						dash_count = 0;
+					}
+					else
+					{
+						player1.vel_x = 0;
+					}
+
 					break;
 				}
 			}
