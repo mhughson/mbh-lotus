@@ -40,9 +40,9 @@ const anim_def fall_right = { 255, 1, { 8 }, CHR_SIDE };
 const anim_def dash_right = { 5, 2, { 9, 10 }, CHR_SIDE_DASH };
 
 const anim_def idle_down_td 	= { 60, 2, { 2, 3 }, CHR_TD };
-const anim_def idle_right_td 	= { 20, 2, { 7, 8 }, CHR_TD };
-const anim_def idle_up_td 		= { 20, 2, { 12, 13 }, CHR_TD };
-const anim_def idle_left_td 	= { 20, 2, { 17, 18 }, CHR_TD };
+const anim_def idle_right_td 	= { 60, 2, { 7, 8 }, CHR_TD };
+const anim_def idle_up_td 		= { 60, 2, { 12, 13 }, CHR_TD };
+const anim_def idle_left_td 	= { 60, 2, { 17, 18 }, CHR_TD };
 
 const anim_def walk_down_td 	= { 20, 2, { 0, 1 }, CHR_TD };
 const anim_def walk_right_td 	= { 20, 2, { 5, 6 }, CHR_TD };
