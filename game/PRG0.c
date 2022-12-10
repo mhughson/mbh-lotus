@@ -553,6 +553,12 @@ PROFILE_POKE(PROF_G);
 		dash_time = DASH_LENGTH_TICKS;
 		player1.vel_x = player1.dir_x * FP_WHOLE(DASH_SPEED);
 		dash_count = 1;
+
+		// When we start a dash, end the current jump if there is
+		// one. This prevents the player from HOLDING A, dashing,
+		// and continuing to hold A, resulting in the "continue jump"
+		// logic overwriting the upward velocity when they hit a wall.
+		jump_held_count = 0;
 	}
 	else if (dash_time > 0)
 	{
