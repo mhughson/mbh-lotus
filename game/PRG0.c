@@ -350,6 +350,8 @@ void update_player()
 	static unsigned long old_x;
 	static unsigned long old_y;
 
+	static signed long tempLong;
+
 	// static unsigned int high_x;
 	// static unsigned int high_y;
 	static const unsigned int high_walk_speed = (WALK_SPEED >> 16);
@@ -379,10 +381,26 @@ PROFILE_POKE(PROF_G);
 			// Apply air friction to the current velocity, which
 			// will be added to position later.
 			// If we are in range of 0, just right there to avoid
-			// over shooting. 
-			if (player1.vel_x > FP_AIR_FRICTION)
+			// over shooting.
+			/*
+				x >> 4 = 0.94
+				x >> 3 = 0.88
+				x >> 2 = 0.75
+				x >> 1 = 0.5 
+			*/
+		
+			//tempFlags = player1.vel_x < 0 ? -1 : 1;
+			tempLong = (ABS(player1.vel_x) >> 4); // equivlent of * 0.94f
+			if (tempLong > 0)
 			{
-				player1.vel_x -= FP_AIR_FRICTION;
+				if (player1.vel_x > 0)
+				{
+					player1.vel_x -= (tempLong);// * tempFlags);
+				}
+				else
+				{
+					player1.vel_x += tempLong;
+				}
 			}
 			else
 			{
@@ -399,14 +417,12 @@ PROFILE_POKE(PROF_G);
 			high_2byte(player1.pos_x) - cam.pos_x >= (high_walk_speed + 8) &&
 			player1.pos_x >= WALK_SPEED + FP_WHOLE(8))
 		{
-			player1.vel_x = WALK_SPEED;
-			player1.dir_x = -1;
+			player1.vel_x = -WALK_SPEED;
 		}
 		// Is the right side of the sprite, after walking, going to be passed the end of the map?
 		else if (pad_all & PAD_RIGHT && (player1.pos_x + WALK_SPEED + FP_WHOLE(16) ) <= FP_WHOLE(cur_room_width_pixels))
 		{
 			player1.vel_x = WALK_SPEED;
-			player1.dir_x = 1;
 		}
 	}
 
@@ -415,14 +431,7 @@ PROFILE_POKE(PROF_G);
 	// move the position by that velocity now.
 	if (player1.vel_x != 0)
 	{
-		if (player1.dir_x < 0)
-		{
-			player1.pos_x -= player1.vel_x;
-		}
-		else
-		{
-			player1.pos_x += player1.vel_x;
-		}
+		player1.pos_x += player1.vel_x;
 
 		// track if the player hit a spike.
 		hit_kill_box = 0;
@@ -435,7 +444,7 @@ PROFILE_POKE(PROF_G);
 			// The position is stored using fixed point math, 
 			// where the high byte is the whole part, and the
 			// low byte is the fraction.
-			if (player1.dir_x < 0)
+			if (player1.vel_x < 0)
 			{
 				x = (high_2byte(player1.pos_x) + x_collision_offsets[0] - 1) >> 4;
 			}
@@ -468,8 +477,7 @@ PROFILE_POKE(PROF_G);
 
 					if (dash_time > 0)
 					{
-						player1.vel_x = FP_WHOLE(1) + FP_0_5 + FP_0_25;
-						player1.dir_x *= -1;
+						player1.vel_x = -SIGN(player1.vel_x) * (FP_WHOLE(1) + FP_0_5 + FP_0_25);
 						player1.vel_y = FP_WHOLE(-5);
 						dash_time = 0;
 						dash_count = 0;
@@ -543,7 +551,7 @@ PROFILE_POKE(PROF_G);
 		// Try to make dash go exactly 4 meta tiles. Note that if dash_speed is greater than
 		// 1, it will not land exactly on point as we always move the full dash_speed every frame.
 		dash_time = DASH_LENGTH_TICKS;
-		player1.vel_x = FP_WHOLE(DASH_SPEED);
+		player1.vel_x = player1.dir_x * FP_WHOLE(DASH_SPEED);
 		dash_count = 1;
 	}
 	else if (dash_time > 0)
@@ -552,7 +560,7 @@ PROFILE_POKE(PROF_G);
 		if (dash_time == 0)
 		{
 			player1.vel_y = 0;
-			player1.vel_x = FP_DASH_SPEED_EXIT;
+			player1.vel_x = player1.dir_x * FP_DASH_SPEED_EXIT;
 		}
 	}
 
@@ -657,6 +665,18 @@ PROFILE_POKE(PROF_G);
 		{
 			// We fell of a ledge. eat a jump so that you can't fall->jump->jump to get further.
 			jump_count++;
+		}
+	}
+
+	if (dash_time == 0)
+	{
+		if (pad_all & PAD_LEFT)
+		{
+			player1.dir_x = -1;
+		}
+		else if (pad_all & PAD_RIGHT)
+		{
+			player1.dir_x = 1;
 		}
 	}
 

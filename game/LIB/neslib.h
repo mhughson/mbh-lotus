@@ -294,6 +294,8 @@ void __fastcall__ delay(unsigned char frames);
 
 #define MAX(x1,x2)		((x1)<(x2)?(x2):(x1))
 #define MIN(x1,x2)		((x1)<(x2)?(x1):(x2))
+#define ABS(x)          ((x)<0 ? -(x) : (x))
+#define SIGN(x)         ((x)<0 ? -1 : 1)
 
 #define MASK_SPR		0x10
 #define MASK_BG			0x08
