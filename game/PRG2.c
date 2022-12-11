@@ -27,6 +27,7 @@ const unsigned char (* const metatile_sets[9])[128*META_TILE_NUM_BYTES] =
 
 void stream_in_next_level()
 {
+	static unsigned long player_steps;
 	/*
 	How to support scrolling in levels not divisible by 512:
 	eg. A B A | A | A B A B A
@@ -73,6 +74,13 @@ void stream_in_next_level()
 		// first frame is not missing the player.
 		banked_call(BANK_1, draw_player_static);
 
+		// Calculate how far the player needs to travel, and then divide that by the 
+		// number of steps the camera will take during the transition, and that is
+		// how much the player should move each frame.
+		// NOTE: The number of steps (64) is NOT wrapped in FP_WHOLE because we want
+		//		 to divide FP distance into 64 chunks, not into (64<<16) chunks.
+		player_steps = ((player1.pos_x % FP_WHOLE(256)) - FP_WHOLE(16)) / (256 / SCROLL_SPEED);
+
 		// We know that the camera is right at the edge of the screen, just by the
 		// nature of the camera system, and so as a result, we know that we need to
 		// scroll 256 pixels to scroll the next room fully into view.
@@ -95,10 +103,8 @@ void stream_in_next_level()
 			// Start moving stuff after streaming in 1 column so that we don't see 
 			// the first column appear after the camera has already moved.
 
-			// desired distance (216) / 64 steps = 3.375
-			// Is dependant on SCROLL_SPEED being 4. If that changes,
-			// then the number of "steps" should be re-calculated.
-			player1.pos_x -= (FP_WHOLE(3) + FP_0_18 + FP_0_15);
+			// Slowly move the player towards the destination.
+			player1.pos_x -= (player_steps);
 
 			// Draw the player without updating the animation, as it looks
 			// weird if they "moon walk" across the screen.
@@ -175,6 +181,8 @@ void stream_in_next_level()
 		// first frame is not missing the player.
 		banked_call(BANK_1, draw_player_static);
 
+		player_steps = ((FP_WHOLE(cur_room_width_pixels - 32) % FP_WHOLE(256)) - (player1.pos_x % FP_WHOLE(256))) / (256 / SCROLL_SPEED);
+
 		// We know that the camera is right at the edge of the screen, just by the
 		// nature of the camera system, and so as a result, we know that we need to
 		// scroll 256 pixels to scroll the next room fully into view.
@@ -197,10 +205,7 @@ void stream_in_next_level()
 			// Start moving stuff after streaming in 1 column so that we don't see 
 			// the first column appear after the camera has already moved.
 
-			// desired distance (216) / 64 steps = 3.375
-			// Is dependant on SCROLL_SPEED being 4. If that changes,
-			// then the number of "steps" should be re-calculated.
-			player1.pos_x += (FP_WHOLE(3) + FP_0_18 + FP_0_05 + FP_0_05);
+			player1.pos_x += player_steps;
 
 			// Draw the player without updating the animation, as it looks
 			// weird if they "moon walk" across the screen.
