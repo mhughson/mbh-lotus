@@ -31,7 +31,7 @@ typedef struct anim_def
 // Helpers to make things easier to move around.
 #define CHR_SIDE 4
 #define CHR_SIDE_DASH 6
-#define CHR_TD 13
+#define CHR_TD 12
 
 const anim_def idle_right = { 20, 4, { 0, 1, 2, 3 }, CHR_SIDE };
 const anim_def walk_right = { 7, 4, { 4, 5, 6, 5 }, CHR_SIDE };

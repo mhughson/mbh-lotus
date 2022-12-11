@@ -40,8 +40,8 @@ const unsigned char x_collision_offsets[NUM_X_COLLISION_OFFSETS] = { 0, 12 };
 
 const unsigned char bg_bank_sets[NUM_BG_BANK_SETS][NUM_BG_BANKS] =
 {
-	{ 3, 8, 9, 10 },
-	{ 27, 28, 29, 30 },
+	{ 3, 8, 10, 20 },
+	{ 26, 28, 30, 32 },
 };
 
 unsigned char irq_array[32];
@@ -131,7 +131,11 @@ PROFILE_POKE(PROF_R)
 		{
 			// TODO: Eventually we might want to support setting the other parts of
 			// 		 VRAM as well.
-			set_chr_mode_0(chr_index_queued);
+			set_chr_mode_2(chr_index_queued);
+			// HACK: Currently the sprites assume 2k of VRAM. Eventually
+			//		 we will want to redo the metasprites to operate on
+			//	 	 1k slices to make better use of the space.
+			set_chr_mode_3(chr_index_queued + 1);
 			chr_index_queued = 0xff;
 		}
 
@@ -157,7 +161,9 @@ PROFILE_POKE(PROF_R)
 				if (tick_count % 32 == 0)
 				{
 					cur_bg_bank = (cur_bg_bank + 1) % 4;
-					set_chr_mode_5(bg_bank_sets[cur_room_metatile_index][cur_bg_bank]);
+					// The second half of the background CHR is 
+					// used for animations.
+					set_chr_mode_1(bg_bank_sets[cur_room_metatile_index][cur_bg_bank]);
 				}
 
 				// store the camera position at the start of the frame, so that
@@ -1119,19 +1125,10 @@ void go_to_state(unsigned char new_state)
 			fade_to_black();
 			ppu_off();
 			scroll(0,0);		
-//			set_chr_bank_0(2);	
 
-/*
-;mode 2 changes $0000-$03FF
-;mode 3 changes $0400-$07FF
-;mode 4 changes $0800-$0BFF
-;mode 5 changes $0C00-$0FFF
-*/	
-
-			set_chr_mode_2(16);
-			set_chr_mode_3(17);
-			set_chr_mode_4(18);
-			set_chr_mode_5(19);
+			// Title screen graphics into the BG VRAM.
+			set_chr_mode_0(16);
+			set_chr_mode_1(18);
 
 			cur_room_index = 0;
 
@@ -1246,19 +1243,15 @@ void set_chr_bank_for_current_room()
 	{
 		case 0:
 		{
-			set_chr_mode_2(0);
-			set_chr_mode_3(1);
-			set_chr_mode_4(2);
-			set_chr_mode_5(3);
+			set_chr_mode_0(0);
+			set_chr_mode_1(2);
 			break;
 		}
 
 		case 1:
 		{
-			set_chr_mode_2(24);
-			set_chr_mode_3(25);
-			set_chr_mode_4(26);
-			set_chr_mode_5(27);	
+			set_chr_mode_0(24);
+			set_chr_mode_1(26);
 			break;
 		}
 	}	

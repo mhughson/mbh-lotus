@@ -1,6 +1,6 @@
 
 
-.define A12_INVERT $80
+.define A12_INVERT $0
 ;values 0 or $80, for the $8000 register
 ;(changes in tileset mapping)
 
