@@ -419,9 +419,7 @@ PROFILE_POKE(PROF_G);
 	// NOT dashing.
 	if (dash_time == 0)
 	{
-		if (pad_all & PAD_LEFT && 
-			high_2byte(player1.pos_x) - cam.pos_x >= (high_walk_speed + 8) &&
-			player1.pos_x >= WALK_SPEED + FP_WHOLE(8))
+		if (pad_all & PAD_LEFT)
 		{
 			player1.vel_x = -WALK_SPEED;
 		}
@@ -437,7 +435,12 @@ PROFILE_POKE(PROF_G);
 	// move the position by that velocity now.
 	if (player1.vel_x != 0)
 	{
-		player1.pos_x += player1.vel_x;
+		// Don't move the player if we are approaching an edge.
+		if ((player1.vel_x < 0 && player1.pos_x >= (ABS(player1.vel_x) + FP_WHOLE(4))) || 
+		    (player1.vel_x > 0 && (player1.pos_x + player1.vel_x + FP_WHOLE(16) ) <= FP_WHOLE(cur_room_width_pixels)) )
+		{
+			player1.pos_x += player1.vel_x;
+		}
 
 		// track if the player hit a spike.
 		hit_kill_box = 0;
@@ -452,7 +455,7 @@ PROFILE_POKE(PROF_G);
 			// low byte is the fraction.
 			if (player1.vel_x < 0)
 			{
-				x = (high_2byte(player1.pos_x) + x_collision_offsets[0] - 1) >> 4;
+				x = (high_2byte(player1.pos_x) + x_collision_offsets[0]) >> 4;
 			}
 			else
 			{
