@@ -180,8 +180,26 @@ void load_and_process_map()
 						player1.pos_y = FP_WHOLE((loaded_obj_y * 16) - 4);
 					}
 
-					player1.dir_x = 1;
+					// For the overworld, we just keep the dir what it was, and that should
+					// point the player in the right direction, but for the side scrolling
+					// levels, they enter on the extreme ends of the levels and so we just
+					// face them away from the edge that will exit.
+					if (cur_room_type == 0)
+					{
+						player1.dir_x = 1;
+
+						// We consider anything beyond the half way point of the first screen
+						// to be on the right side of the level.
+						if (player1.pos_x > FP_WHOLE(128))
+						{
+							player1.dir_x = -1;
+						}
+
+						dash_time = 0;
+					}
 					player1.dir_y = 1;
+					player1.vel_x = 0;
+					player1.vel_y = 0;
 				}
 				break;
 			}

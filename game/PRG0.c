@@ -189,9 +189,13 @@ PROFILE_POKE(PROF_B);
 						{
 							case TRIG_TRANS_POINT:
 							{
-								if ((pad_all_new & PAD_UP || cur_room_type == 1) &&
-									(high_2byte(player1.pos_x) + y_collision_offsets[1] ) / 16 == trig_objs.pos_x_tile[local_i] &&
-									high_2byte(player1.pos_y) / 16 == trig_objs.pos_y_tile[local_i])
+								// For side scrolling levels, we only care about the X collision, so that the
+								// transition happens for the entire height of the screen.
+								// This means that we want to add "doors" again, they will need to restore the
+								// Y check, or be a new TRIG type (which also require UP to be pressed).
+								if ((high_2byte(player1.pos_x) + 8) / 16 == trig_objs.pos_x_tile[local_i] &&
+									(cur_room_type == 0 ||
+									(high_2byte(player1.pos_y) + 8) / 16 == trig_objs.pos_y_tile[local_i]))
 								{
 									cur_state = 0xff;
 									// right 5 bits are destination level (max value 31)
@@ -212,8 +216,8 @@ PROFILE_POKE(PROF_B);
 								// are hidden so it needs to collide sooner.
 								index = 1;
 								if (pad_all & PAD_LEFT) index = 0;
-								if ((high_2byte(player1.pos_x) + y_collision_offsets[index] ) / 16 == trig_objs.pos_x_tile[local_i] &&
-									high_2byte(player1.pos_y) / 16 == trig_objs.pos_y_tile[local_i])
+								// NOTE: Only checking for X collision so that this spans the height of the screen.
+								if ((high_2byte(player1.pos_x) + y_collision_offsets[index] ) / 16 == trig_objs.pos_x_tile[local_i])
 								{
 									// Figure out if we are headed left or right based on the position in world.
 									if (trig_objs.pos_x_tile[local_i] > 8)

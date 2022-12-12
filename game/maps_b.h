@@ -54,12 +54,12 @@ const unsigned char map_gym_03[270] =
 
 //Objects: (type, tile_x, tile_y, payload) 
 0, 1, 7, 0,
-1, 1, 6, 0,
+1, 0, 7, 0,
 2, 15, 6, 2,
 0xff, 0xff, 0xff, 0xff 
 };
 
-const unsigned char map_gym_02[512] = 
+const unsigned char map_gym_02[504] = 
 {
 
 //BG PAL:
@@ -128,14 +128,12 @@ const unsigned char map_gym_02[512] =
 0xff, 0xff, 
 
 //Objects: (type, tile_x, tile_y, payload) 
-0, 22, 9, 0,
-1, 22, 8, 34,
 2, 0, 6, 1,
 2, 31, 6, 3,
 0xff, 0xff, 0xff, 0xff 
 };
 
-const unsigned char map_gym_01[998] = 
+const unsigned char map_gym_01[990] = 
 {
 
 //BG PAL:
@@ -234,10 +232,8 @@ const unsigned char map_gym_01[998] =
 959, 1, 0xff, 0xff, 
 
 //Objects: (type, tile_x, tile_y, payload) 
-1, 12, 5, 2,
-0, 12, 6, 1,
 2, 0, 6, 2,
-1, 62, 6, 32,
+1, 63, 7, 32,
 0, 62, 7, 0,
 0xff, 0xff, 0xff, 0xff 
 };

@@ -33,40 +33,6 @@
          "objects":[
                 {
                  "height":16,
-                 "id":3,
-                 "name":"trans_point",
-                 "properties":[
-                        {
-                         "name":"payload",
-                         "type":"int",
-                         "value":2
-                        }],
-                 "rotation":0,
-                 "type":"trans_point",
-                 "visible":true,
-                 "width":16,
-                 "x":192,
-                 "y":80
-                }, 
-                {
-                 "height":16,
-                 "id":4,
-                 "name":"player_spawn_point",
-                 "properties":[
-                        {
-                         "name":"payload",
-                         "type":"int",
-                         "value":1
-                        }],
-                 "rotation":0,
-                 "type":"player_spawn_point",
-                 "visible":true,
-                 "width":16,
-                 "x":192,
-                 "y":96
-                }, 
-                {
-                 "height":16,
                  "id":5,
                  "name":"trans_edge",
                  "properties":[
@@ -96,8 +62,8 @@
                  "type":"trans_point",
                  "visible":true,
                  "width":16,
-                 "x":992,
-                 "y":96
+                 "x":1008,
+                 "y":112
                 }, 
                 {
                  "height":16,
