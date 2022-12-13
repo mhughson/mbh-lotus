@@ -18,6 +18,8 @@
 //
 
 unsigned char tick_count;
+unsigned int tick_count16;
+unsigned int ticks_in_state16;
 unsigned char pad_all;
 unsigned char pad_all_new;
 unsigned int cur_col;
@@ -33,6 +35,7 @@ unsigned char tempFlags;
 unsigned char ticks_since_attack = 0xff;
 unsigned char nametable_col[36];
 unsigned char nametable_col_b[36];
+unsigned char irq_index;
 unsigned int cam_x;
 unsigned int cam_y;
 unsigned int old_cam_x;

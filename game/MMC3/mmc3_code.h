@@ -1,6 +1,46 @@
 // Contains functions to help with working with multiple PRG/CHR banks
 // For MMC3 code.
 
+
+// format
+// value < 0xf0, it's a scanline count
+// zero is valid, it triggers an IRQ at the end of the current line
+
+// if >= 0xf0...
+// f0 = 2000 write, next byte is write value
+// f1 = 2001 write, next byte is write value
+// f2-f4 unused - future TODO ?
+// f5 = 2005 write, next byte is H Scroll value
+// f6 = 2006 write, next 2 bytes are write values
+
+// f7 = change CHR mode 0, next byte is write value
+// f8 = change CHR mode 1, next byte is write value
+// f9 = change CHR mode 2, next byte is write value
+// fa = change CHR mode 3, next byte is write value
+// fb = change CHR mode 4, next byte is write value
+// fc = change CHR mode 5, next byte is write value
+
+// fd = very short wait, no following byte 
+// fe = short wait, next byte is quick loop value
+// (for fine tuning timing of things)
+
+// ff = end of data set
+
+// IRQ COMMANDS
+#define IRQ_CHR_BANK(bank_num) (bank_num)
+#define IRQ_SCANLINE(line_num) (line_num)
+#define IRQ_WRITE_2000 (0xf0) 
+#define IRQ_WRITE_2001 (0xf1) 
+#define IRQ_H_SCROLL (0xf5)
+#define IRQ_SET_PPU_ADDR (0xf6)
+#define IRQ_CHR_MODE_0 (0xf7)
+#define IRQ_CHR_MODE_1 (0xf8)
+#define IRQ_CHR_MODE_2 (0xf9)
+#define IRQ_CHR_MODE_3 (0xfa)
+#define IRQ_CHR_MODE_4 (0xfb)
+#define IRQ_CHR_MODE_5 (0xfc)
+#define IRQ_END (0xff)
+
 // Maximum level of recursion to allow with banked_call and similar functions.
 #define MAX_BANK_DEPTH 10
 

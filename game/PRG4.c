@@ -15,6 +15,10 @@ void load_screen_title()
 {
 	vram_adr(NTADR_A(0,0));
     vram_unrle(screen_title);
+    // Load it into both nametables so that the h_scroll split
+    // loops nicely.
+	vram_adr(NTADR_B(0,0));
+    vram_unrle(screen_title);
 }
 
 void load_screen_gameover()

@@ -96,6 +96,42 @@
 #define QUEUE_DRAW_ROW_ATTR 3
 #define QUEUE_DRAW_COL_ATTR 4
 
+// IRQ COMMANDS
+// All IRQ operations should ideally be wrapped in a command to 
+// enforce the byte formats.
+#define IRQ_CMD(cmd) irq_array_buffer[irq_index++] = (cmd);
+
+#define IRQ_CMD_BEGIN irq_index = 0;
+
+#define IRQ_CMD_SCANLINE(line_num) 	IRQ_CMD(IRQ_SCANLINE(line_num));
+
+#define IRQ_CMD_WRITE_2000(val) 	IRQ_CMD(IRQ_WRITE_2000); \
+									IRQ_CMD(val);
+
+#define IRQ_CMD_WRITE_2001(val) 	IRQ_CMD(IRQ_WRITE_2001); \
+									IRQ_CMD(val);
+
+#define IRQ_CMD_H_SCROLL(scroll_val) IRQ_CMD(IRQ_H_SCROLL); \
+								     IRQ_CMD(scroll_val);
+
+#define IRQ_CMD_CHR_MODE_0(bank_id) IRQ_CMD(IRQ_CHR_MODE_0); \
+									IRQ_CMD(IRQ_CHR_BANK(bank_id));
+#define IRQ_CMD_CHR_MODE_1(bank_id) IRQ_CMD(IRQ_CHR_MODE_1); \
+									IRQ_CMD(IRQ_CHR_BANK(bank_id));
+#define IRQ_CMD_CHR_MODE_2(bank_id) IRQ_CMD(IRQ_CHR_MODE_2); \
+									IRQ_CMD(IRQ_CHR_BANK(bank_id));
+#define IRQ_CMD_CHR_MODE_3(bank_id) IRQ_CMD(IRQ_CHR_MODE_3); \
+									IRQ_CMD(IRQ_CHR_BANK(bank_id));
+#define IRQ_CMD_CHR_MODE_4(bank_id) IRQ_CMD(IRQ_CHR_MODE_4); \
+									IRQ_CMD(IRQ_CHR_BANK(bank_id));
+#define IRQ_CMD_CHR_MODE_5(bank_id) IRQ_CMD(IRQ_CHR_MODE_5); \
+									IRQ_CMD(IRQ_CHR_BANK(bank_id));
+
+#define IRQ_CMD_END IRQ_CMD(IRQ_END);
+
+#define IRQ_CMD_FLUSH memcpy(irq_array, irq_array_buffer, sizeof(irq_array)); 
+
+
 enum
 {
 	ANIM_PLAYER_IDLE = 0,
@@ -193,6 +229,8 @@ typedef struct trigger_objects
 //
 
 extern unsigned char tick_count;
+extern unsigned int tick_count16;
+extern unsigned int ticks_in_state16;
 extern unsigned char pad_all;
 extern unsigned char pad_all_new;
 extern unsigned int index16;
@@ -207,6 +245,7 @@ extern unsigned char ticks_since_attack;
 // temp used for working with a single vertical row of tiles.
 extern unsigned char nametable_col[36];
 extern unsigned char nametable_col_b[36];
+extern unsigned char irq_index;
 
 // inputs for cached camera positions. see "cam" struct for *actual* camera.
 extern unsigned int cam_x;

@@ -45,6 +45,7 @@ const unsigned char bg_bank_sets[NUM_BG_BANK_SETS][NUM_BG_BANKS] =
 };
 
 unsigned char irq_array[32];
+unsigned char irq_array_buffer[32];
 
 #if DEBUG_ENABLED
 // Debug hack to test teleporting around a map.
@@ -65,7 +66,8 @@ void main_real()
 
 	set_mirroring(MIRROR_VERTICAL);
 
-	irq_array[0] = 0xff; // end of data
+	irq_array[0] = IRQ_END; // end of data
+	irq_array_buffer[0] = IRQ_END;
 	set_irq_ptr(irq_array); // point to this array
 	
 	
@@ -121,6 +123,8 @@ void main_real()
 	while (1)
 	{
 		++tick_count;
+		++tick_count16;
+		++ticks_in_state16;
 
 		ppu_wait_nmi(); // wait till beginning of the frame
 PROFILE_POKE(PROF_R)
@@ -159,6 +163,28 @@ PROFILE_POKE(PROF_R)
 						in_destination_spawn_id = checkpoint_spawn_id;
 					}
 					go_to_state(STATE_GAME);
+				}
+				else
+				{
+					IRQ_CMD_BEGIN;
+					
+					// All these command swill run at the start of the frame.
+					// Swap the first 4k section of graphics with the 16th chunk of graphics.
+					IRQ_CMD_CHR_MODE_0(16);
+
+					// All the commands after this point will run after scanline 166 is drawn.
+					IRQ_CMD_SCANLINE(166);
+					// Swap the first 4k section of graphics with the 36th chunk of graphics.
+					IRQ_CMD_CHR_MODE_0(36);
+					// Scroll the screen by 1 pixel every frame (looping every 256 pixels).
+					IRQ_CMD_H_SCROLL(ticks_in_state16 % 256);
+					// Switch to the correct nametable.
+					IRQ_CMD_WRITE_2000(0x88 | (ticks_in_state16 % 512 < 256 ? 0 : 1));
+					// Tint the screen "yellowish".
+					IRQ_CMD_WRITE_2001(PROF_R_TINT | PROF_G_TINT);
+					
+					// Signal the end of the commands.
+					IRQ_CMD_END;
 				}
 				break;
 			}
@@ -351,6 +377,17 @@ PROFILE_POKE(PROF_R);
 		gray_line();
 #endif // DEBUG_ENABLED
 PROFILE_POKE(PROF_CLEAR)
+
+		// wait till the irq system is done before changing it
+		// this could waste a lot of CPU time, so we do it last
+		while(!is_irq_done() ){ // have we reached the 0xff, end of data
+							// is_irq_done() returns zero if not done
+			// do nothing while we wait
+		}
+
+		// copy from double_buffer to the irq_array
+		// memcpy(void *dst,void *src,unsigned int len);
+		memcpy(irq_array, irq_array_buffer, sizeof(irq_array)); 
 	}
 }
 
@@ -1133,6 +1170,8 @@ void go_to_state(unsigned char new_state)
 {
 	cur_state = new_state;
 
+	ticks_in_state16 = 0;
+
 	switch(cur_state)
 	{
 		case STATE_TITLE:
@@ -1150,6 +1189,14 @@ void go_to_state(unsigned char new_state)
 			pal_bg(palette_title);
 			pal_spr(palette_title);
 			banked_call(BANK_4, load_screen_title);
+
+			IRQ_CMD_BEGIN;
+			IRQ_CMD_CHR_MODE_0(16);
+			IRQ_CMD_SCANLINE(166);
+			IRQ_CMD_CHR_MODE_0(36);
+			IRQ_CMD_END;
+			IRQ_CMD_FLUSH;
+
 			ppu_on_all();
 //			music_play(0);
 			fade_from_black();
@@ -1160,7 +1207,17 @@ void go_to_state(unsigned char new_state)
 		case STATE_GAME:
 		{
 			fade_to_black();
+
+			// I am able to comment this out and the irq stuff still gets cleared out properly
+			// but I think that is just luck. Not sure though.
+			while(!is_irq_done()) {} 
+			
 			ppu_off();
+
+			// Clear out any IRQ tasks before kicking off the next section.
+			irq_array[0] = 0xff;
+			irq_array_buffer[0] = 0xff;
+
 			music_stop();
 			scroll(0,0);
 			cam.pos_x = 0;
