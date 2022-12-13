@@ -364,6 +364,12 @@ PROFILE_POKE(PROF_R);
 			{
 				if (pad_all_new & PAD_ANY_CONFIRM_BUTTON)
 				{
+					// Go back to the last checkpoint.
+					if (checkpoint_room_index != 0xff && checkpoint_spawn_id != 0xff)
+					{
+						cur_room_index = checkpoint_room_index;
+						in_destination_spawn_id = checkpoint_spawn_id;
+					}
 					go_to_state(STATE_GAME);
 				}
 				else if (pad_all_new & PAD_B)
