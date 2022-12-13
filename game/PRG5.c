@@ -136,6 +136,14 @@ void load_and_process_map()
 	cur_room_height_pixels = cur_room_height_tiles * 16;
     cur_room_size_tiles = cur_room_width_tiles * cur_room_height_tiles;
 
+	// When loading into a level without streaming, that is a good spot to have an
+	// automated checkpoint.
+	if (!in_is_streaming)
+	{
+		checkpoint_room_index = cur_room_index;
+		checkpoint_spawn_id = in_destination_spawn_id;
+	}
+
 	banked_call(BANK_2, set_metatile_set);
 	banked_call(BANK_0, set_chr_bank_for_current_room);
 

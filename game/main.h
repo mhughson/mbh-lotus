@@ -314,6 +314,8 @@ extern unsigned char chr_index_queued;
 extern unsigned char save_version_validation[NUM_SAVE_VERSION_VALIDATION];
 extern unsigned char current_room[MAX_ROOM_NUM_TILES];
 extern unsigned char cur_metatiles[META_TILE_SET_NUM_BYTES];
+extern unsigned char checkpoint_room_index;
+extern unsigned char checkpoint_spawn_id;
 
 // Functions
 //

@@ -88,6 +88,9 @@ void main_real()
 			}
 
 			// SET NON-ZERO DEFAULT VALUES HERE.
+			
+			checkpoint_room_index = 0xff;
+			checkpoint_spawn_id = 0xff;
 
 			break;
 		}
@@ -150,6 +153,11 @@ PROFILE_POKE(PROF_R)
 			{
 				if (pad_all_new & PAD_ANY_CONFIRM_BUTTON)
 				{
+					if (checkpoint_room_index != 0xff && checkpoint_spawn_id != 0xff)
+					{
+						cur_room_index = checkpoint_room_index;
+						in_destination_spawn_id = checkpoint_spawn_id;
+					}
 					go_to_state(STATE_GAME);
 				}
 				break;

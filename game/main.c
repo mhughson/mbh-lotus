@@ -109,6 +109,8 @@ unsigned char chr_index_queued;
 unsigned char save_version_validation[NUM_SAVE_VERSION_VALIDATION];
 unsigned char current_room[MAX_ROOM_NUM_TILES];
 unsigned char cur_metatiles[META_TILE_SET_NUM_BYTES];
+unsigned char checkpoint_room_index;
+unsigned char checkpoint_spawn_id;
 #pragma bss-name(pop)
 
 #pragma rodata-name ("CODE")
