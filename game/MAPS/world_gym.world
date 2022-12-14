@@ -20,6 +20,13 @@
             "width": 256,
             "x": 0,
             "y": 0
+        },
+        {
+            "fileName": "map_gym_05.json",
+            "height": 240,
+            "width": 256,
+            "x": 1792,
+            "y": 0
         }
     ],
     "onlyShowAdjacentMaps": false,

@@ -84,7 +84,7 @@
                         {
                          "name":"payload",
                          "type":"int",
-                         "value":3
+                         "value":4
                         }],
                  "rotation":0,
                  "type":"trans_point",

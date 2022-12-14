@@ -281,7 +281,7 @@ const unsigned char map_gym_over_02[3872] =
 0, 10, 3, 0,
 1, 11, 3, 1,
 0, 17, 2, 1,
-1, 16, 2, 3,
+1, 16, 2, 4,
 0xff, 0xff, 0xff, 0xff 
 };
 

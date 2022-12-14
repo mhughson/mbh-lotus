@@ -34,7 +34,7 @@
 #define SAVE_VERSION 1
 // The number of bytes that should contain the SAVE_VERSION at the 
 // start of XRAM to confirm that this is valid save data.
-#define NUM_SAVE_VERSION_VALIDATION 4
+#define NUM_SAVE_VERSION_VALIDATION 1
 
 #define NUM_BG_BANKS 4 // MUST BE POWER OF 2
 #define NUM_BG_BANK_SETS 2

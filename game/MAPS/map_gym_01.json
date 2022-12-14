@@ -50,30 +50,19 @@
                 }, 
                 {
                  "height":16,
-                 "id":6,
-                 "name":"trans_point",
+                 "id":8,
+                 "name":"trans_edge",
                  "properties":[
                         {
                          "name":"payload",
                          "type":"int",
-                         "value":32
+                         "value":4
                         }],
                  "rotation":0,
-                 "type":"trans_point",
+                 "type":"trans_edge",
                  "visible":true,
                  "width":16,
                  "x":1008,
-                 "y":112
-                }, 
-                {
-                 "height":16,
-                 "id":7,
-                 "name":"player_spawn_point",
-                 "rotation":0,
-                 "type":"player_spawn_point",
-                 "visible":true,
-                 "width":16,
-                 "x":992,
                  "y":112
                 }],
          "opacity":1,
@@ -83,7 +72,7 @@
          "y":0
         }],
  "nextlayerid":4,
- "nextobjectid":8,
+ "nextobjectid":9,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.7.0",
