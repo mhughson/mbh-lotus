@@ -10,6 +10,7 @@
 
 #include "NES_ST/meta_player.h"
 #include "NES_ST/meta_player_td.h"
+#include "NES_ST/meta_enemies.h"
 
 typedef struct anim_def
 {
@@ -32,6 +33,7 @@ typedef struct anim_def
 #define CHR_SIDE 4
 #define CHR_SIDE_DASH 6
 #define CHR_TD 12
+#define CHR_SKEL 14
 
 const anim_def idle_right = { 20, 4, { 0, 1, 2, 3 }, CHR_SIDE };
 const anim_def walk_right = { 7, 4, { 4, 5, 6, 5 }, CHR_SIDE };
@@ -48,6 +50,9 @@ const anim_def walk_down_td 	= { 20, 2, { 0, 1 }, CHR_TD };
 const anim_def walk_right_td 	= { 20, 2, { 5, 6 }, CHR_TD };
 const anim_def walk_up_td 		= { 20, 2, { 10, 11 }, CHR_TD };
 const anim_def walk_left_td 	= { 20, 2, { 15, 16 }, CHR_TD };
+
+const anim_def skel_walk_right	= { 20, 2, { 0, 1 }, CHR_SKEL};
+
 const struct anim_def* sprite_anims[] =
 {
 	&idle_right,
@@ -68,6 +73,8 @@ const struct anim_def* sprite_anims[] =
 	&walk_right_td,
 	&walk_up_td ,
 	&walk_left_td ,
+
+	&skel_walk_right,
 };
 
 unsigned char update_anim()
@@ -139,4 +146,34 @@ void draw_player_td()
 		high_2byte(player1.pos_x) - cam.pos_x, 
 		high_2byte(player1.pos_y) - 1 - cam.pos_y,
 		meta_player_td_list[sprite_anims[player1.sprite.anim.anim_current]->frames[player1.sprite.anim.anim_frame]]);
+}
+
+void draw_skeleton()
+{
+	global_working_anim = &dynamic_objs.sprite[in_dynamic_obj_index].anim;
+	update_anim();
+
+	// At the start of the next frame, when this oam data will be display, swap to the correct
+	// sprite VRAM data.
+
+	// TODO: load into other slots.
+	chr_3_index_queued = sprite_anims[global_working_anim->anim_current]->chr_index;
+
+//	if (high_2byte(player1.pos_y) < 240 || high_2byte(player1.pos_y) > (0xffff - 16))
+	{
+		if (dynamic_objs.dir_x[in_dynamic_obj_index] < 0)
+		{
+			in_oam_x = high_2byte(dynamic_objs.pos_x[in_dynamic_obj_index]) - cam.pos_x;
+			in_oam_y = high_2byte(dynamic_objs.pos_y[in_dynamic_obj_index]) - 1 - cam.pos_y;
+			in_oam_data = meta_enemies_list[sprite_anims[global_working_anim->anim_current]->frames[global_working_anim->anim_frame]];
+			c_oam_meta_spr_flipped();
+		}
+		else // NOTE: This assumes left/right only.
+		{		
+			oam_meta_spr(
+				high_2byte(dynamic_objs.pos_x[in_dynamic_obj_index]) - cam.pos_x,
+				high_2byte(dynamic_objs.pos_y[in_dynamic_obj_index]) - 1 - cam.pos_y,
+				meta_enemies_list[sprite_anims[dynamic_objs.sprite[in_dynamic_obj_index].anim.anim_current]->frames[dynamic_objs.sprite[in_dynamic_obj_index].anim.anim_frame]]);
+		}
+	}	
 }

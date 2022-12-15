@@ -24,7 +24,7 @@ const unsigned char BG_palettes[][16] =
 
 const unsigned char SPR_palettes[][16] =
 {
-	{ 0x0f,0x04,0x23,0x38,0x0f,0x16,0x26,0x36,0x0f,0x17,0x27,0x37,0x0f,0x18,0x28,0x38 }
+	{ 0x24,0x04,0x23,0x38,0x24,0x04,0x27,0x38,0x24,0x13,0x23,0x33,0x24,0x14,0x24,0x34 },
 };
 
 const unsigned char palette_title[16]={ 0x0f,0x15,0x25,0x30,0x0f,0x13,0x25,0x30,0x0f,0x06,0x16,0x26,0x0f,0x09,0x19,0x29 };
@@ -57,6 +57,7 @@ unsigned int debug_pos_start;
 
 void kill_player();
 void update_player();
+void update_skeleton();
 
 void main_real()
 {
@@ -144,6 +145,12 @@ PROFILE_POKE(PROF_R)
 			//	 	 1k slices to make better use of the space.
 			set_chr_mode_3(chr_index_queued + 1);
 			chr_index_queued = 0xff;
+		}
+
+		if (chr_3_index_queued != 0xff)
+		{
+			set_chr_mode_4(chr_3_index_queued);
+			chr_3_index_queued = 0xff;
 		}
 
 		pad_all = pad_poll(0) | pad_poll(1); // read the first controller
@@ -276,6 +283,31 @@ PROFILE_POKE(PROF_B);
 						}
 					}
 				}
+
+				// update the trigger objects.
+				for (local_i = 0; local_i < MAX_DYNAMIC_OBJS; ++local_i)
+				{
+					if (dynamic_objs.type[local_i] != TRIG_UNUSED)
+					{
+						switch (dynamic_objs.type[local_i])
+						{
+							case TRIG_SKELETON:
+							{
+								in_dynamic_obj_index = local_i;
+								update_skeleton();
+
+								anim_index = ANIM_SKEL_WALK_RIGHT;
+								global_working_anim = &dynamic_objs.sprite[local_i].anim;
+								queue_next_anim(anim_index);
+								commit_next_anim();
+
+								in_dynamic_obj_index = local_i;
+								banked_call(BANK_1, draw_skeleton);
+								break;
+							}
+						}
+					}
+				}				
 PROFILE_POKE(PROF_R);				
 
 				// Handle case where the state changed in update_player()
@@ -380,7 +412,7 @@ PROFILE_POKE(PROF_R);
 			}
 		}
 #if DEBUG_ENALBED
-		gray_line();
+		//gray_line();
 #endif // DEBUG_ENABLED
 PROFILE_POKE(PROF_CLEAR)
 
@@ -1230,6 +1262,7 @@ void go_to_state(unsigned char new_state)
 
 			// Clear the queue to load sprite data.
 			chr_index_queued = 0xff;
+			chr_3_index_queued = 0xff;
 
 // #if DEBUG_ENABLED
 // 			player1.pos_x = FP_WHOLE(debug_pos_start);
@@ -1341,4 +1374,31 @@ void load_level_pal()
 
 	pal_bg(BG_palettes[index]);
 	pal_spr(SPR_palettes[index2]);
+}
+
+void update_skeleton()
+{
+	static unsigned char local_offset;
+
+	PROFILE_POKE(PROF_G);
+
+	dynamic_objs.pos_x[in_dynamic_obj_index] += FP_0_25 * dynamic_objs.dir_x[in_dynamic_obj_index];
+
+	local_offset = 0;
+	if (dynamic_objs.dir_x[in_dynamic_obj_index] > 0)
+	{
+		local_offset = 1;
+	}
+
+	index16 = GRID_XY_TO_ROOM_INDEX((high_2byte(dynamic_objs.pos_x[in_dynamic_obj_index]) / 16) + local_offset, high_2byte(dynamic_objs.pos_y[in_dynamic_obj_index]) / 16);
+
+	tempFlags = GET_META_TILE_FLAGS(index16);
+
+	// Check if that point is in a solid metatile
+	if (tempFlags & FLAG_SOLID)
+	{
+		dynamic_objs.dir_x[in_dynamic_obj_index] *= -1;
+	}
+
+	PROFILE_POKE(PROF_B);
 }

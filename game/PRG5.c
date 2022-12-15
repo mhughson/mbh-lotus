@@ -106,6 +106,7 @@ void get_cur_room_dimensions()
 void load_and_process_map()
 {
 	static unsigned char local_index;
+	static unsigned char local_dynamic_index;
 
 	get_cur_room_dimensions();
     cur_room_width_tiles = index;
@@ -168,10 +169,12 @@ void load_and_process_map()
 	} while (loaded_obj_id != 0xff);
 	
 	/* TODO: Confirm that sizeof() is returning the size of all elements. */
-	memfill(&trig_objs, 0, sizeof(trig_objs));
+	memfill(&trig_objs, TRIG_UNUSED, sizeof(trig_objs));
+	memfill(&dynamic_objs, TRIG_UNUSED, sizeof(dynamic_actors));
 
 	/* track the index of the last added object to fill the array up. */
 	local_index = 0;
+	local_dynamic_index = 0;
 	do
 	{
 		get_next_object();
@@ -222,6 +225,19 @@ void load_and_process_map()
 
 				++local_index;
 				break;
+			}
+
+			case TRIG_SKELETON:
+			{
+				dynamic_objs.type[local_dynamic_index] = loaded_obj_id;
+				dynamic_objs.pos_x[local_dynamic_index] = FP_WHOLE(loaded_obj_x * 16);
+				dynamic_objs.pos_y[local_dynamic_index] = FP_WHOLE(loaded_obj_y * 16);
+				dynamic_objs.dir_x[local_dynamic_index] = -1;
+				dynamic_objs.dir_y[local_dynamic_index] = -1;
+				dynamic_objs.payload[local_dynamic_index] = loaded_obj_payload;
+				++local_dynamic_index;
+				break;
+
 			}
 			
 			default:

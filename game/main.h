@@ -8,7 +8,7 @@
 #define DEBUG_ENABLED 1
 
 #if DEBUG_ENABLED
-#define PROFILE_POKE(val) // POKE((0x2001),(val));
+#define PROFILE_POKE(val) //POKE((0x2001),(val));
 #else
 #define PROFILE_POKE(val)
 #endif
@@ -149,6 +149,8 @@ enum
 	ANIM_WALK_UP_TD ,
 	ANIM_WALK_LEFT_TD ,
 
+	ANIM_SKEL_WALK_RIGHT,
+
 	NUM_ANIMS,
 };
 
@@ -206,11 +208,13 @@ typedef struct game_actor
 	signed char dir_y;
 } game_actor;
 
+
 typedef enum TRIGGER_OBJECT_TYPES
 {
 	TRIG_PLAYER_SPAWN_POINT = 0,
 	TRIG_TRANS_POINT,
 	TRIG_TRANS_EDGE,
+	TRIG_SKELETON,
 
 	TRIG_UNUSED = 0xff,
 } TRIGGER_OBJECT_TYPES;
@@ -224,6 +228,22 @@ typedef struct trigger_objects
 	unsigned char payload[MAX_TRIGGERS];	
 } trigger_objects;
 
+
+#define MAX_DYNAMIC_OBJS (8)
+typedef struct dynamic_actors
+{
+	animated_sprite sprite[MAX_DYNAMIC_OBJS];
+
+	unsigned long pos_x[MAX_DYNAMIC_OBJS];
+	unsigned long pos_y[MAX_DYNAMIC_OBJS];
+
+	signed char dir_x[MAX_DYNAMIC_OBJS];
+	signed char dir_y[MAX_DYNAMIC_OBJS];
+
+	TRIGGER_OBJECT_TYPES type[MAX_DYNAMIC_OBJS];
+
+	unsigned char payload[MAX_DYNAMIC_OBJS];	
+} dynamic_actors;
 
 // RAM
 //
@@ -263,7 +283,7 @@ extern unsigned int draw_queue[DRAW_QUEUE_SIZE];
 // At some point I think I will need to keep the current 2 nametables of level data in RAM, so that I can
 // edit it on the fly (eg. destructable blocks). Reserving it for now, since this is a large chunk of memory
 // that will be challenging to peel back after its used.
-#define RAINY_DAY_RAM_SIZE (400)
+#define RAINY_DAY_RAM_SIZE (200)
 extern unsigned char rainy_day_ram[RAINY_DAY_RAM_SIZE];
 
 
@@ -283,6 +303,8 @@ extern unsigned char in_is_streaming;
 extern unsigned char in_destination_spawn_id;
 extern unsigned char in_stream_direction;
 
+extern unsigned char in_dynamic_obj_index;
+
 extern unsigned char out_num_tiles;
 
 // Used by the anim functions to avoid passing in a parameter.
@@ -291,6 +313,7 @@ extern anim_info* global_working_anim;
 extern game_actor player1;
 extern camera cam;
 extern trigger_objects trig_objs;
+extern dynamic_actors dynamic_objs;
 
 extern unsigned char cur_state;
 
@@ -343,6 +366,7 @@ extern unsigned char dash_time;
 extern unsigned char dash_count;
 
 extern unsigned char chr_index_queued;
+extern unsigned char chr_3_index_queued;
 
 // XRAM
 //

@@ -58,6 +58,7 @@ const unsigned char *in_oam_data;
 unsigned char in_is_streaming;
 unsigned char in_destination_spawn_id;
 unsigned char in_stream_direction;
+unsigned char in_dynamic_obj_index;
 
 unsigned char out_num_tiles;
 
@@ -65,6 +66,7 @@ anim_info* global_working_anim;
 game_actor player1;
 camera cam;
 trigger_objects trig_objs;
+dynamic_actors dynamic_objs;
 
 unsigned char cur_state;
 unsigned char cur_room_index;
@@ -105,6 +107,7 @@ unsigned char dash_time;
 unsigned char dash_count;
 
 unsigned char chr_index_queued;
+unsigned char chr_3_index_queued;
 
 #pragma bss-name(push, "XRAM")
 // extra RAM at $6000-$7fff

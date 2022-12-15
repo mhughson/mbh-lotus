@@ -51,6 +51,7 @@ object_type_name_mapping = {
     "player_spawn_point" : "0",
     "trans_point" : "1",
     "trans_edge" : "2",
+    "skeleton" : "3",
 }
 
 flag_names = [
