@@ -150,6 +150,7 @@ enum
 	ANIM_WALK_LEFT_TD ,
 
 	ANIM_SKEL_WALK_RIGHT,
+	ANIM_SKEL_SQUISHED,
 
 	NUM_ANIMS,
 };
@@ -243,6 +244,8 @@ typedef struct dynamic_actors
 	TRIGGER_OBJECT_TYPES type[MAX_DYNAMIC_OBJS];
 
 	unsigned char payload[MAX_DYNAMIC_OBJS];	
+
+	unsigned char dead_time[MAX_DYNAMIC_OBJS];
 } dynamic_actors;
 
 // RAM
@@ -385,7 +388,6 @@ extern unsigned char checkpoint_spawn_id;
 
 void queue_next_anim(unsigned char next_anim_index);
 void commit_next_anim();
-void c_oam_meta_spr_flipped(void);
 
 #define FADE_DELAY 2
 void fade_to_black();

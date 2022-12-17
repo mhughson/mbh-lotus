@@ -235,6 +235,7 @@ void load_and_process_map()
 				dynamic_objs.dir_x[local_dynamic_index] = -1;
 				dynamic_objs.dir_y[local_dynamic_index] = -1;
 				dynamic_objs.payload[local_dynamic_index] = loaded_obj_payload;
+				dynamic_objs.dead_time[local_dynamic_index] = 0;
 				++local_dynamic_index;
 				break;
 

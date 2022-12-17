@@ -18,10 +18,19 @@ const unsigned char meta_enemies_Metasprite1_data[]={
 
 };
 
+const unsigned char meta_enemies_Metasprite2_data[]={
+
+	  0,  8,0x94,1,
+	  8,  8,0x95,1,
+	0x80
+
+};
+
 const unsigned char* const meta_enemies_list[]={
 
 	meta_enemies_Metasprite0_data,
-	meta_enemies_Metasprite1_data
+	meta_enemies_Metasprite1_data,
+	meta_enemies_Metasprite2_data
 
 };
 

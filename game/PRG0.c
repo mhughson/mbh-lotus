@@ -55,9 +55,7 @@ unsigned int debug_pos_start;
 // Functions
 //
 
-void kill_player();
 void update_player();
-void update_skeleton();
 
 void main_real()
 {
@@ -294,15 +292,26 @@ PROFILE_POKE(PROF_B);
 							case TRIG_SKELETON:
 							{
 								in_dynamic_obj_index = local_i;
-								update_skeleton();
+								banked_call(BANK_4, update_skeleton);
 
-								anim_index = ANIM_SKEL_WALK_RIGHT;
-								global_working_anim = &dynamic_objs.sprite[local_i].anim;
-								queue_next_anim(anim_index);
-								commit_next_anim();
+								// The update call might have killed them.
+								if (dynamic_objs.type[local_i] != TRIG_UNUSED)
+								{
+									if (dynamic_objs.dead_time[in_dynamic_obj_index] > 0)
+									{
+										anim_index = ANIM_SKEL_SQUISHED;
+									}
+									else
+									{
+										anim_index = ANIM_SKEL_WALK_RIGHT;
+									}
+									global_working_anim = &dynamic_objs.sprite[local_i].anim;
+									queue_next_anim(anim_index);
+									commit_next_anim();
 
-								in_dynamic_obj_index = local_i;
-								banked_call(BANK_1, draw_skeleton);
+									in_dynamic_obj_index = local_i;
+									banked_call(BANK_1, draw_skeleton);
+								}
 								break;
 							}
 						}
@@ -411,9 +420,9 @@ PROFILE_POKE(PROF_R);
 				break;
 			}
 		}
-#if DEBUG_ENALBED
+//#if DEBUG_ENALBED
 		//gray_line();
-#endif // DEBUG_ENABLED
+//#endif // DEBUG_ENABLED
 PROFILE_POKE(PROF_CLEAR)
 
 		// wait till the irq system is done before changing it
@@ -715,7 +724,9 @@ PROFILE_POKE(PROF_G);
 		for (i = 0; i < NUM_X_COLLISION_OFFSETS; ++i)
 		{
 			x = (high_2byte(player1.pos_x) + x_collision_offsets[i]) >> 4;
-			y = (high_2byte(player1.pos_y) + 20) >> 4; // feet
+			// + 1 because we want to check collision just below where the Left/Right checks were to avoid
+			// getting "stuck"
+			y = (high_2byte(player1.pos_y) + (y_collision_offsets[2] + 1)) >> 4; // feet
 
 			if (y > 15 && y < 20)
 			{
@@ -729,7 +740,7 @@ PROFILE_POKE(PROF_G);
 				{
 					jump_count = 0;
 					grounded = 1;
-					player1.pos_y = (unsigned long)((y << 4) - 20) << HALF_POS_BIT_COUNT;
+					player1.pos_y = (unsigned long)((y << 4) - (y_collision_offsets[2] + 1)) << HALF_POS_BIT_COUNT;
 					player1.vel_y = 0;
 					airtime = 0;
 					hit_kill_box = 0;
@@ -1374,31 +1385,4 @@ void load_level_pal()
 
 	pal_bg(BG_palettes[index]);
 	pal_spr(SPR_palettes[index2]);
-}
-
-void update_skeleton()
-{
-	static unsigned char local_offset;
-
-	PROFILE_POKE(PROF_G);
-
-	dynamic_objs.pos_x[in_dynamic_obj_index] += FP_0_25 * dynamic_objs.dir_x[in_dynamic_obj_index];
-
-	local_offset = 0;
-	if (dynamic_objs.dir_x[in_dynamic_obj_index] > 0)
-	{
-		local_offset = 1;
-	}
-
-	index16 = GRID_XY_TO_ROOM_INDEX((high_2byte(dynamic_objs.pos_x[in_dynamic_obj_index]) / 16) + local_offset, high_2byte(dynamic_objs.pos_y[in_dynamic_obj_index]) / 16);
-
-	tempFlags = GET_META_TILE_FLAGS(index16);
-
-	// Check if that point is in a solid metatile
-	if (tempFlags & FLAG_SOLID)
-	{
-		dynamic_objs.dir_x[in_dynamic_obj_index] *= -1;
-	}
-
-	PROFILE_POKE(PROF_B);
 }

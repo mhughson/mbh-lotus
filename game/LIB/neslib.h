@@ -113,6 +113,7 @@ void __fastcall__ oam_spr(unsigned char x,unsigned char y,unsigned char chrnum,u
 // Note: sprid removed for speed
 
 void __fastcall__ oam_meta_spr(unsigned char x,unsigned char y,const unsigned char *data);
+void __fastcall__ oam_meta_spr_flipped(unsigned char x,unsigned char y,const unsigned char *data);
 
 
 //hide all remaining sprites from given offset

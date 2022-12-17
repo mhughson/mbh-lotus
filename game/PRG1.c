@@ -52,6 +52,7 @@ const anim_def walk_up_td 		= { 20, 2, { 10, 11 }, CHR_TD };
 const anim_def walk_left_td 	= { 20, 2, { 15, 16 }, CHR_TD };
 
 const anim_def skel_walk_right	= { 20, 2, { 0, 1 }, CHR_SKEL};
+const anim_def skel_squished	= { 255, 1, { 2 }, CHR_SKEL};
 
 const struct anim_def* sprite_anims[] =
 {
@@ -75,6 +76,7 @@ const struct anim_def* sprite_anims[] =
 	&walk_left_td ,
 
 	&skel_walk_right,
+	&skel_squished,
 };
 
 unsigned char update_anim()
@@ -118,10 +120,10 @@ void draw_player_static()
 	{
 		if (player1.dir_x < 0)
 		{
-			in_oam_x = high_2byte(player1.pos_x) - cam.pos_x;
-			in_oam_y = high_2byte(player1.pos_y) - 1 - cam.pos_y;
-			in_oam_data = meta_player_list[sprite_anims[player1.sprite.anim.anim_current]->frames[player1.sprite.anim.anim_frame]];
-			c_oam_meta_spr_flipped();
+			oam_meta_spr_flipped(
+				high_2byte(player1.pos_x) - cam.pos_x, 
+				high_2byte(player1.pos_y) - 1 - cam.pos_y,
+				meta_player_list[sprite_anims[player1.sprite.anim.anim_current]->frames[player1.sprite.anim.anim_frame]]);
 		}
 		else // NOTE: This assumes left/right only.
 		{		
@@ -163,10 +165,11 @@ void draw_skeleton()
 	{
 		if (dynamic_objs.dir_x[in_dynamic_obj_index] < 0)
 		{
-			in_oam_x = high_2byte(dynamic_objs.pos_x[in_dynamic_obj_index]) - cam.pos_x;
-			in_oam_y = high_2byte(dynamic_objs.pos_y[in_dynamic_obj_index]) - 1 - cam.pos_y;
-			in_oam_data = meta_enemies_list[sprite_anims[global_working_anim->anim_current]->frames[global_working_anim->anim_frame]];
-			c_oam_meta_spr_flipped();
+			oam_meta_spr_flipped(
+				high_2byte(dynamic_objs.pos_x[in_dynamic_obj_index]) - cam.pos_x,
+				high_2byte(dynamic_objs.pos_y[in_dynamic_obj_index]) - 1 - cam.pos_y,
+				meta_enemies_list[sprite_anims[dynamic_objs.sprite[in_dynamic_obj_index].anim.anim_current]->frames[dynamic_objs.sprite[in_dynamic_obj_index].anim.anim_frame]]);
+
 		}
 		else // NOTE: This assumes left/right only.
 		{		

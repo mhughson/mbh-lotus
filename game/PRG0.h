@@ -14,5 +14,6 @@ void vram_buffer_load_column_full();
 void go_to_state(unsigned char new_state);
 void set_chr_bank_for_current_room();
 void load_level_pal();
+void kill_player();
 
 #endif /* D12B32D3_39DD_4865_9236_3AEDEF9ACEDE */

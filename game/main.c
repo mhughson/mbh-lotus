@@ -146,32 +146,6 @@ void commit_next_anim()
 	global_working_anim->anim_queued = 0xff;
 }
 
-void c_oam_meta_spr_flipped(void)
-{
-	static const unsigned char* _elem;
-	static unsigned char _x;
-	static unsigned char _y;
-	static unsigned char _sprite;
-	static unsigned char _att;
-
-	if (in_oam_data == NULL)
-	{
-		return;
-	}
-
-	_elem = in_oam_data;
-
-	while (_elem[0] != END_OF_META)
-	{
-		_x = 8 - _elem[0];
-		_y = _elem[1];
-		_sprite = _elem[2];
-		_att = _elem[3] | OAM_FLIP_H;
-		_elem += 4;
-		oam_spr(in_oam_x + _x, in_oam_y + _y, _sprite, _att);
-	}
-}
-
 #define FADE_DELAY 2
 void fade_to_black()
 {

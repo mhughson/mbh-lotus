@@ -15,7 +15,7 @@
 	.export _pal_all,_pal_bg,_pal_spr,_pal_col,_pal_clear
 	.export _pal_bright,_pal_spr_bright,_pal_bg_bright
 	.export _ppu_off,_ppu_on_all,_ppu_on_bg,_ppu_on_spr,_ppu_mask,_ppu_system
-	.export _oam_clear,_oam_size,_oam_spr,_oam_meta_spr,_oam_hide_rest
+	.export _oam_clear,_oam_size,_oam_spr,_oam_meta_spr,_oam_meta_spr_flipped,_oam_hide_rest
 	.export _ppu_wait_frame,_ppu_wait_nmi
 	.export _scroll,_split
 	.export _bank_spr,_bank_bg
@@ -502,7 +502,67 @@ _oam_meta_spr:
 	stx SPRID
 	rts
 
+;void __fastcall__ oam_meta_spr_flipped(unsigned char x,unsigned char y,const unsigned char *data);
+;sprid removed
 
+_oam_meta_spr_flipped:
+
+	sta <PTR
+	stx <PTR+1
+
+	ldy #1		;2 popa calls replacement, performed in reversed order
+	lda (sp),y
+	dey
+	sta <SCRX
+	lda (sp),y
+	sta <SCRY
+	
+	ldx SPRID
+
+@1:
+
+	; First check if we are at the end of the meta data (signalled by 0x80)
+	lda (PTR),y		;x offset
+	cmp #$80
+	beq @2
+	; When flipped, the sprites should be draw at 8 - x_pos.
+	sec
+	lda #$8
+	sbc (PTR),y		;x offset
+	iny
+	clc
+	adc <SCRX
+	sta OAM_BUF+3,x
+	lda (PTR),y		;y offset
+	iny
+	clc
+	adc <SCRY
+	sta OAM_BUF+0,x
+	lda (PTR),y		;tile
+	iny
+	sta OAM_BUF+1,x
+	lda (PTR),y		;attribute
+	ora #$40 ; flip
+	iny
+	sta OAM_BUF+2,x
+	inx
+	inx
+	inx
+	inx
+	jmp @1
+
+@2:
+
+	lda <sp
+	adc #1 ;2			;carry is always set here, so it adds 3
+	sta <sp
+	bcc @3
+	inc <sp+1
+
+@3:
+
+	stx SPRID
+	rts
 
 ;void __fastcall__ oam_hide_rest(void);
 ;sprid removed
