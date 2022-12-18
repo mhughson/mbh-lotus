@@ -3,10 +3,10 @@ Modules list:
 crt0.o:
     CODE              Offs=000000  Size=000E76  Align=00001  Fill=0000
     BSS               Offs=000000  Size=000020  Align=00001  Fill=0000
-    ZEROPAGE          Offs=000000  Size=000039  Align=00001  Fill=0000
+    ZEROPAGE          Offs=000000  Size=00003A  Align=00001  Fill=0000
     HEADER            Offs=000000  Size=000010  Align=00001  Fill=0000
     BANK12            Offs=000000  Size=00145F  Align=00001  Fill=0000
-    STARTUP           Offs=000000  Size=00092D  Align=00001  Fill=0000
+    STARTUP           Offs=000000  Size=0008E8  Align=00001  Fill=0000
     VECTORS           Offs=000000  Size=000006  Align=00001  Fill=0000
     CHARS             Offs=000000  Size=00A000  Align=00001  Fill=0000
 main.o:
@@ -16,14 +16,14 @@ main.o:
     XRAM              Offs=000000  Size=001303  Align=00001  Fill=0000
 mmc3_code.o:
     BSS               Offs=0002D1  Size=00000B  Align=00001  Fill=0000
-    STARTUP           Offs=00092D  Size=000055  Align=00001  Fill=0000
+    STARTUP           Offs=0008E8  Size=000055  Align=00001  Fill=0000
 PRG0.o:
     BSS               Offs=0002DC  Size=00006F  Align=00001  Fill=0000
     BANK0             Offs=000000  Size=001DA0  Align=00001  Fill=0000
 PRG1.o:
     BSS               Offs=00034B  Size=000002  Align=00001  Fill=0000
     DATA              Offs=000001  Size=00001E  Align=00001  Fill=0000
-    BANK1             Offs=000000  Size=000A01  Align=00001  Fill=0000
+    BANK1             Offs=000000  Size=00084B  Align=00001  Fill=0000
 PRG2.o:
     BSS               Offs=00034D  Size=000006  Align=00001  Fill=0000
     BANK2             Offs=000000  Size=000C36  Align=00001  Fill=0000
@@ -153,7 +153,7 @@ PRG6.o:
 ..\lib/nes.lib(zerobss.o):
     CODE              Offs=0014ED  Size=000023  Align=00001  Fill=0000
 ..\lib/nes.lib(zeropage.o):
-    ZEROPAGE          Offs=000039  Size=00001A  Align=00001  Fill=0000
+    ZEROPAGE          Offs=00003A  Size=00001A  Align=00001  Fill=0000
 
 
 Segment list:
@@ -162,12 +162,12 @@ Name                   Start     End    Size  Align
 ----------------------------------------------------
 CHARS                 000000  009FFF  00A000  00001
 HEADER                000000  00000F  000010  00001
-ZEROPAGE              000000  000052  000053  00001
+ZEROPAGE              000000  000053  000054  00001
 DATA                  000300  000322  000023  00001
 BSS                   000323  0006B0  00038E  00001
 XRAM                  006000  007302  001303  00001
 BANK0                 008000  009D9F  001DA0  00001
-BANK1                 008000  008A00  000A01  00001
+BANK1                 008000  00884A  00084B  00001
 BANK12                008000  00945E  00145F  00001
 BANK2                 008000  008C35  000C36  00001
 BANK3                 008000  009A9C  001A9D  00001
@@ -175,7 +175,7 @@ BANK4                 008000  0084D9  0004DA  00001
 BANK5                 008000  009856  001857  00001
 BANK6                 008000  008E6F  000E70  00001
 CODE                  00A000  00B50F  001510  00001
-STARTUP               00E000  00E981  000982  00001
+STARTUP               00E000  00E93C  00093D  00001
 VECTORS               00FFFA  00FFFF  000006  00001
 
 
@@ -183,85 +183,85 @@ Exports list by name:
 ---------------------
 NES_CHR_BANKS             000010 REA    NES_MAPPER                000004 REA    
 NES_MIRRORING             000000 REA    NES_PRG_BANKS             000008 REA    
-__BSS_RUN__               000323 RLA    __BSS_SIZE__              00038E REA    
-__DATA_LOAD__             00B510 RLA    __DATA_RUN__              000300 RLA    
-__DATA_SIZE__             000023 REA    __STACKSIZE__             000100 REA    
-__STACK_START__           000700 REA    __STARTUP__               000001 REA    
-_abs                      00B33F RLA    _airtime                  0005E6 RLA    
-_anim_index               0005E2 RLA    _assert                   00A000 RLA    
-_bank_bg                  00E609 RLA    _bank_spr                 00E5F9 RLA    
-_banked_call              00E92D RLA    _cam                      00051B RLA    
-_cam_x                    00039F RLA    _cam_y                    0003A1 RLA    
-_checkpoint_room_index    007301 RLA    _checkpoint_spawn_id      007302 RLA    
-_chr_3_index_queued       0005F0 RLA    _chr_index_queued         0005EF RLA    
-_clear_vram_buffer        00A071 RLA    _commit_next_anim         00AE8D RLA    
-_copy_bg_to_current_room_b 008AD4 RLA    _copy_original_room_to_current_b 008B08 RLA    
-_cur_metatiles            006F01 RLA    _cur_nametable_y          0005DB RLA    
-_cur_nametable_y_left     0005DC RLA    _cur_nametable_y_right    0005DD RLA    
-_cur_room_height_pixels   0005D5 RLA    _cur_room_height_tiles    0005D7 RLA    
-_cur_room_index           0005C8 RLA    _cur_room_metatile_index  0005D0 RLA    
-_cur_room_size_tiles      0005D9 RLA    _cur_room_type            0005E1 RLA    
-_cur_room_width_pixels    0005D2 RLA    _cur_room_width_tiles     0005D4 RLA    
-_cur_room_width_tiles_shift_factor 0005D8 RLA    _cur_state                0005C7 RLA    
-_current_room             006001 RLA    _dash_count               0005EE RLA    
-_dash_time                0005ED RLA    _delay                    00E853 RLA    
-_draw_dequeue_index       0003A8 RLA    _draw_player              0084DD RLA    
-_draw_player_static       0084ED RLA    _draw_player_td           00861E RLA    
-_draw_queue               0003A9 RLA    _draw_queue_index         0003A7 RLA    
-_draw_skeleton            0086C6 RLA    _dynamic_objs             00053F RLA    
-_fade_from_black          00AF2A RLA    _fade_from_white          00AF70 RLA    
-_fade_to_black            00AF07 RLA    _fade_to_white            00AF4D RLA    
-_get_at_addr              00A19B RLA    _get_cur_room_bit_flags_b 008D61 RLA    
-_get_cur_room_dimensions_b 008E23 RLA    _get_cur_room_metatile_set 009076 RLA    
-_get_cur_room_metatile_set_b 008D35 RLA    _get_cur_room_music_track_b 008DAF RLA    
-_get_cur_room_palettes    009032 RLA    _get_cur_room_palettes_b  008CEC RLA    
-_get_cur_room_special_type_b 008D88 RLA    _get_cur_room_world_and_level_b 008DD6 RLA    
-_get_next_object_b        008BDE RLA    _get_obj_id_b             008B56 RLA    
-_get_pad_new              00A07B RLA    _get_ppu_addr             00A174 RLA    
-_global_working_anim      000503 RLA    _grounded                 0005E3 RLA    
-_i                        000350 RLA    _in_destination_spawn_id  0004FF RLA    
-_in_dynamic_obj_index     000501 RLA    _in_flip_nt               0004F9 RLA    
-_in_is_streaming          0004FE RLA    _in_obj_index             0005CF RLA    
-_in_stream_direction      000500 RLA    _in_x_pixel               0004F5 RLA    
-_in_x_tile                0004F1 RLA    _index                    00034E RLA    
-_index16                  00034A RLA    _index2                   00034F RLA    
-_irq_index                00039E RLA    _is_irq_done              00E194 RLA    
-_jump_count               0005E8 RLA    _jump_held_count          0005E4 RLA    
-_kill_player              009503 RLA    _load_and_process_map     009186 RLA    
-_load_level_pal           0094CF RLA    _load_screen_gameover     0081A6 RLA    
-_load_screen_title        00818A RLA    _loaded_obj_id            0005CA RLA    
-_loaded_obj_index         0005CB RLA    _loaded_obj_payload       0005CE RLA    
-_loaded_obj_x             0005CC RLA    _loaded_obj_y             0005CD RLA    
-_main                     00AF93 RLA    _main_real                00804D RLA    
-_memcpy                   00E7F1 RLA    _memfill                  00E824 RLA    
-_multi_vram_buffer_horz   00A00D RLA    _multi_vram_buffer_vert   00A044 RLA    
-_music_play               00E66B RLA    _music_stop               00E67E RLA    
-_nametable_col            000356 RLA    _new_jump_btn             0005EA RLA    
-_oam_clear                00E42B RLA    _oam_meta_spr             00E481 RLA    
-_oam_meta_spr_flipped     00E4D8 RLA    _old_cam_x                0003A3 RLA    
+_SPR_FLIP_META            000030 REZ    __BSS_RUN__               000323 RLA    
+__BSS_SIZE__              00038E REA    __DATA_LOAD__             00B510 RLA    
+__DATA_RUN__              000300 RLA    __DATA_SIZE__             000023 REA    
+__STACKSIZE__             000100 REA    __STACK_START__           000700 REA    
+__STARTUP__               000001 REA    _abs                      00B33F RLA    
+_airtime                  0005E6 RLA    _anim_index               0005E2 RLA    
+_assert                   00A000 RLA    _bank_bg                  00E5C4 RLA    
+_bank_spr                 00E5B4 RLA    _banked_call              00E8E8 RLA    
+_cam                      00051B RLA    _cam_x                    00039F RLA    
+_cam_y                    0003A1 RLA    _checkpoint_room_index    007301 RLA    
+_checkpoint_spawn_id      007302 RLA    _chr_3_index_queued       0005F0 RLA    
+_chr_index_queued         0005EF RLA    _clear_vram_buffer        00A071 RLA    
+_commit_next_anim         00AE8D RLA    _copy_bg_to_current_room_b 008AD4 RLA    
+_copy_original_room_to_current_b 008B08 RLA    _cur_metatiles            006F01 RLA    
+_cur_nametable_y          0005DB RLA    _cur_nametable_y_left     0005DC RLA    
+_cur_nametable_y_right    0005DD RLA    _cur_room_height_pixels   0005D5 RLA    
+_cur_room_height_tiles    0005D7 RLA    _cur_room_index           0005C8 RLA    
+_cur_room_metatile_index  0005D0 RLA    _cur_room_size_tiles      0005D9 RLA    
+_cur_room_type            0005E1 RLA    _cur_room_width_pixels    0005D2 RLA    
+_cur_room_width_tiles     0005D4 RLA    _cur_room_width_tiles_shift_factor 0005D8 RLA    
+_cur_state                0005C7 RLA    _current_room             006001 RLA    
+_dash_count               0005EE RLA    _dash_time                0005ED RLA    
+_delay                    00E80E RLA    _draw_dequeue_index       0003A8 RLA    
+_draw_player              0084DD RLA    _draw_player_static       0084ED RLA    
+_draw_player_td           0085B0 RLA    _draw_queue               0003A9 RLA    
+_draw_queue_index         0003A7 RLA    _draw_skeleton            008658 RLA    
+_dynamic_objs             00053F RLA    _fade_from_black          00AF2A RLA    
+_fade_from_white          00AF70 RLA    _fade_to_black            00AF07 RLA    
+_fade_to_white            00AF4D RLA    _get_at_addr              00A19B RLA    
+_get_cur_room_bit_flags_b 008D61 RLA    _get_cur_room_dimensions_b 008E23 RLA    
+_get_cur_room_metatile_set 009076 RLA    _get_cur_room_metatile_set_b 008D35 RLA    
+_get_cur_room_music_track_b 008DAF RLA    _get_cur_room_palettes    009032 RLA    
+_get_cur_room_palettes_b  008CEC RLA    _get_cur_room_special_type_b 008D88 RLA    
+_get_cur_room_world_and_level_b 008DD6 RLA    _get_next_object_b        008BDE RLA    
+_get_obj_id_b             008B56 RLA    _get_pad_new              00A07B RLA    
+_get_ppu_addr             00A174 RLA    _global_working_anim      000503 RLA    
+_grounded                 0005E3 RLA    _i                        000350 RLA    
+_in_destination_spawn_id  0004FF RLA    _in_dynamic_obj_index     000501 RLA    
+_in_flip_nt               0004F9 RLA    _in_is_streaming          0004FE RLA    
+_in_obj_index             0005CF RLA    _in_stream_direction      000500 RLA    
+_in_x_pixel               0004F5 RLA    _in_x_tile                0004F1 RLA    
+_index                    00034E RLA    _index16                  00034A RLA    
+_index2                   00034F RLA    _irq_index                00039E RLA    
+_is_irq_done              00E194 RLA    _jump_count               0005E8 RLA    
+_jump_held_count          0005E4 RLA    _kill_player              009503 RLA    
+_load_and_process_map     009186 RLA    _load_level_pal           0094CF RLA    
+_load_screen_gameover     0081A6 RLA    _load_screen_title        00818A RLA    
+_loaded_obj_id            0005CA RLA    _loaded_obj_index         0005CB RLA    
+_loaded_obj_payload       0005CE RLA    _loaded_obj_x             0005CC RLA    
+_loaded_obj_y             0005CD RLA    _main                     00AF93 RLA    
+_main_real                00804D RLA    _memcpy                   00E7AC RLA    
+_memfill                  00E7DF RLA    _multi_vram_buffer_horz   00A00D RLA    
+_multi_vram_buffer_vert   00A044 RLA    _music_play               00E626 RLA    
+_music_stop               00E639 RLA    _nametable_col            000356 RLA    
+_new_jump_btn             0005EA RLA    _oam_clear                00E42B RLA    
+_oam_meta_spr             00E481 RLA    _old_cam_x                0003A3 RLA    
 _old_cam_y                0003A5 RLA    _on_ground                0005E9 RLA    
 _one_vram_buffer          00A053 RLA    _pad_all                  000348 RLA    
-_pad_all_new              000349 RLA    _pad_poll                 00E6D4 RLA    
+_pad_all_new              000349 RLA    _pad_poll                 00E68F RLA    
 _pal_bg                   00E3B0 RLA    _pal_bright               00E3FE RLA    
 _pal_spr                  00E3BA RLA    _player1                  000505 RLA    
 _ppu_off                  00E405 RLA    _ppu_on_all               00E40E RLA    
-_ppu_wait_nmi             00E55B RLA    _queue_next_anim          00AE76 RLA    
-_save_version_validation  006000 RLA    _scroll                   00E59D RLA    
+_ppu_wait_nmi             00E516 RLA    _queue_next_anim          00AE76 RLA    
+_save_version_validation  006000 RLA    _scroll                   00E558 RLA    
 _set_chr_bank_for_current_room 0094A9 RLA    _set_chr_mode_0           00E135 RLA    
 _set_chr_mode_1           00E13E RLA    _set_chr_mode_2           00E147 RLA    
 _set_chr_mode_3           00E150 RLA    _set_chr_mode_4           00E159 RLA    
 _set_irq_ptr              00E18F RLA    _set_metatile_set         008BFB RLA    
 _set_mirroring            00E180 RLA    _set_prg_8000             00E11C RLA    
 _set_scroll_x             00A11D RLA    _set_vram_buffer          00A001 RLA    
-_sfx_play                 00E6A2 RLA    _stream_in_next_level     008812 RLA    
+_sfx_play                 00E65D RLA    _stream_in_next_level     008812 RLA    
 _temp32                   000351 RLA    _tempFlags                000355 RLA    
 _tick_count               000343 RLA    _tick_count16             000344 RLA    
 _ticks_down               0005E7 RLA    _ticks_in_state16         000346 RLA    
 _tile_index_param         0005C9 RLA    _trig_objs                00051F RLA    
 _update_cam_td            008608 RLA    _update_player_td         008004 RLA    
-_update_skeleton          0081B4 RLA    _vram_adr                 00E7B0 RLA    
-_vram_buffer_load_column_full 008FA9 RLA    _vram_unrle               00E566 RLA    
-_vram_write               00E644 RLA    _x                        00034C RLA    
+_update_skeleton          0081B4 RLA    _vram_adr                 00E76B RLA    
+_vram_buffer_load_column_full 008FA9 RLA    _vram_unrle               00E521 RLA    
+_vram_write               00E5FF RLA    _x                        00034C RLA    
 _y                        00034D RLA    addysp                    00AFBC RLA    
 addysp1                   00AFBB RLA    aslax2                    00AFC9 RLA    
 aslax4                    00AFE2 RLA    aslaxy                    00B3D4 RLA    
@@ -278,9 +278,9 @@ ldaidx                    00B19A RLA    ldeaxi                    00B1A6 RLA
 lsubeq                    00B293 RLA    negax                     00B343 RLA    
 negeax                    00B225 RLA    popa                      00B363 RLA    
 popax                     00B0C9 RLA    popptr1                   00B36F RLA    
-popsargsudiv16            00B3AD RLA    ptr1                      000041 RLZ    
-ptr2                      000043 RLZ    ptr3                      000045 RLZ    
-ptr4                      000047 RLZ    push0                     00B393 RLA    
+popsargsudiv16            00B3AD RLA    ptr1                      000042 RLZ    
+ptr2                      000044 RLZ    ptr3                      000046 RLZ    
+ptr4                      000048 RLZ    push0                     00B393 RLA    
 pusha                     00B381 RLA    pusha0                    00B395 RLA    
 pushax                    00B397 RLA    pusheax                   00B24C RLA    
 shlax3                    00AFD4 RLA    shlax4                    00AFE2 RLA    
@@ -288,10 +288,10 @@ shlaxy                    00B3D4 RLA    shleax2                   00AFF3 RLA
 shleax4                   00B006 RLA    shrax1                    00B400 RLA    
 shrax3                    00B408 RLA    shrax4                    00B416 RLA    
 shreax2                   00B427 RLA    shreax4                   00B43A RLA    
-sp                        000039 RLZ    sreg                      00003B RLZ    
+sp                        00003A RLZ    sreg                      00003C RLZ    
 staxysp                   00B44D RLA    steaxspidx                00B456 RLA    
-tmp1                      000049 RLZ    tmp2                      00004A RLZ    
-tmp3                      00004B RLZ    tmp4                      00004C RLZ    
+tmp1                      00004A RLZ    tmp2                      00004B RLZ    
+tmp3                      00004C RLZ    tmp4                      00004D RLZ    
 tosadd0ax                 00B0E9 RLA    tosadda0                  00AF9F RLA    
 tosaddeax                 00B0EF RLA    tosandeax                 00B141 RLA    
 tosgeeax                  00B1BD RLA    tosicmp                   00B096 RLA    
@@ -310,125 +310,125 @@ Exports list by value:
 NES_MIRRORING             000000 REA    __STARTUP__               000001 REA    
 NES_MAPPER                000004 REA    NES_PRG_BANKS             000008 REA    
 NES_CHR_BANKS             000010 REA    __DATA_SIZE__             000023 REA    
-sp                        000039 RLZ    sreg                      00003B RLZ    
-ptr1                      000041 RLZ    ptr2                      000043 RLZ    
-ptr3                      000045 RLZ    ptr4                      000047 RLZ    
-tmp1                      000049 RLZ    tmp2                      00004A RLZ    
-tmp3                      00004B RLZ    tmp4                      00004C RLZ    
-__STACKSIZE__             000100 REA    __DATA_RUN__              000300 RLA    
-__BSS_RUN__               000323 RLA    _tick_count               000343 RLA    
-_tick_count16             000344 RLA    _ticks_in_state16         000346 RLA    
-_pad_all                  000348 RLA    _pad_all_new              000349 RLA    
-_index16                  00034A RLA    _x                        00034C RLA    
-_y                        00034D RLA    _index                    00034E RLA    
-_index2                   00034F RLA    _i                        000350 RLA    
-_temp32                   000351 RLA    _tempFlags                000355 RLA    
-_nametable_col            000356 RLA    __BSS_SIZE__              00038E REA    
-_irq_index                00039E RLA    _cam_x                    00039F RLA    
-_cam_y                    0003A1 RLA    _old_cam_x                0003A3 RLA    
-_old_cam_y                0003A5 RLA    _draw_queue_index         0003A7 RLA    
-_draw_dequeue_index       0003A8 RLA    _draw_queue               0003A9 RLA    
-_in_x_tile                0004F1 RLA    _in_x_pixel               0004F5 RLA    
-_in_flip_nt               0004F9 RLA    _in_is_streaming          0004FE RLA    
-_in_destination_spawn_id  0004FF RLA    _in_stream_direction      000500 RLA    
-_in_dynamic_obj_index     000501 RLA    _global_working_anim      000503 RLA    
-_player1                  000505 RLA    _cam                      00051B RLA    
-_trig_objs                00051F RLA    _dynamic_objs             00053F RLA    
-_cur_state                0005C7 RLA    _cur_room_index           0005C8 RLA    
-_tile_index_param         0005C9 RLA    _loaded_obj_id            0005CA RLA    
-_loaded_obj_index         0005CB RLA    _loaded_obj_x             0005CC RLA    
-_loaded_obj_y             0005CD RLA    _loaded_obj_payload       0005CE RLA    
-_in_obj_index             0005CF RLA    _cur_room_metatile_index  0005D0 RLA    
-_cur_room_width_pixels    0005D2 RLA    _cur_room_width_tiles     0005D4 RLA    
-_cur_room_height_pixels   0005D5 RLA    _cur_room_height_tiles    0005D7 RLA    
-_cur_room_width_tiles_shift_factor 0005D8 RLA    _cur_room_size_tiles      0005D9 RLA    
-_cur_nametable_y          0005DB RLA    _cur_nametable_y_left     0005DC RLA    
-_cur_nametable_y_right    0005DD RLA    _cur_room_type            0005E1 RLA    
-_anim_index               0005E2 RLA    _grounded                 0005E3 RLA    
-_jump_held_count          0005E4 RLA    _airtime                  0005E6 RLA    
-_ticks_down               0005E7 RLA    _jump_count               0005E8 RLA    
-_on_ground                0005E9 RLA    _new_jump_btn             0005EA RLA    
-_dash_time                0005ED RLA    _dash_count               0005EE RLA    
-_chr_index_queued         0005EF RLA    _chr_3_index_queued       0005F0 RLA    
-__STACK_START__           000700 REA    _save_version_validation  006000 RLA    
-_current_room             006001 RLA    _cur_metatiles            006F01 RLA    
-_checkpoint_room_index    007301 RLA    _checkpoint_spawn_id      007302 RLA    
-_update_player_td         008004 RLA    _main_real                00804D RLA    
-_load_screen_title        00818A RLA    _load_screen_gameover     0081A6 RLA    
-_update_skeleton          0081B4 RLA    _draw_player              0084DD RLA    
-_draw_player_static       0084ED RLA    _update_cam_td            008608 RLA    
-_draw_player_td           00861E RLA    _draw_skeleton            0086C6 RLA    
-_stream_in_next_level     008812 RLA    _copy_bg_to_current_room_b 008AD4 RLA    
-_copy_original_room_to_current_b 008B08 RLA    _get_obj_id_b             008B56 RLA    
-_get_next_object_b        008BDE RLA    _set_metatile_set         008BFB RLA    
-_get_cur_room_palettes_b  008CEC RLA    _get_cur_room_metatile_set_b 008D35 RLA    
-_get_cur_room_bit_flags_b 008D61 RLA    _get_cur_room_special_type_b 008D88 RLA    
-_get_cur_room_music_track_b 008DAF RLA    _get_cur_room_world_and_level_b 008DD6 RLA    
-_get_cur_room_dimensions_b 008E23 RLA    _vram_buffer_load_column_full 008FA9 RLA    
-_get_cur_room_palettes    009032 RLA    _get_cur_room_metatile_set 009076 RLA    
-_load_and_process_map     009186 RLA    _set_chr_bank_for_current_room 0094A9 RLA    
-_load_level_pal           0094CF RLA    _kill_player              009503 RLA    
-_assert                   00A000 RLA    _set_vram_buffer          00A001 RLA    
-_multi_vram_buffer_horz   00A00D RLA    _multi_vram_buffer_vert   00A044 RLA    
-_one_vram_buffer          00A053 RLA    _clear_vram_buffer        00A071 RLA    
-_get_pad_new              00A07B RLA    _set_scroll_x             00A11D RLA    
-_get_ppu_addr             00A174 RLA    _get_at_addr              00A19B RLA    
-_queue_next_anim          00AE76 RLA    _commit_next_anim         00AE8D RLA    
-_fade_to_black            00AF07 RLA    _fade_from_black          00AF2A RLA    
-_fade_to_white            00AF4D RLA    _fade_from_white          00AF70 RLA    
-_main                     00AF93 RLA    tosadda0                  00AF9F RLA    
-addysp1                   00AFBB RLA    addysp                    00AFBC RLA    
-aslax2                    00AFC9 RLA    shlax3                    00AFD4 RLA    
-aslax4                    00AFE2 RLA    shlax4                    00AFE2 RLA    
-shleax2                   00AFF3 RLA    shleax4                   00B006 RLA    
-asreax4                   00B017 RLA    axlong                    00B02C RLA    
-callax                    00B039 RLA    copydata                  00B040 RLA    
-decsp2                    00B06D RLA    decsp3                    00B07A RLA    
-decsp4                    00B087 RLA    tosicmp0                  00B094 RLA    
-tosicmp                   00B096 RLA    incsp1                    00B0C2 RLA    
-popax                     00B0C9 RLA    incsp2                    00B0D1 RLA    
-incsp3                    00B0DF RLA    incsp4                    00B0E4 RLA    
-tosadd0ax                 00B0E9 RLA    tosaddeax                 00B0EF RLA    
-laddeq                    00B116 RLA    tosandeax                 00B141 RLA    
-toslcmp                   00B15F RLA    ldaidx                    00B19A RLA    
-ldeaxi                    00B1A6 RLA    tosgeeax                  00B1BD RLA    
-tosumuleax                00B1C9 RLA    tosneeax                  00B21F RLA    
-negeax                    00B225 RLA    pusheax                   00B24C RLA    
-tossubeax                 00B26A RLA    lsubeq                    00B293 RLA    
-tosugeeax                 00B2BC RLA    tosuleeax                 00B2C2 RLA    
-boolne                    00B2C8 RLA    booleq                    00B2CE RLA    
-boolge                    00B2DF RLA    boolule                   00B2E5 RLA    
-boolult                   00B2E7 RLA    booluge                   00B2EF RLA    
-tosmoda0                  00B2F4 RLA    tosumula0                 00B305 RLA    
-_abs                      00B33F RLA    negax                     00B343 RLA    
-tosorax                   00B353 RLA    popa                      00B363 RLA    
-popptr1                   00B36F RLA    pusha                     00B381 RLA    
-push0                     00B393 RLA    pusha0                    00B395 RLA    
-pushax                    00B397 RLA    popsargsudiv16            00B3AD RLA    
-shlaxy                    00B3D4 RLA    aslaxy                    00B3D4 RLA    
-shrax1                    00B400 RLA    shrax3                    00B408 RLA    
-shrax4                    00B416 RLA    shreax2                   00B427 RLA    
-shreax4                   00B43A RLA    staxysp                   00B44D RLA    
-steaxspidx                00B456 RLA    tossubax                  00B47A RLA    
-udiv16                    00B49E RLA    tosumoda0                 00B4DC RLA    
-tosumodax                 00B4DE RLA    zerobss                   00B4ED RLA    
-__DATA_LOAD__             00B510 RLA    _set_prg_8000             00E11C RLA    
-_set_chr_mode_0           00E135 RLA    _set_chr_mode_1           00E13E RLA    
-_set_chr_mode_2           00E147 RLA    _set_chr_mode_3           00E150 RLA    
-_set_chr_mode_4           00E159 RLA    _set_mirroring            00E180 RLA    
-_set_irq_ptr              00E18F RLA    _is_irq_done              00E194 RLA    
-_pal_bg                   00E3B0 RLA    _pal_spr                  00E3BA RLA    
-_pal_bright               00E3FE RLA    _ppu_off                  00E405 RLA    
-_ppu_on_all               00E40E RLA    _oam_clear                00E42B RLA    
-_oam_meta_spr             00E481 RLA    _oam_meta_spr_flipped     00E4D8 RLA    
-_ppu_wait_nmi             00E55B RLA    _vram_unrle               00E566 RLA    
-_scroll                   00E59D RLA    _bank_spr                 00E5F9 RLA    
-_bank_bg                  00E609 RLA    _vram_write               00E644 RLA    
-_music_play               00E66B RLA    _music_stop               00E67E RLA    
-_sfx_play                 00E6A2 RLA    _pad_poll                 00E6D4 RLA    
-_vram_adr                 00E7B0 RLA    _memcpy                   00E7F1 RLA    
-_memfill                  00E824 RLA    _delay                    00E853 RLA    
-_banked_call              00E92D RLA    
+_SPR_FLIP_META            000030 REZ    sp                        00003A RLZ    
+sreg                      00003C RLZ    ptr1                      000042 RLZ    
+ptr2                      000044 RLZ    ptr3                      000046 RLZ    
+ptr4                      000048 RLZ    tmp1                      00004A RLZ    
+tmp2                      00004B RLZ    tmp3                      00004C RLZ    
+tmp4                      00004D RLZ    __STACKSIZE__             000100 REA    
+__DATA_RUN__              000300 RLA    __BSS_RUN__               000323 RLA    
+_tick_count               000343 RLA    _tick_count16             000344 RLA    
+_ticks_in_state16         000346 RLA    _pad_all                  000348 RLA    
+_pad_all_new              000349 RLA    _index16                  00034A RLA    
+_x                        00034C RLA    _y                        00034D RLA    
+_index                    00034E RLA    _index2                   00034F RLA    
+_i                        000350 RLA    _temp32                   000351 RLA    
+_tempFlags                000355 RLA    _nametable_col            000356 RLA    
+__BSS_SIZE__              00038E REA    _irq_index                00039E RLA    
+_cam_x                    00039F RLA    _cam_y                    0003A1 RLA    
+_old_cam_x                0003A3 RLA    _old_cam_y                0003A5 RLA    
+_draw_queue_index         0003A7 RLA    _draw_dequeue_index       0003A8 RLA    
+_draw_queue               0003A9 RLA    _in_x_tile                0004F1 RLA    
+_in_x_pixel               0004F5 RLA    _in_flip_nt               0004F9 RLA    
+_in_is_streaming          0004FE RLA    _in_destination_spawn_id  0004FF RLA    
+_in_stream_direction      000500 RLA    _in_dynamic_obj_index     000501 RLA    
+_global_working_anim      000503 RLA    _player1                  000505 RLA    
+_cam                      00051B RLA    _trig_objs                00051F RLA    
+_dynamic_objs             00053F RLA    _cur_state                0005C7 RLA    
+_cur_room_index           0005C8 RLA    _tile_index_param         0005C9 RLA    
+_loaded_obj_id            0005CA RLA    _loaded_obj_index         0005CB RLA    
+_loaded_obj_x             0005CC RLA    _loaded_obj_y             0005CD RLA    
+_loaded_obj_payload       0005CE RLA    _in_obj_index             0005CF RLA    
+_cur_room_metatile_index  0005D0 RLA    _cur_room_width_pixels    0005D2 RLA    
+_cur_room_width_tiles     0005D4 RLA    _cur_room_height_pixels   0005D5 RLA    
+_cur_room_height_tiles    0005D7 RLA    _cur_room_width_tiles_shift_factor 0005D8 RLA    
+_cur_room_size_tiles      0005D9 RLA    _cur_nametable_y          0005DB RLA    
+_cur_nametable_y_left     0005DC RLA    _cur_nametable_y_right    0005DD RLA    
+_cur_room_type            0005E1 RLA    _anim_index               0005E2 RLA    
+_grounded                 0005E3 RLA    _jump_held_count          0005E4 RLA    
+_airtime                  0005E6 RLA    _ticks_down               0005E7 RLA    
+_jump_count               0005E8 RLA    _on_ground                0005E9 RLA    
+_new_jump_btn             0005EA RLA    _dash_time                0005ED RLA    
+_dash_count               0005EE RLA    _chr_index_queued         0005EF RLA    
+_chr_3_index_queued       0005F0 RLA    __STACK_START__           000700 REA    
+_save_version_validation  006000 RLA    _current_room             006001 RLA    
+_cur_metatiles            006F01 RLA    _checkpoint_room_index    007301 RLA    
+_checkpoint_spawn_id      007302 RLA    _update_player_td         008004 RLA    
+_main_real                00804D RLA    _load_screen_title        00818A RLA    
+_load_screen_gameover     0081A6 RLA    _update_skeleton          0081B4 RLA    
+_draw_player              0084DD RLA    _draw_player_static       0084ED RLA    
+_draw_player_td           0085B0 RLA    _update_cam_td            008608 RLA    
+_draw_skeleton            008658 RLA    _stream_in_next_level     008812 RLA    
+_copy_bg_to_current_room_b 008AD4 RLA    _copy_original_room_to_current_b 008B08 RLA    
+_get_obj_id_b             008B56 RLA    _get_next_object_b        008BDE RLA    
+_set_metatile_set         008BFB RLA    _get_cur_room_palettes_b  008CEC RLA    
+_get_cur_room_metatile_set_b 008D35 RLA    _get_cur_room_bit_flags_b 008D61 RLA    
+_get_cur_room_special_type_b 008D88 RLA    _get_cur_room_music_track_b 008DAF RLA    
+_get_cur_room_world_and_level_b 008DD6 RLA    _get_cur_room_dimensions_b 008E23 RLA    
+_vram_buffer_load_column_full 008FA9 RLA    _get_cur_room_palettes    009032 RLA    
+_get_cur_room_metatile_set 009076 RLA    _load_and_process_map     009186 RLA    
+_set_chr_bank_for_current_room 0094A9 RLA    _load_level_pal           0094CF RLA    
+_kill_player              009503 RLA    _assert                   00A000 RLA    
+_set_vram_buffer          00A001 RLA    _multi_vram_buffer_horz   00A00D RLA    
+_multi_vram_buffer_vert   00A044 RLA    _one_vram_buffer          00A053 RLA    
+_clear_vram_buffer        00A071 RLA    _get_pad_new              00A07B RLA    
+_set_scroll_x             00A11D RLA    _get_ppu_addr             00A174 RLA    
+_get_at_addr              00A19B RLA    _queue_next_anim          00AE76 RLA    
+_commit_next_anim         00AE8D RLA    _fade_to_black            00AF07 RLA    
+_fade_from_black          00AF2A RLA    _fade_to_white            00AF4D RLA    
+_fade_from_white          00AF70 RLA    _main                     00AF93 RLA    
+tosadda0                  00AF9F RLA    addysp1                   00AFBB RLA    
+addysp                    00AFBC RLA    aslax2                    00AFC9 RLA    
+shlax3                    00AFD4 RLA    aslax4                    00AFE2 RLA    
+shlax4                    00AFE2 RLA    shleax2                   00AFF3 RLA    
+shleax4                   00B006 RLA    asreax4                   00B017 RLA    
+axlong                    00B02C RLA    callax                    00B039 RLA    
+copydata                  00B040 RLA    decsp2                    00B06D RLA    
+decsp3                    00B07A RLA    decsp4                    00B087 RLA    
+tosicmp0                  00B094 RLA    tosicmp                   00B096 RLA    
+incsp1                    00B0C2 RLA    popax                     00B0C9 RLA    
+incsp2                    00B0D1 RLA    incsp3                    00B0DF RLA    
+incsp4                    00B0E4 RLA    tosadd0ax                 00B0E9 RLA    
+tosaddeax                 00B0EF RLA    laddeq                    00B116 RLA    
+tosandeax                 00B141 RLA    toslcmp                   00B15F RLA    
+ldaidx                    00B19A RLA    ldeaxi                    00B1A6 RLA    
+tosgeeax                  00B1BD RLA    tosumuleax                00B1C9 RLA    
+tosneeax                  00B21F RLA    negeax                    00B225 RLA    
+pusheax                   00B24C RLA    tossubeax                 00B26A RLA    
+lsubeq                    00B293 RLA    tosugeeax                 00B2BC RLA    
+tosuleeax                 00B2C2 RLA    boolne                    00B2C8 RLA    
+booleq                    00B2CE RLA    boolge                    00B2DF RLA    
+boolule                   00B2E5 RLA    boolult                   00B2E7 RLA    
+booluge                   00B2EF RLA    tosmoda0                  00B2F4 RLA    
+tosumula0                 00B305 RLA    _abs                      00B33F RLA    
+negax                     00B343 RLA    tosorax                   00B353 RLA    
+popa                      00B363 RLA    popptr1                   00B36F RLA    
+pusha                     00B381 RLA    push0                     00B393 RLA    
+pusha0                    00B395 RLA    pushax                    00B397 RLA    
+popsargsudiv16            00B3AD RLA    shlaxy                    00B3D4 RLA    
+aslaxy                    00B3D4 RLA    shrax1                    00B400 RLA    
+shrax3                    00B408 RLA    shrax4                    00B416 RLA    
+shreax2                   00B427 RLA    shreax4                   00B43A RLA    
+staxysp                   00B44D RLA    steaxspidx                00B456 RLA    
+tossubax                  00B47A RLA    udiv16                    00B49E RLA    
+tosumoda0                 00B4DC RLA    tosumodax                 00B4DE RLA    
+zerobss                   00B4ED RLA    __DATA_LOAD__             00B510 RLA    
+_set_prg_8000             00E11C RLA    _set_chr_mode_0           00E135 RLA    
+_set_chr_mode_1           00E13E RLA    _set_chr_mode_2           00E147 RLA    
+_set_chr_mode_3           00E150 RLA    _set_chr_mode_4           00E159 RLA    
+_set_mirroring            00E180 RLA    _set_irq_ptr              00E18F RLA    
+_is_irq_done              00E194 RLA    _pal_bg                   00E3B0 RLA    
+_pal_spr                  00E3BA RLA    _pal_bright               00E3FE RLA    
+_ppu_off                  00E405 RLA    _ppu_on_all               00E40E RLA    
+_oam_clear                00E42B RLA    _oam_meta_spr             00E481 RLA    
+_ppu_wait_nmi             00E516 RLA    _vram_unrle               00E521 RLA    
+_scroll                   00E558 RLA    _bank_spr                 00E5B4 RLA    
+_bank_bg                  00E5C4 RLA    _vram_write               00E5FF RLA    
+_music_play               00E626 RLA    _music_stop               00E639 RLA    
+_sfx_play                 00E65D RLA    _pad_poll                 00E68F RLA    
+_vram_adr                 00E76B RLA    _memcpy                   00E7AC RLA    
+_memfill                  00E7DF RLA    _delay                    00E80E RLA    
+_banked_call              00E8E8 RLA    
 
 
 Imports list:
@@ -441,6 +441,8 @@ NES_MIRRORING ([linker generated]):
     crt0.o                    crt0.s(38)
 NES_PRG_BANKS ([linker generated]):
     crt0.o                    crt0.s(38)
+_SPR_FLIP_META (crt0.o):
+    PRG1.o                    PRG1.s(43)
 __BSS_RUN__ ([linker generated]):
     zerobss.o                 common/zerobss.s(8)
 __BSS_SIZE__ ([linker generated]):
@@ -741,8 +743,6 @@ _oam_clear (crt0.o):
     PRG2.o                    PRG2.s(65)
     PRG0.o                    PRG0.s(212)
 _oam_meta_spr (crt0.o):
-    PRG1.o                    PRG1.s(43)
-_oam_meta_spr_flipped (crt0.o):
     PRG1.o                    PRG1.s(44)
 _old_cam_x (main.o):
     PRG3.o                    PRG3.s(72)
@@ -874,7 +874,7 @@ aslax2 (aslax2.o):
     PRG5.o                    PRG5.s(5903)
     PRG4.o                    PRG4.s(1126)
     PRG4.o                    PRG4.s(1126)
-    PRG1.o                    PRG1.s(2125)
+    PRG1.o                    PRG1.s(1866)
     PRG0.o                    PRG0.s(5877)
 aslax4 (aslax4.o):
     PRG0.o                    PRG0.s(5877)
@@ -923,9 +923,9 @@ decsp2 (decsp2.o):
     PRG3.o                    PRG3.s(5003)
     PRG3.o                    PRG3.s(5003)
     PRG3.o                    PRG3.s(5003)
-    PRG1.o                    PRG1.s(2125)
-    PRG1.o                    PRG1.s(2125)
-    PRG1.o                    PRG1.s(2125)
+    PRG1.o                    PRG1.s(1866)
+    PRG1.o                    PRG1.s(1866)
+    PRG1.o                    PRG1.s(1866)
     PRG0.o                    PRG0.s(5877)
     PRG0.o                    PRG0.s(5877)
 decsp3 (decsp3.o):
@@ -953,7 +953,7 @@ laddeq (laddeq.o):
     PRG0.o                    PRG0.s(5877)
 ldaidx (ldai.o):
     PRG4.o                    PRG4.s(1126)
-    PRG1.o                    PRG1.s(2125)
+    PRG1.o                    PRG1.s(1866)
 ldeaxi (ldeaxi.o):
     PRG4.o                    PRG4.s(1126)
 lsubeq (lsubeq.o):
@@ -1062,7 +1062,6 @@ pushax (pushax.o):
     PRG3.o                    PRG3.s(5003)
     PRG2.o                    PRG2.s(2899)
     PRG2.o                    PRG2.s(2899)
-    PRG1.o                    PRG1.s(2125)
     PRG0.o                    PRG0.s(5877)
     PRG0.o                    PRG0.s(5877)
     PRG0.o                    PRG0.s(5877)
@@ -1241,7 +1240,6 @@ tosicmp (icmp.o):
     PRG3.o                    PRG3.s(5003)
     PRG3.o                    PRG3.s(5003)
     PRG2.o                    PRG2.s(2899)
-    PRG1.o                    PRG1.s(2125)
     PRG0.o                    PRG0.s(5877)
     PRG0.o                    PRG0.s(5877)
     PRG0.o                    PRG0.s(5877)

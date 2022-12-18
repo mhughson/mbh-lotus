@@ -371,6 +371,9 @@ extern unsigned char dash_count;
 extern unsigned char chr_index_queued;
 extern unsigned char chr_3_index_queued;
 
+// assembly exports.
+extern unsigned char SPR_FLIP_META;
+
 // XRAM
 //
 

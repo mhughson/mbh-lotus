@@ -120,18 +120,17 @@ void draw_player_static()
 	{
 		if (player1.dir_x < 0)
 		{
-			oam_meta_spr_flipped(
-				high_2byte(player1.pos_x) - cam.pos_x, 
-				high_2byte(player1.pos_y) - 1 - cam.pos_y,
-				meta_player_list[sprite_anims[player1.sprite.anim.anim_current]->frames[player1.sprite.anim.anim_frame]]);
+			SPR_FLIP_META = 1;
 		}
-		else // NOTE: This assumes left/right only.
-		{		
-			oam_meta_spr(
-				high_2byte(player1.pos_x) - cam.pos_x, 
-				high_2byte(player1.pos_y) - 1 - cam.pos_y,
-				meta_player_list[sprite_anims[player1.sprite.anim.anim_current]->frames[player1.sprite.anim.anim_frame]]);
+		else
+		{
+			SPR_FLIP_META = 0;
 		}
+
+		oam_meta_spr(
+			high_2byte(player1.pos_x) - cam.pos_x, 
+			high_2byte(player1.pos_y) - 1 - cam.pos_y,
+			meta_player_list[sprite_anims[player1.sprite.anim.anim_current]->frames[player1.sprite.anim.anim_frame]]);
 	}
 }
 
@@ -163,20 +162,19 @@ void draw_skeleton()
 
 //	if ((high_2byte(dynamic_objs.pos_x[in_dynamic_obj_index]) + 8) > cam.pos_x && high_2byte(dynamic_objs.pos_x[in_dynamic_obj_index]) < (cam.pos_x + 256))
 	{
+
 		if (dynamic_objs.dir_x[in_dynamic_obj_index] < 0)
 		{
-			oam_meta_spr_flipped(
-				high_2byte(dynamic_objs.pos_x[in_dynamic_obj_index]) - cam.pos_x,
-				high_2byte(dynamic_objs.pos_y[in_dynamic_obj_index]) - 1 - cam.pos_y,
-				meta_enemies_list[sprite_anims[dynamic_objs.sprite[in_dynamic_obj_index].anim.anim_current]->frames[dynamic_objs.sprite[in_dynamic_obj_index].anim.anim_frame]]);
+			SPR_FLIP_META = 1;
+		}
+		else
+		{
+			SPR_FLIP_META = 0;
+		}
 
-		}
-		else // NOTE: This assumes left/right only.
-		{		
-			oam_meta_spr(
-				high_2byte(dynamic_objs.pos_x[in_dynamic_obj_index]) - cam.pos_x,
-				high_2byte(dynamic_objs.pos_y[in_dynamic_obj_index]) - 1 - cam.pos_y,
-				meta_enemies_list[sprite_anims[dynamic_objs.sprite[in_dynamic_obj_index].anim.anim_current]->frames[dynamic_objs.sprite[in_dynamic_obj_index].anim.anim_frame]]);
-		}
+		oam_meta_spr(
+			high_2byte(dynamic_objs.pos_x[in_dynamic_obj_index]) - cam.pos_x,
+			high_2byte(dynamic_objs.pos_y[in_dynamic_obj_index]) - 1 - cam.pos_y,
+			meta_enemies_list[sprite_anims[dynamic_objs.sprite[in_dynamic_obj_index].anim.anim_current]->frames[dynamic_objs.sprite[in_dynamic_obj_index].anim.anim_frame]]);
 	}	
 }
