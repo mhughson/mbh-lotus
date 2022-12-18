@@ -109,6 +109,8 @@ VRAM_INDEX:			.res 1
 META_PTR:			.res 2
 DATA_PTR:			.res 2
 
+; temp for storing sprite position during oam_spr_meta
+SPR_POS:			.res 1
 
 
 

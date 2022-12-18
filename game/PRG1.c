@@ -161,7 +161,7 @@ void draw_skeleton()
 	// TODO: load into other slots.
 	chr_3_index_queued = sprite_anims[global_working_anim->anim_current]->chr_index;
 
-//	if (high_2byte(player1.pos_y) < 240 || high_2byte(player1.pos_y) > (0xffff - 16))
+//	if ((high_2byte(dynamic_objs.pos_x[in_dynamic_obj_index]) + 8) > cam.pos_x && high_2byte(dynamic_objs.pos_x[in_dynamic_obj_index]) < (cam.pos_x + 256))
 	{
 		if (dynamic_objs.dir_x[in_dynamic_obj_index] < 0)
 		{

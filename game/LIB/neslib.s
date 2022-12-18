@@ -469,8 +469,31 @@ _oam_meta_spr:
 	cmp #$80
 	beq @2
 	iny
-	clc
-	adc <SCRX
+
+	; Store the sprite position in a temp while
+	; a gets used top manipulate the screen position.
+	sta <SPR_POS ; store here for a moment.
+
+	; The next little chunk of code is to all us to detect
+	; wrap-around of unsigned + signed values, so that we can
+	; avoid drawing sprites that go off the screen.
+	; TODO: Eventually this will need to be reversed for
+	;		metasprites starting off screen.
+	lda <SCRX		; Load up the screen position.
+	eor #$80        ; Flip the high bit.
+	clc             ; Clear the carry flag, as needed by adc.
+	adc <SPR_POS    ; Add the sprite offset (signed).
+					; setting overflow if appropriate.
+	eor #$80        ; Flip the high bit again.
+	bvc @drawsprite	; Branch if there was NO overflow.
+
+	; a wrap happened so clean up and move to the next sprite.
+	; iny y to get to the next sprite in the meta sprite.
+	iny
+	iny
+	iny
+	jmp @skip
+@drawsprite:
 	sta OAM_BUF+3,x
 	lda (PTR),y		;y offset
 	iny
@@ -483,6 +506,7 @@ _oam_meta_spr:
 	lda (PTR),y		;attribute
 	iny
 	sta OAM_BUF+2,x
+@skip:
 	inx
 	inx
 	inx
@@ -530,8 +554,31 @@ _oam_meta_spr_flipped:
 	lda #$8
 	sbc (PTR),y		;x offset
 	iny
-	clc
-	adc <SCRX
+
+	; Store the sprite position in a temp while
+	; a gets used top manipulate the screen position.
+	sta <SPR_POS ; store here for a moment.
+
+	; The next little chunk of code is to all us to detect
+	; wrap-around of unsigned + signed values, so that we can
+	; avoid drawing sprites that go off the screen.
+	; TODO: Eventually this will need to be reversed for
+	;		metasprites starting off screen.
+	lda <SCRX		; Load up the screen position.
+	eor #$80        ; Flip the high bit.
+	clc             ; Clear the carry flag, as needed by adc.
+	adc <SPR_POS    ; Add the sprite offset (signed).
+					; setting overflow if appropriate.
+	eor #$80        ; Flip the high bit again.
+	bvc @drawsprite	; Branch if there was NO overflow.
+
+	; a wrap happened so clean up and move to the next sprite.
+	; iny y to get to the next sprite in the meta sprite.
+	iny
+	iny
+	iny
+	jmp @skip
+@drawsprite:
 	sta OAM_BUF+3,x
 	lda (PTR),y		;y offset
 	iny
@@ -545,6 +592,7 @@ _oam_meta_spr_flipped:
 	ora #$40 ; flip
 	iny
 	sta OAM_BUF+2,x
+@skip:
 	inx
 	inx
 	inx
