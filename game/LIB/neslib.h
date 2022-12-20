@@ -114,6 +114,7 @@ void __fastcall__ oam_spr(unsigned char x,unsigned char y,unsigned char chrnum,u
 // use SPR_FLIP_META to draw the metasprite flipped.
 
 void __fastcall__ oam_meta_spr(unsigned char x,unsigned char y,const unsigned char *data);
+void __fastcall__ oam_meta_spr_offscreen(unsigned char x,unsigned char y,const unsigned char *data);
 
 
 //hide all remaining sprites from given offset
