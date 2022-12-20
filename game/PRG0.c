@@ -47,6 +47,8 @@ const unsigned char bg_bank_sets[NUM_BG_BANK_SETS][NUM_BG_BANKS] =
 unsigned char irq_array[32];
 unsigned char irq_array_buffer[32];
 
+unsigned char oam_base;
+
 #if DEBUG_ENABLED
 // Debug hack to test teleporting around a map.
 unsigned int debug_pos_start;
@@ -129,6 +131,9 @@ void main_real()
 PROFILE_POKE(PROF_R)
 
 		oam_clear();
+
+		oam_base += (39 * 4);
+		oam_set(oam_base);
 
 		// When a VRAM update is queued, we can't do it while the screen is
 		// drawing or it will change the visuals for the *previous* frame, which
