@@ -373,6 +373,7 @@ extern unsigned char chr_3_index_queued;
 
 // assembly exports.
 extern unsigned char SPR_FLIP_META;
+extern unsigned char SPR_OFFSCREEN_META;
 
 // XRAM
 //

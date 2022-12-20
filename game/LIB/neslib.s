@@ -15,7 +15,7 @@
 	.export _pal_all,_pal_bg,_pal_spr,_pal_col,_pal_clear
 	.export _pal_bright,_pal_spr_bright,_pal_bg_bright
 	.export _ppu_off,_ppu_on_all,_ppu_on_bg,_ppu_on_spr,_ppu_mask,_ppu_system
-	.export _oam_clear,_oam_size,_oam_spr,_oam_meta_spr,_oam_meta_spr_offscreen,_oam_hide_rest
+	.export _oam_clear,_oam_size,_oam_spr,_oam_meta_spr,_oam_hide_rest
 	.export _ppu_wait_frame,_ppu_wait_nmi
 	.export _scroll,_split
 	.export _bank_spr,_bank_bg
@@ -486,127 +486,19 @@ _oam_meta_spr:
 @cont:
 
 	iny
-
 	; Store the sprite position in a temp while
 	; a gets used top manipulate the screen position.
 	sta <SPR_POS ; store here for a moment.
 
-	; The next little chunk of code is to all us to detect
-	; wrap-around of unsigned + signed values, so that we can
-	; avoid drawing sprites that go off the screen.
-	; TODO: Eventually this will need to be reversed for
-	;		metasprites starting off screen.
-	lda <SCRX		; Load up the screen position.
-	eor #$80        ; Flip the high bit.
-	clc             ; Clear the carry flag, as needed by adc.
-	adc <SPR_POS    ; Add the sprite offset (signed).
-					; setting overflow if appropriate.
-	eor #$80        ; Flip the high bit again.
-	bvc @drawsprite	; Branch if there was NO overflow.
+	; Is this an onscreen sprite or an offscreen sprite?
+	lda SPR_OFFSCREEN_META
+	beq @draw_onscreen
 
-	; a wrap happened so clean up and move to the next sprite.
-	; iny y to get to the next sprite in the meta sprite.
-	iny
-	iny
-	iny
-	jmp @skip
-@drawsprite:
-	sta OAM_BUF+3,x
-	lda (PTR),y		;y offset
-	iny
-	clc
-	adc <SCRY
-	sta OAM_BUF+0,x
-	lda (PTR),y		;tile
-	iny
-	sta OAM_BUF+1,x
-
-	; Did the caller request that the meta sprite be flipped?
-	lda SPR_FLIP_META
-	beq @skip_attr_flip
-
-	; If the meta sprite is flipped, we need every sprite to have
-	; its horizontal flip bit... flipped.
-	lda (PTR),y		;attribute
-	ora #$40 ; flip
-	jmp @cont_attr
-@skip_attr_flip:
-	lda (PTR),y		;attribute
-@cont_attr:
-	iny
-	sta OAM_BUF+2,x
-@skip:
-	inx
-	inx
-	inx
-	inx
-	jmp @1
-
-@2:
-
-	lda <sp
-	adc #1 ;2			;carry is always set here, so it adds 3
-	sta <sp
-	bcc @3
-	inc <sp+1
-
-@3:
-
-	stx SPRID
-	rts
-
-
-; Duplicate of the regular oam_meta_spr function but with
-; the culling logic reversed: this version will only draw
-; sub-sprites which *do* wrap (meaning they went from off-
-; screen to on screen).
-_oam_meta_spr_offscreen:
-
-	sta <PTR
-	stx <PTR+1
-
-	ldy #1		;2 popa calls replacement, performed in reversed order
-	lda (sp),y
-	dey
-	sta <SCRX
-	lda (sp),y
-	sta <SCRY
-	
-	ldx SPRID
-
-@1:
-
-	lda (PTR),y		;x offset
-	cmp #$80
-	beq @2
-	
-	; Did the caller request that the meta sprite be flipped?
-	lda SPR_FLIP_META
-	beq @skip_flip
-
-	; When flipped, the sprites should be draw at 8 - x_pos.
-	sec
-	lda #$8
-	sbc (PTR),y		;x offset
-	jmp @cont
-
-@skip_flip:
-
-	lda (PTR),y		;x offset
-
-@cont:
-
-	iny
-
-	; Store the sprite position in a temp while
-	; a gets used top manipulate the screen position.
-	sta <SPR_POS ; store here for a moment.
+;draw_offscreen
 
 	; The next little chunk of code is to all us to detect
 	; wrap-around of unsigned + signed values, so that we can
-	; avoid drawing sprites that go off the screen.
-	; TODO: Eventually this will need to be reversed for
-	;		metasprites starting off screen.
+	; avoid drawing sprites that are off the screen.
 	lda <SCRX		; Load up the screen position.
 	eor #$80        ; Flip the high bit.
 	clc             ; Clear the carry flag, as needed by adc.
@@ -614,9 +506,23 @@ _oam_meta_spr_offscreen:
 					; setting overflow if appropriate.
 	eor #$80        ; Flip the high bit again.
 	bvs @drawsprite	; Branch if there WAS overflow.
-					; This is the only thing different from the 
-					; default oam_spr routine.
+	jmp @skip_drawsprite
 
+@draw_onscreen:
+
+	; The next little chunk of code is to all us to detect
+	; wrap-around of unsigned + signed values, so that we can
+	; avoid drawing sprites that go off the screen.
+	lda <SCRX		; Load up the screen position.
+	eor #$80        ; Flip the high bit.
+	clc             ; Clear the carry flag, as needed by adc.
+	adc <SPR_POS    ; Add the sprite offset (signed).
+					; setting overflow if appropriate.
+	eor #$80        ; Flip the high bit again.
+	bvc @drawsprite	; Branch if there was NO overflow.
+;jmp @skip_drawsprite
+
+@skip_drawsprite:
 	; a wrap happened so clean up and move to the next sprite.
 	; iny y to get to the next sprite in the meta sprite.
 	iny
@@ -667,7 +573,6 @@ _oam_meta_spr_offscreen:
 
 	stx SPRID
 	rts
-
 
 
 

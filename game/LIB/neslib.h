@@ -111,10 +111,9 @@ void __fastcall__ oam_spr(unsigned char x,unsigned char y,unsigned char chrnum,u
 //in order x offset, y offset, tile, attribute
 //x=128 is end of a meta sprite
 // Note: sprid removed for speed
-// use SPR_FLIP_META to draw the metasprite flipped.
-
+//      SPR_FLIP_META to draw the metasprite flipped.
+//      SPR_OFFSCREEN_META when drawing metasprites that are off screen
 void __fastcall__ oam_meta_spr(unsigned char x,unsigned char y,const unsigned char *data);
-void __fastcall__ oam_meta_spr_offscreen(unsigned char x,unsigned char y,const unsigned char *data);
 
 
 //hide all remaining sprites from given offset
