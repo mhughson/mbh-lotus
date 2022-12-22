@@ -82,18 +82,27 @@ const struct anim_def* sprite_anims[] =
 unsigned char update_anim()
 {
 	static const struct anim_def* cur_anim;
+    static unsigned char local_tmp1;
+    static unsigned char local_tmp2;
+    
 	cur_anim = sprite_anims[global_working_anim->anim_current];
 
 	// Note: In WnW this was done in each draw function manually, and I'm not sure why. Perhaps
 	//		 to ensure that the first frame got played before advancing?
 	++global_working_anim->anim_ticks;
 
-	if (global_working_anim->anim_ticks >= cur_anim->ticks_per_frame)
+	// optimization to avoid int compare.
+    local_tmp1 = global_working_anim->anim_ticks;
+    local_tmp2 = cur_anim->ticks_per_frame;
+    if (local_tmp1 >= local_tmp2)
 	{
 		global_working_anim->anim_ticks = 0;
 		++global_working_anim->anim_frame;
-		// todo: don't always loop.
-		if (global_working_anim->anim_frame >= cur_anim->anim_len)
+
+		// optimization to avoid int compare.
+        local_tmp1 = global_working_anim->anim_frame;
+        local_tmp2 = cur_anim->anim_len;
+        if (local_tmp1 >= local_tmp2)
 		{
 			global_working_anim->anim_frame = 0;
 			return 1;
@@ -173,11 +182,10 @@ void draw_skeleton()
 		SPR_FLIP_META = 0;
 	}
 
-	SPR_OFFSCREEN_META = (high_2byte(dynamic_objs.pos_x[in_dynamic_obj_index])) < cam.pos_x || high_2byte(dynamic_objs.pos_x[in_dynamic_obj_index]) >= (cam.pos_x + 256);
+	SPR_OFFSCREEN_META = (dynamic_objs.pos_x[in_dynamic_obj_index]) < cam.pos_x || dynamic_objs.pos_x[in_dynamic_obj_index] >= (cam.pos_x + 256);
 
 	oam_meta_spr(
-		high_2byte(dynamic_objs.pos_x[in_dynamic_obj_index]) - cam.pos_x,
-		high_2byte(dynamic_objs.pos_y[in_dynamic_obj_index]) - 1 - cam.pos_y,
-		meta_enemies_list[sprite_anims[dynamic_objs.sprite[in_dynamic_obj_index].anim.anim_current]->frames[dynamic_objs.sprite[in_dynamic_obj_index].anim.anim_frame]]);
-
+		dynamic_objs.pos_x[in_dynamic_obj_index] - cam.pos_x,
+		dynamic_objs.pos_y[in_dynamic_obj_index] - 1 - cam.pos_y,
+		meta_enemies_list[sprite_anims[global_working_anim->anim_current]->frames[global_working_anim->anim_frame]]);
 }

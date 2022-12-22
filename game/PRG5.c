@@ -209,8 +209,8 @@ void load_and_process_map()
 						dash_time = 0;
 					}
 					player1.dir_y = 1;
-					player1.vel_x = 0;
-					player1.vel_y = 0;
+					player1.vel_x16 = 0;
+					player1.vel_y16 = 0;
 				}
 				break;
 			}
@@ -230,8 +230,8 @@ void load_and_process_map()
 			case TRIG_SKELETON:
 			{
 				dynamic_objs.type[local_dynamic_index] = loaded_obj_id;
-				dynamic_objs.pos_x[local_dynamic_index] = FP_WHOLE(loaded_obj_x * 16);
-				dynamic_objs.pos_y[local_dynamic_index] = FP_WHOLE(loaded_obj_y * 16);
+				dynamic_objs.pos_x[local_dynamic_index] = loaded_obj_x * 16;
+				dynamic_objs.pos_y[local_dynamic_index] = loaded_obj_y * 16;
 				dynamic_objs.dir_x[local_dynamic_index] = -1;
 				dynamic_objs.dir_y[local_dynamic_index] = -1;
 				dynamic_objs.payload[local_dynamic_index] = loaded_obj_payload;

@@ -112,7 +112,6 @@ DATA_PTR:			.res 2
 ; temp for storing sprite position during oam_spr_meta
 SPR_POS:			.res 1
 
-.segment "BSS" ; I haven't been able to figure out how to import into zero page in C
 ; if non-zero, will flip an entire meta sprite when oam_spr_meta
 ; is called.
 SPR_FLIP_META:		.res 1

@@ -40,11 +40,11 @@ unsigned char intersects_box_box()
 	static signed int _width_half = 8;
 	static signed int _height_half = 8;
 
-	_pos_delta = (high_2byte(player1.pos_x) + _width_half) - (high_2byte(dynamic_objs.pos_x[in_dynamic_obj_index]) + _width_half);
+	_pos_delta = (high_2byte(player1.pos_x) + _width_half) - (dynamic_objs.pos_x[in_dynamic_obj_index] + _width_half);
 	_dist_sum = _width_half + _width_half;
 	if( abs(_pos_delta) >= _dist_sum ) return 0;
 
-	_pos_delta = (high_2byte(player1.pos_y) + 12) - (high_2byte(dynamic_objs.pos_y[in_dynamic_obj_index]) + _height_half);
+	_pos_delta = (high_2byte(player1.pos_y) + 12) - (dynamic_objs.pos_y[in_dynamic_obj_index] + _height_half);
 	_dist_sum = 12 + _height_half;
 	if( abs(_pos_delta) >= _dist_sum ) return 0;
 	
@@ -54,8 +54,6 @@ unsigned char intersects_box_box()
 void update_skeleton()
 {
 	static unsigned char local_offset;
-
-PROFILE_POKE(PROF_G);
 
     // Check if the Skeleton is dead.
     if (dynamic_objs.dead_time[in_dynamic_obj_index] > 0)
@@ -73,7 +71,17 @@ PROFILE_POKE(PROF_G);
         return;
     }
 
-	dynamic_objs.pos_x[in_dynamic_obj_index] += FP_0_25 * dynamic_objs.dir_x[in_dynamic_obj_index];
+	if (tick_count % 4 == 0)
+	{
+		if (dynamic_objs.dir_x[in_dynamic_obj_index] < 0)
+		{
+			--dynamic_objs.pos_x[in_dynamic_obj_index];
+		}
+		else
+		{
+			++dynamic_objs.pos_x[in_dynamic_obj_index];
+		}
+	}
 
 	local_offset = 0;
 	if (dynamic_objs.dir_x[in_dynamic_obj_index] > 0)
@@ -81,7 +89,7 @@ PROFILE_POKE(PROF_G);
 		local_offset = 1;
 	}
 
-	index16 = GRID_XY_TO_ROOM_INDEX((high_2byte(dynamic_objs.pos_x[in_dynamic_obj_index]) / 16) + local_offset, high_2byte(dynamic_objs.pos_y[in_dynamic_obj_index]) / 16);
+	index16 = GRID_XY_TO_ROOM_INDEX((dynamic_objs.pos_x[in_dynamic_obj_index] / 16) + local_offset, dynamic_objs.pos_y[in_dynamic_obj_index] / 16);
 
 	tempFlags = GET_META_TILE_FLAGS(index16);
 
@@ -97,24 +105,24 @@ PROFILE_POKE(PROF_G);
         // Check if the player's feet are above the feet of the Skeleton.
         // We will only consider this a "squish attack" if they are.
         // TODO: I'm not quite sure why the player feet needs to be at "21" rather than their actual position of "20".
-		if ((dynamic_objs.pos_y[in_dynamic_obj_index] + FP_WHOLE(16)) >= (player1.pos_y + FP_WHOLE(21)))
+		if ((dynamic_objs.pos_y[in_dynamic_obj_index] + 16) >= (high_2byte(player1.pos_y) + 21))
 		{
 			// if downward, bounce
-			if (player1.vel_y > 0)
+			if (player1.vel_y16 > 0)
 			{
                 // Big or normal bounce?
                 if (pad_all & PAD_A)
                 {
-				    player1.vel_y = -(JUMP_VEL) * 2;
+				    player1.vel_y16 = -(JUMP_VEL_16bit) * 2;
                 }
                 else
                 {
-                    player1.vel_y = -(JUMP_VEL);
+                    player1.vel_y16 = -(JUMP_VEL_16bit);
                 }
 
                 // Experimenting with zeroing out the X velocity
                 // of the player, to make it feel less "out of control".
-                player1.vel_x = 0;
+                player1.vel_x16 = 0;
 				sfx_play(5,0);
 
                 // Start the death timer for the skeleton.
@@ -123,11 +131,9 @@ PROFILE_POKE(PROF_G);
 		}
         // Only hurt the player if they are NOT jumping upward.
         // This is to make the game feel more forgiving.
-		else if (player1.vel_y >= 0)
+		else if (player1.vel_y16 >= 0)
 		{
 			banked_call(BANK_0, kill_player);
 		}
 	}
-
-PROFILE_POKE(PROF_B);
 }

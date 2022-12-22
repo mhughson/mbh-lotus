@@ -128,7 +128,7 @@ void main_real()
 		++ticks_in_state16;
 
 		ppu_wait_nmi(); // wait till beginning of the frame
-PROFILE_POKE(PROF_R)
+PROFILE_POKE(PROF_W)
 
 		oam_clear();
 
@@ -214,6 +214,7 @@ PROFILE_POKE(PROF_R)
 				// we can detect if it moved by the end of the frame.
 				local_old_cam_x = cam.pos_x;
 
+PROFILE_POKE(PROF_G);
 				if (cur_room_type == 1)
 				{
 					banked_call(BANK_3, update_player_td);
@@ -222,8 +223,8 @@ PROFILE_POKE(PROF_R)
 				{
 					update_player();
 				}
+PROFILE_POKE(PROF_W);
 
-PROFILE_POKE(PROF_B);
 				// update the trigger objects.
 				for (local_i = 0; local_i < MAX_TRIGGERS; ++local_i)
 				{
@@ -322,7 +323,6 @@ PROFILE_POKE(PROF_B);
 						}
 					}
 				}				
-PROFILE_POKE(PROF_R);				
 
 				// Handle case where the state changed in update_player()
 				// We want to make sure that the state changes hold (eg. scroll)
@@ -425,9 +425,9 @@ PROFILE_POKE(PROF_R);
 				break;
 			}
 		}
-//#if DEBUG_ENALBED
-		//gray_line();
-//#endif // DEBUG_ENABLED
+
+gray_line();
+
 PROFILE_POKE(PROF_CLEAR)
 
 		// wait till the irq system is done before changing it
@@ -457,13 +457,10 @@ void update_player()
 	static unsigned long old_x;
 	static unsigned long old_y;
 
-	static signed long tempLong;
+	static signed int tempInt;
 
 	// static unsigned int high_x;
 	// static unsigned int high_y;
-	static const unsigned int high_walk_speed = (WALK_SPEED >> 16);
-
-PROFILE_POKE(PROF_G);
 
 	// high_x = high_2byte(player1.pos_x);
 	// high_y = high_2byte(player1.pos_y);
@@ -481,7 +478,7 @@ PROFILE_POKE(PROF_G);
 		{
 			// When on the ground, stop dead. This isn't an
 			// ice rink!
-			player1.vel_x = 0;
+			player1.vel_x16 = 0;
 		}
 		else
 		{
@@ -497,21 +494,21 @@ PROFILE_POKE(PROF_G);
 			*/
 		
 			//tempFlags = player1.vel_x < 0 ? -1 : 1;
-			tempLong = (ABS(player1.vel_x) >> 4); // equivlent of * 0.94f
-			if (tempLong > 0)
+			tempInt = (ABS(player1.vel_x16) >> 4); // equivlent of * 0.94f
+			if (tempInt > 0)
 			{
-				if (player1.vel_x > 0)
+				if (player1.vel_x16 > 0)
 				{
-					player1.vel_x -= (tempLong);// * tempFlags);
+					player1.vel_x16 -= (tempInt);// * tempFlags);
 				}
 				else
 				{
-					player1.vel_x += tempLong;
+					player1.vel_x16 += tempInt;
 				}
 			}
 			else
 			{
-				player1.vel_x = 0;
+				player1.vel_x16 = 0;
 			}
 		}
 	}
@@ -522,26 +519,31 @@ PROFILE_POKE(PROF_G);
 	{
 		if (pad_all & PAD_LEFT)
 		{
-			player1.vel_x = -WALK_SPEED;
+			player1.vel_x16 = -WALK_SPEED_16bit;
 		}
 		// Is the right side of the sprite, after walking, going to be passed the end of the map?
-		else if (pad_all & PAD_RIGHT && (player1.pos_x + WALK_SPEED + FP_WHOLE(16) ) <= FP_WHOLE(cur_room_width_pixels))
+		else if (pad_all & PAD_RIGHT) // && (high_2byte(player1.pos_x) + high_byte(WALK_SPEED) + 16) <= cur_room_width_pixels)
 		{
-			player1.vel_x = WALK_SPEED;
+			player1.vel_x16 = WALK_SPEED_16bit;
 		}
 	}
 
 	// If the player has a horizontal velecity, be it from
 	// pressing the DPAD above, or because they are airborne,
 	// move the position by that velocity now.
-	if (player1.vel_x != 0)
+	if (player1.vel_x16 != 0)
 	{
-		// Don't move the player if we are approaching an edge.
-		if ((player1.vel_x < 0 && player1.pos_x >= (ABS(player1.vel_x) + FP_WHOLE(4))) || 
-		    (player1.vel_x > 0 && (player1.pos_x + player1.vel_x + FP_WHOLE(16) ) <= FP_WHOLE(cur_room_width_pixels)) )
-		{
-			player1.pos_x += player1.vel_x;
-		}
+		// Not sure if blocking the player at the edge of the screen will actually
+		// ever be needed. Can be solved in level design.
+		
+		// // Don't move the player if we are approaching an edge.
+		// if ((player1.vel_x < 0 && player1.pos_x >= (ABS(player1.vel_x) + FP_WHOLE(4))) || 
+		//     (player1.vel_x > 0 && (player1.pos_x + player1.vel_x + FP_WHOLE(16) ) <= FP_WHOLE(cur_room_width_pixels)) )
+		// {
+		// 	player1.pos_x += player1.vel_x;
+		// }
+
+		player1.pos_x += FP_16_TO_32(player1.vel_x16);
 
 		// track if the player hit a spike.
 		hit_kill_box = 0;
@@ -554,7 +556,7 @@ PROFILE_POKE(PROF_G);
 			// The position is stored using fixed point math, 
 			// where the high byte is the whole part, and the
 			// low byte is the fraction.
-			if (player1.vel_x < 0)
+			if (player1.vel_x16 < 0)
 			{
 				x = (high_2byte(player1.pos_x) + x_collision_offsets[0]) >> 4;
 			}
@@ -587,14 +589,21 @@ PROFILE_POKE(PROF_G);
 
 					if (dash_time > 0)
 					{
-						player1.vel_x = -SIGN(player1.vel_x) * (FP_WHOLE(1) + FP_0_5 + FP_0_25);
-						player1.vel_y = FP_WHOLE(-5);
+						if (player1.vel_x16 < 0)
+						{
+							player1.vel_x16 = 448; // 1.75
+						}
+						else
+						{
+							player1.vel_x16 = -448;
+						}
+						player1.vel_y16 = -FP_WHOLE_16(5); // FP_WHOLE(-5);
 						dash_time = 0;
 						dash_count = 0;
 					}
 					else
 					{
-						player1.vel_x = 0;
+						player1.vel_x16 = 0;
 					}
 
 					break;
@@ -625,14 +634,14 @@ PROFILE_POKE(PROF_G);
 			//until max jump time.
 			if (jump_held_count < JUMP_HOLD_MAX)
 			{
-				player1.vel_y = -(JUMP_VEL);//keep going up while held
+				player1.vel_y16 = -(JUMP_VEL_16bit);//keep going up while held
 			}
 		}
 		else if ((on_ground && new_jump_btn && jump_count == 0))
 		{
 			++jump_held_count;
 			++jump_count;
-			player1.vel_y = -(JUMP_VEL);
+			player1.vel_y16 = -(JUMP_VEL_16bit);
 			// The moment you just, the dash is over, but
 			// we don't reset the dash_count until you land.
             dash_time = 0;
@@ -642,7 +651,7 @@ PROFILE_POKE(PROF_G);
 		{
 			++jump_held_count;
 			++jump_count;
-			player1.vel_y = -(JUMP_VEL);
+			player1.vel_y16 = -(JUMP_VEL_16bit);
 		}
 	}
 	else
@@ -661,7 +670,7 @@ PROFILE_POKE(PROF_G);
 		// Try to make dash go exactly 4 meta tiles. Note that if dash_speed is greater than
 		// 1, it will not land exactly on point as we always move the full dash_speed every frame.
 		dash_time = DASH_LENGTH_TICKS;
-		player1.vel_x = player1.dir_x * FP_WHOLE(DASH_SPEED);
+		player1.vel_x16 = player1.dir_x * FP_WHOLE_16(DASH_SPEED);
 		dash_count = 1;
 
 		// When we start a dash, end the current jump if there is
@@ -675,8 +684,8 @@ PROFILE_POKE(PROF_G);
 		--dash_time;
 		if (dash_time == 0)
 		{
-			player1.vel_y = 0;
-			player1.vel_x = player1.dir_x * FP_DASH_SPEED_EXIT;
+			player1.vel_y16 = 0;
+			player1.vel_x16 = player1.dir_x * FP_DASH_SPEED_EXIT_16bit;
 		}
 	}
 
@@ -695,15 +704,15 @@ PROFILE_POKE(PROF_G);
 	// Only apply gravity if you are dashing.
 	if (dash_time == 0)
 	{
-		player1.vel_y += GRAVITY;
-		player1.pos_y += player1.vel_y;
+		player1.vel_y16 += GRAVITY_16bit;
+		player1.pos_y += FP_16_TO_32(player1.vel_y16);
 	}
 
 	// Assume not on the ground each frame, until we detect we hit it.
 	grounded = 0;
 
 	// Roof check
-	if (player1.vel_y < 0)
+	if (player1.vel_y16 < 0)
 	{
 		for (i = 0; i < NUM_X_COLLISION_OFFSETS; ++i)
 		{
@@ -715,7 +724,7 @@ PROFILE_POKE(PROF_G);
 				if (GET_META_TILE_FLAGS(index16) & FLAG_SOLID)
 				{
 					player1.pos_y = (unsigned long)((y << 4) + CELL_SIZE) << HALF_POS_BIT_COUNT;
-					player1.vel_y = 0;
+					player1.vel_y16 = 0;
 					// prevent hovering against the roof.
 					jump_held_count = JUMP_HOLD_MAX;
 					break;
@@ -746,7 +755,7 @@ PROFILE_POKE(PROF_G);
 					jump_count = 0;
 					grounded = 1;
 					player1.pos_y = (unsigned long)((y << 4) - (y_collision_offsets[2] + 1)) << HALF_POS_BIT_COUNT;
-					player1.vel_y = 0;
+					player1.vel_y16 = 0;
 					airtime = 0;
 					hit_kill_box = 0;
 					// Don't reset the dash count unless the player has stopped dashing,
@@ -807,7 +816,7 @@ PROFILE_POKE(PROF_G);
 	}
 	else if (!grounded)
 	{
-		if (player1.vel_y > 0)
+		if (player1.vel_y16 > 0)
 		{
 			anim_index = ANIM_PLAYER_FALL;
 			global_working_anim = &player1.sprite.anim;
@@ -836,10 +845,6 @@ PROFILE_POKE(PROF_G);
 		queue_next_anim(anim_index);
 		commit_next_anim();
 	}
-
-	//draw_player();
-
-PROFILE_POKE(PROF_R);
 }
 
 void copy_current_map_to_nametable()
@@ -1052,8 +1057,6 @@ void vram_buffer_load_column()
 
 	// TILES
 
-PROFILE_POKE(PROF_G)
-
 	tile_offset = (in_x_pixel % 16) / 8;
 	tile_offset2 = tile_offset+2;
 
@@ -1082,8 +1085,6 @@ PROFILE_POKE(PROF_G)
 
 
 	// ATTRIBUTES
-
-PROFILE_POKE(PROF_B)
 
 	// Attributes are in 2x2 meta tile chunks, so we need to round down to the nearest,
 	// multiple of 2 (eg. if you pass in index 5, we want to start on 4).
@@ -1120,7 +1121,6 @@ PROFILE_POKE(PROF_B)
 
 		one_vram_buffer(local_i, get_at_addr(nametable_index, (local_x) * CELL_SIZE, ((local_y * CELL_SIZE) + (cur_nametable_y * 8))));
 	}
-PROFILE_POKE(PROF_W)
 }
 
 // TODO: Can the full and timesliced versions of these functions be combined
@@ -1153,8 +1153,6 @@ void vram_buffer_load_column_full()
 
 	// TILES
 
-PROFILE_POKE(PROF_G)
-
 	tile_offset = (in_x_pixel % 16) / 8;
 	tile_offset2 = tile_offset+2;
 
@@ -1179,8 +1177,6 @@ PROFILE_POKE(PROF_G)
 
 
 	// ATTRIBUTES
-
-PROFILE_POKE(PROF_B)
 
 	// Attributes are in 2x2 meta tile chunks, so we need to round down to the nearest,
 	// multiple of 2 (eg. if you pass in index 5, we want to start on 4).
@@ -1217,7 +1213,6 @@ PROFILE_POKE(PROF_B)
 
 		one_vram_buffer(local_i, get_at_addr(nametable_index, (local_x) * CELL_SIZE, ((local_y * CELL_SIZE))));
 	}
-PROFILE_POKE(PROF_W)
 }
 
 void go_to_state(unsigned char new_state)
@@ -1294,7 +1289,7 @@ void go_to_state(unsigned char new_state)
 			player1.pos_x = FP_WHOLE(24);
 //#endif // DEBUG_ENABLED
 			player1.pos_y = FP_WHOLE((6<<4));
-			player1.vel_y = 0;
+			player1.vel_y16 = 0;
 
 			// Load the room first so that we know it's size.
 			in_is_streaming = 0;

@@ -8,7 +8,7 @@
 #define DEBUG_ENABLED 1
 
 #if DEBUG_ENABLED
-#define PROFILE_POKE(val) //POKE((0x2001),(val));
+#define PROFILE_POKE(val) POKE((0x2001),(val));
 #else
 #define PROFILE_POKE(val)
 #endif
@@ -61,6 +61,7 @@
 
 // Constants
 #define HALF_POS_BIT_COUNT (16ul)
+#define QUART_POS_BIT_COUNT (8)
 #define FP_0_01 ((unsigned long)655ul) // approx
 #define FP_0_05 ((unsigned long)3277ul) // approx
 #define FP_0_15 ((unsigned long)9831ul) // approx
@@ -69,17 +70,19 @@
 #define FP_0_5 ((unsigned long)32768ul)
 #define FP_0_75 ((unsigned long)49152ul)
 #define FP_WHOLE(x) ((unsigned long)(x)<<HALF_POS_BIT_COUNT)
+#define FP_WHOLE_16(x) ((signed int)(x)<<QUART_POS_BIT_COUNT)
+#define FP_16_TO_32(x) ((unsigned long)(x)<<QUART_POS_BIT_COUNT)
 
 // Tunables
-#define JUMP_VEL (FP_WHOLE(2ul) + FP_0_5)
+#define JUMP_VEL_16bit ( (2 << 8) + 128 ) //  (FP_WHOLE(2ul) + FP_0_5)
 #define JUMP_HOLD_MAX (15ul) // 10 = 3 tiles, 12 = 3.5 tiles, 15 = 4 tiles
-#define GRAVITY (FP_0_18)
+#define GRAVITY_16bit (46) // (FP_0_18)
 #define GRAVITY_LOW (FP_0_05)
-#define WALK_SPEED (FP_WHOLE(1ul) + FP_0_5)
+#define WALK_SPEED_16bit (384) //(FP_WHOLE(1ul) + FP_0_5)
 #define JUMP_COYOTE_DELAY (8)
 #define ATTACK_LEN (5)
 #define DASH_SPEED ((unsigned char)3)
-#define FP_DASH_SPEED_EXIT WALK_SPEED // feels weird with anything higher than walk speed
+#define FP_DASH_SPEED_EXIT_16bit WALK_SPEED_16bit // feels weird with anything higher than walk speed
 #define DASH_LENGTH_TICKS (((unsigned char)4 * (unsigned char)16) / DASH_SPEED)
 #define FP_AIR_FRICTION FP_0_05
 
@@ -202,8 +205,8 @@ typedef struct game_actor
 	unsigned long pos_x;
 	unsigned long pos_y;
 
-	signed long vel_x;
-	signed long vel_y;
+	signed int vel_x16;
+	signed int vel_y16;
 
 	signed char dir_x;
 	signed char dir_y;
@@ -235,8 +238,8 @@ typedef struct dynamic_actors
 {
 	animated_sprite sprite[MAX_DYNAMIC_OBJS];
 
-	unsigned long pos_x[MAX_DYNAMIC_OBJS];
-	unsigned long pos_y[MAX_DYNAMIC_OBJS];
+	unsigned int pos_x[MAX_DYNAMIC_OBJS];
+	unsigned int pos_y[MAX_DYNAMIC_OBJS];
 
 	signed char dir_x[MAX_DYNAMIC_OBJS];
 	signed char dir_y[MAX_DYNAMIC_OBJS];
@@ -373,7 +376,10 @@ extern unsigned char chr_3_index_queued;
 
 // assembly exports.
 extern unsigned char SPR_FLIP_META;
+ #pragma zpsym ("SPR_FLIP_META"); // zero-page
 extern unsigned char SPR_OFFSCREEN_META;
+ #pragma zpsym ("SPR_OFFSCREEN_META");
+
 
 // XRAM
 //

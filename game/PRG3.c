@@ -29,8 +29,6 @@ void update_player_td()
 
 	static const unsigned int high_walk_speed = (WALK_SPEED_TD >> 16);
 
-PROFILE_POKE(PROF_G);
-
 	// high_x = high_2byte(player1.pos_x);
 	// high_y = high_2byte(player1.pos_y);
 
@@ -147,7 +145,7 @@ PROFILE_POKE(PROF_G);
 				if (GET_META_TILE_FLAGS(index16) & FLAG_SOLID)
 				{
 					player1.pos_y = temp32;
-					player1.vel_y = 0;
+					player1.vel_y16 = 0;
 					break;
 				}
 			}
@@ -170,7 +168,7 @@ PROFILE_POKE(PROF_G);
 				if (GET_META_TILE_FLAGS(index16) & FLAG_SOLID)
 				{
 					player1.pos_y = temp32;
-					player1.vel_y = 0;
+					player1.vel_y16 = 0;
 					break;
 				}
 			}
@@ -267,8 +265,6 @@ PROFILE_POKE(PROF_G);
 	commit_next_anim();
 
 	//draw_player();
-
-PROFILE_POKE(PROF_R);	
 }
 
 
