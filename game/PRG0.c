@@ -331,8 +331,8 @@ PROFILE_POKE(PROF_W);
 							{
 								case TRIG_SKELETON:
 								{
-									if (dynamic_objs.pos_x[local_i] > (cam.pos_x >= THAW_OFFSET ? cam.pos_x - THAW_OFFSET : 0) &&
-										dynamic_objs.pos_x[local_i] < (cam.pos_x <= cur_room_width_pixels - 256 - THAW_OFFSET ? cam.pos_x + 256 + THAW_OFFSET : cur_room_width_pixels))
+									if (dynamic_objs.pos_x[local_i] > cam.thaw_left &&
+										dynamic_objs.pos_x[local_i] < cam.thaw_right)
 									{
 										dynamic_objs.state[local_i] ^= DYNAMIC_STATE_FROZEN;
 									}
@@ -399,6 +399,12 @@ PROFILE_POKE(PROF_W);
 				}
 
 				banked_call(BANK_1, draw_player);
+
+				// update the freeze and thaw values at the end of the frame.
+				cam.freeze_left = (cam.pos_x >= FROZEN_OFFSET ? cam.pos_x - FROZEN_OFFSET : 0);
+				cam.freeze_right = (cam.pos_x <= cur_room_width_pixels - 256 - FROZEN_OFFSET ? cam.pos_x + 256 + FROZEN_OFFSET : cur_room_width_pixels);
+				cam.thaw_left = (cam.pos_x >= THAW_OFFSET ? cam.pos_x - THAW_OFFSET : 0);
+				cam.thaw_right = (cam.pos_x <= cur_room_width_pixels - 256 - THAW_OFFSET ? cam.pos_x + 256 + THAW_OFFSET : cur_room_width_pixels);	
 
 				// cur_col is the last column to be loaded, aka the right
 				// hand side of the screen. The scroll amount is relative to the 

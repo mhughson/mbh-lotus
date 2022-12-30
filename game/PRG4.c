@@ -83,8 +83,8 @@ void update_skeleton()
 		}
 	}
 
-	if (dynamic_objs.pos_x[in_dynamic_obj_index] < (cam.pos_x >= FROZEN_OFFSET ? cam.pos_x - FROZEN_OFFSET : 0) ||
-		dynamic_objs.pos_x[in_dynamic_obj_index] > (cam.pos_x <= cur_room_width_pixels - 256 - FROZEN_OFFSET ? cam.pos_x + 256 + FROZEN_OFFSET : cur_room_width_pixels))
+	if (dynamic_objs.pos_x[in_dynamic_obj_index] < cam.freeze_left ||
+		dynamic_objs.pos_x[in_dynamic_obj_index] > cam.freeze_right)
 	{
 		dynamic_objs.state[in_dynamic_obj_index] |= DYNAMIC_STATE_FROZEN;
 		return;

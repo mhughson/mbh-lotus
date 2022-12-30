@@ -188,6 +188,14 @@ typedef struct camera
 {
 	unsigned int pos_x;
 	unsigned int pos_y;
+
+	// cached values for where offscreen objects should go into a
+	// frozen state or a re-activate. This is done once at the end
+	// of the frame, rather than per-object.
+	unsigned int freeze_left;
+	unsigned int freeze_right;
+	unsigned int thaw_left;
+	unsigned int thaw_right;
 } camera;
 
 // data speciic to player game objects.
