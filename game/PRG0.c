@@ -1042,7 +1042,6 @@ void vram_buffer_load_2x2_metatile()
 void vram_buffer_load_column()
 {
 	// TODO: Remove int is a significant perf improvment.
-	static unsigned char local_x;
 	static unsigned char local_y;
 	static unsigned char local_i;
 	static unsigned int local_index16;
@@ -1050,10 +1049,16 @@ void vram_buffer_load_column()
 	static unsigned char nametable_index;
 	static unsigned char tile_offset;
 	static unsigned char tile_offset2;
+	static unsigned char local_cur_nametable_y_pixel;
+	static unsigned int nametable_attr_address;
 
 	static unsigned char array_temp8;
 
+PROFILE_POKE(PROF_R)
+
 	nametable_index = (in_x_tile / 16) % 2;
+
+	local_cur_nametable_y_pixel = cur_nametable_y * 8;
 
 	// TILES
 
@@ -1081,46 +1086,32 @@ void vram_buffer_load_column()
 	// update beyond the bottom of the screen.
 	array_temp8 = MIN(NAMETABLE_TILES_8_UPDATED_PER_FRAME, 30 - cur_nametable_y);
 
-	multi_vram_buffer_vert(nametable_col, (unsigned char)array_temp8, get_ppu_addr(nametable_index, in_x_pixel, cur_nametable_y * 8));
+	multi_vram_buffer_vert(nametable_col, (unsigned char)array_temp8, get_ppu_addr(nametable_index, in_x_pixel, local_cur_nametable_y_pixel));
 
+PROFILE_POKE(PROF_G)
 
 	// ATTRIBUTES
 
-	// Attributes are in 2x2 meta tile chunks, so we need to round down to the nearest,
-	// multiple of 2 (eg. if you pass in index 5, we want to start on 4).
-	local_x = (in_x_tile & 0xFFFE);//local_x = (in_x_tile / 2) * 2;
-	//local_x = (in_x_tile / 2) * 2;
+	// Convert tile index to attribute group index.
+	local_att_index16 = in_x_tile / 2;
 
-	for (local_y = 0; local_y < (NAMETABLE_ATTRIBUTES_16_UPDATED_PER_FRAME); local_y+=2)
+	// Cache the nametable address which can be manually incremented in loop.
+	nametable_attr_address = get_at_addr(nametable_index, local_att_index16 * 32, (local_cur_nametable_y_pixel));	
+
+	// The index into the attribute table.
+	local_att_index16 += ((cur_nametable_y / 4) * cur_room_width_attributes);
+
+	for (local_y = 0; local_y < NAMETABLE_ATTRIBUTES_16_UPDATED_PER_FRAME; ++local_y)
 	{
-		local_i = 0;
+		// Get the attribute for this 2x2 chunk of metatiles.
+		local_i = current_room_attr[local_att_index16];
+		one_vram_buffer(local_i, nametable_attr_address);
 
-		// room index.
-		local_index16 = GRID_XY_TO_ROOM_INDEX(local_x, local_y + (cur_nametable_y / 2));
-		// meta tile palette index.
-		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
-		local_att_index16+=4;
-		// bit shift amount
-		local_i |= (cur_metatiles[local_att_index16]);
-
-		local_index16++;//local_index16 = local_index16 + 1; //(local_y * 16) + (local_x + 1);
-		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
-		local_att_index16+=4;
-		local_i |= (cur_metatiles[local_att_index16]) << 2;
-
-		local_index16 = local_index16 + cur_room_width_tiles; //((local_y + 1) * 16) + (local_x);
-		local_index16--;
-		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
-		local_att_index16+=4;
-		local_i |= (cur_metatiles[local_att_index16]) << 4;
-
-		local_index16++;// = local_index16 + 1; //((local_y + 1) * 16) + (local_x + 1);
-		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
-		local_att_index16+=4;
-		local_i |= (cur_metatiles[local_att_index16]) << 6;	
-
-		one_vram_buffer(local_i, get_at_addr(nametable_index, (local_x) * CELL_SIZE, ((local_y * CELL_SIZE) + (cur_nametable_y * 8))));
+		// Increment to the next row of attribute chunks.
+		local_att_index16 += cur_room_width_attributes;
+		nametable_attr_address += 8;
 	}
+PROFILE_POKE(PROF_W)
 }
 
 // TODO: Can the full and timesliced versions of these functions be combined

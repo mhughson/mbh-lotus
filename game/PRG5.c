@@ -108,9 +108,19 @@ void load_and_process_map()
 	static unsigned char local_index;
 	static unsigned char local_dynamic_index;
 
+	// attribute cache vars
+	static unsigned char local_x;
+	static unsigned char local_y;
+	static unsigned char local_i;
+	static unsigned int local_index16;
+	static unsigned int local_att_index16;
+	static unsigned int local_att_count;
+	//
+
 	get_cur_room_dimensions();
     cur_room_width_tiles = index;
 	cur_room_height_tiles = index2;
+	cur_room_width_attributes = cur_room_width_tiles / 2;
 
 	get_cur_room_special_type();
 	cur_room_type = index;
@@ -152,6 +162,49 @@ void load_and_process_map()
 
 	//memcpy(current_room, &rooms_maps_ ## MAP_VAL [cur_room_index][NUM_CUSTOM_PROPS], cur_room_size_tiles);
 	copy_bg_to_current_room();
+
+	// pre-cache attribute table for quicker copy during scrolling
+	//
+
+	local_att_count = 0;
+	for (local_y = 0; local_y < 15; local_y += 2)
+	{
+		for (local_x = 0; local_x < cur_room_width_tiles; local_x += 2)
+		{
+			local_i = 0;
+
+			// room index.
+			local_index16 = GRID_XY_TO_ROOM_INDEX(local_x, local_y);
+
+			// meta tile palette index.
+			local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
+			local_att_index16+=4;
+			// bit shift amount
+			local_i |= (cur_metatiles[local_att_index16]);
+
+			local_index16++;
+			local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
+			local_att_index16+=4;
+			local_i |= (cur_metatiles[local_att_index16]) << 2;
+
+			local_index16 = local_index16 + cur_room_width_tiles;
+			local_index16--;
+			local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
+			local_att_index16+=4;
+			local_i |= (cur_metatiles[local_att_index16]) << 4;
+
+			local_index16++;
+			local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
+			local_att_index16+=4;
+			local_i |= (cur_metatiles[local_att_index16]) << 6;	
+
+			current_room_attr[local_att_count] = local_i;
+			++local_att_count;
+		}
+	}
+
+	//
+	// end pre-cache attributes
 
 	in_obj_index = 0;
 	do

@@ -5,7 +5,7 @@
 #ifndef ONCE_MAIN_H
 #define ONCE_MAIN_H
 
-#define DEBUG_ENABLED 1
+#define DEBUG_ENABLED 0
 
 #if DEBUG_ENABLED
 #define PROFILE_POKE(val) POKE((0x2001),(val));
@@ -55,9 +55,9 @@
 //#define GET_META_TILE_FLAGS_SCROLL(room_number, room_table_index) cur_metatiles[rooms[(room_number)][(room_table_index)] * META_TILE_NUM_BYTES + META_TILE_FLAGS_OFFSET]
 
 
-#define NAMETABLE_TILES_8_UPDATED_PER_FRAME (16)
-#define NAMETABLE_TILES_8_UPDATED_PER_FRAME_TD (32)
-#define NAMETABLE_ATTRIBUTES_16_UPDATED_PER_FRAME (NAMETABLE_TILES_8_UPDATED_PER_FRAME / 2)
+#define NAMETABLE_TILES_8_UPDATED_PER_FRAME ((unsigned char)16)
+#define NAMETABLE_TILES_8_UPDATED_PER_FRAME_TD ((unsigned char)32)
+#define NAMETABLE_ATTRIBUTES_16_UPDATED_PER_FRAME (NAMETABLE_TILES_8_UPDATED_PER_FRAME / (unsigned char)4)
 
 // Constants
 #define HALF_POS_BIT_COUNT (16ul)
@@ -340,6 +340,7 @@ extern unsigned int cur_room_metatile_index;
 
 extern unsigned int cur_room_width_pixels;
 extern unsigned char cur_room_width_tiles;
+extern unsigned char cur_room_width_attributes;
 extern unsigned int cur_room_height_pixels;
 extern unsigned char cur_room_height_tiles;
 extern unsigned char cur_room_width_tiles_shift_factor;
@@ -389,6 +390,7 @@ extern unsigned char SPR_OFFSCREEN_META;
 #define MAX_ROOM_NUM_TILES (240 * 16)
 extern unsigned char save_version_validation[NUM_SAVE_VERSION_VALIDATION];
 extern unsigned char current_room[MAX_ROOM_NUM_TILES];
+extern unsigned char current_room_attr[MAX_ROOM_NUM_TILES / 4];
 extern unsigned char cur_metatiles[META_TILE_SET_NUM_BYTES];
 extern unsigned char checkpoint_room_index;
 extern unsigned char checkpoint_spawn_id;

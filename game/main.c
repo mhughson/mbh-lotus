@@ -81,6 +81,7 @@ unsigned int cur_room_metatile_index;
 
 unsigned int cur_room_width_pixels;
 unsigned char cur_room_width_tiles;
+unsigned char cur_room_width_attributes;
 unsigned int cur_room_height_pixels;
 unsigned char cur_room_height_tiles;
 unsigned int cur_room_size_tiles;
@@ -114,6 +115,8 @@ unsigned char chr_3_index_queued;
 //unsigned char wram_array[0x2000];
 unsigned char save_version_validation[NUM_SAVE_VERSION_VALIDATION];
 unsigned char current_room[MAX_ROOM_NUM_TILES];
+unsigned char current_room_attr[(MAX_ROOM_NUM_TILES) / 4];
+//unsigned char current_room_tiles[(240 * 4) * 3];
 unsigned char cur_metatiles[META_TILE_SET_NUM_BYTES];
 unsigned char checkpoint_room_index;
 unsigned char checkpoint_spawn_id;
