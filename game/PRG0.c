@@ -293,33 +293,52 @@ PROFILE_POKE(PROF_W);
 				{
 					if (dynamic_objs.type[local_i] != TRIG_UNUSED)
 					{
-						switch (dynamic_objs.type[local_i])
+						if ((dynamic_objs.state[local_i] & DYNAMIC_STATE_FROZEN) == 0)
 						{
-							case TRIG_SKELETON:
+							switch (dynamic_objs.type[local_i])
 							{
-								in_dynamic_obj_index = local_i;
-								banked_call(BANK_4, update_skeleton);
-
-								// The update call might have killed them.
-								if (dynamic_objs.type[local_i] != TRIG_UNUSED)
+								case TRIG_SKELETON:
 								{
-									if (dynamic_objs.dead_time[in_dynamic_obj_index] > 0)
-									{
-										anim_index = ANIM_SKEL_SQUISHED;
-									}
-									else
-									{
-										anim_index = ANIM_SKEL_WALK_RIGHT;
-									}
-									global_working_anim = &dynamic_objs.sprite[local_i].anim;
-									queue_next_anim(anim_index);
-									commit_next_anim();
-
 									in_dynamic_obj_index = local_i;
-									banked_call(BANK_1, draw_skeleton);
+									banked_call(BANK_4, update_skeleton);
+
+									// The update call might have killed them.
+									if (dynamic_objs.type[local_i] != TRIG_UNUSED && (dynamic_objs.state[local_i] & DYNAMIC_STATE_FROZEN) == 0)
+									{
+										if (dynamic_objs.dead_time[in_dynamic_obj_index] > 0)
+										{
+											anim_index = ANIM_SKEL_SQUISHED;
+										}
+										else
+										{
+											anim_index = ANIM_SKEL_WALK_RIGHT;
+										}
+										global_working_anim = &dynamic_objs.sprite[local_i].anim;
+										queue_next_anim(anim_index);
+										commit_next_anim();
+
+										in_dynamic_obj_index = local_i;
+										banked_call(BANK_1, draw_skeleton);
+									}
+									break;
 								}
-								break;
 							}
+						}
+						else
+						{
+							// try to wake it up.
+							switch (dynamic_objs.type[local_i])
+							{
+								case TRIG_SKELETON:
+								{
+									if (dynamic_objs.pos_x[local_i] > (cam.pos_x >= THAW_OFFSET ? cam.pos_x - THAW_OFFSET : 0) &&
+										dynamic_objs.pos_x[local_i] < (cam.pos_x <= cur_room_width_pixels - 256 - THAW_OFFSET ? cam.pos_x + 256 + THAW_OFFSET : cur_room_width_pixels))
+									{
+										dynamic_objs.state[local_i] ^= DYNAMIC_STATE_FROZEN;
+									}
+									break;
+								}
+							}							
 						}
 					}
 				}				

@@ -83,6 +83,13 @@ void update_skeleton()
 		}
 	}
 
+	if (dynamic_objs.pos_x[in_dynamic_obj_index] < (cam.pos_x >= FROZEN_OFFSET ? cam.pos_x - FROZEN_OFFSET : 0) ||
+		dynamic_objs.pos_x[in_dynamic_obj_index] > (cam.pos_x <= cur_room_width_pixels - 256 - FROZEN_OFFSET ? cam.pos_x + 256 + FROZEN_OFFSET : cur_room_width_pixels))
+	{
+		dynamic_objs.state[in_dynamic_obj_index] |= DYNAMIC_STATE_FROZEN;
+		return;
+	}
+
 	local_offset = 0;
 	if (dynamic_objs.dir_x[in_dynamic_obj_index] > 0)
 	{

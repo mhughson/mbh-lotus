@@ -5,7 +5,7 @@
 #ifndef ONCE_MAIN_H
 #define ONCE_MAIN_H
 
-#define DEBUG_ENABLED 0
+#define DEBUG_ENABLED 1
 
 #if DEBUG_ENABLED
 #define PROFILE_POKE(val) POKE((0x2001),(val));
@@ -234,6 +234,12 @@ typedef struct trigger_objects
 
 
 #define MAX_DYNAMIC_OBJS (8)
+#define DYNAMIC_STATE_FROZEN (0b00000001)
+
+#define FROZEN_OFFSET (128)
+#define THAW_OFFSET (96)
+
+
 typedef struct dynamic_actors
 {
 	animated_sprite sprite[MAX_DYNAMIC_OBJS];
@@ -249,6 +255,8 @@ typedef struct dynamic_actors
 	unsigned char payload[MAX_DYNAMIC_OBJS];	
 
 	unsigned char dead_time[MAX_DYNAMIC_OBJS];
+
+	unsigned char state[MAX_DYNAMIC_OBJS];
 } dynamic_actors;
 
 // RAM
