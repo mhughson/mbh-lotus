@@ -9,8 +9,8 @@
 ::echo %code%
 ::echo %run%
 
-set name="main"
-set name_no_quote=main
+set name="lotus"
+set name_no_quote=lotus
 
 set path=..\bin\;%path%
 
@@ -30,7 +30,7 @@ IF DEFINED maps (
 IF DEFINED code (
 	REM -g adds debug information, but the end result .nes file is not
 	REM affected, so leave it in all the time.
-	cc65 -g -Oirs %name%.c --add-source
+	cc65 -g -Oirs main.c --add-source
 	cc65 -g -Oirs PRG0.c --add-source
 	cc65 -g -Oirs PRG1.c --add-source
 	cc65 -g -Oirs PRG2.c --add-source
@@ -40,7 +40,7 @@ IF DEFINED code (
 	cc65 -g -Oirs PRG6.c --add-source
 	cc65 -g -Oirs mmc3\mmc3_code.c --add-source
 	ca65 crt0.s
-	ca65 %name%.s -g
+	ca65 main.s -g
 	ca65 PRG0.s -g
 	ca65 PRG1.s -g
 	ca65 PRG2.s -g
@@ -51,7 +51,7 @@ IF DEFINED code (
 	ca65 mmc3\mmc3_code.s -g
 
 	REM -dbgfile does not impact the resulting .nes file.
-	ld65 -C mmc3_128_128.cfg --dbgfile %name%.dbg -o %name%.nes crt0.o %name%.o mmc3\mmc3_code.o PRG0.o PRG1.o PRG2.o PRG3.o PRG4.o PRG5.o PRG6.o nes.lib -Ln labels.txt -m map.txt
+	ld65 -C mmc3_128_128.cfg --dbgfile %name%.dbg -o %name%.nes crt0.o main.o mmc3\mmc3_code.o PRG0.o PRG1.o PRG2.o PRG3.o PRG4.o PRG5.o PRG6.o nes.lib -Ln labels.txt -m map.txt
 
 	del *.o
 	del mmc3\*.o
@@ -60,7 +60,7 @@ IF DEFINED code (
 	move /Y %name%.nes BUILD\ 
 	move /Y %name%.dbg BUILD\ 
 	move /Y labels.txt BUILD\ 
-	move /Y %name%.s BUILD\ 
+	move /Y main.s BUILD\ 
 	move /Y mmc3\mmc3_code.s BUILD\ 
 	move /Y PRG0.s BUILD\ 
 	move /Y PRG1.s BUILD\ 
