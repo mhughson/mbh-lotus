@@ -243,7 +243,7 @@ const unsigned char map_gym_01[998] =
 0xff, 0xff, 0xff, 0xff 
 };
 
-const unsigned char map_gym_05[996] = 
+const unsigned char map_gym_05[1000] = 
 {
 
 //BG PAL:
@@ -347,6 +347,7 @@ const unsigned char map_gym_05[996] =
 2, 0, 7, 3,
 3, 50, 8, 0,
 3, 4, 8, 0,
+3, 57, 5, 0,
 0xff, 0xff, 0xff, 0xff 
 };
 

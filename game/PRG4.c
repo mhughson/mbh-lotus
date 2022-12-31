@@ -105,6 +105,21 @@ void update_skeleton()
 	{
 		dynamic_objs.dir_x[in_dynamic_obj_index] *= -1;
 	}
+	else
+	{
+		// Only check for a pit if we DIDN'T already hit a wall to avoid
+		// flipping again since a lot of tiles below edges will actually
+		// not be solid because you can't reach them.
+		index16 += cur_room_width_tiles;
+
+		tempFlags = GET_META_TILE_FLAGS(index16);
+
+		// Check if that point is in a solid metatile
+		if ((tempFlags & FLAG_SOLID) == 0)
+		{
+			dynamic_objs.dir_x[in_dynamic_obj_index] *= -1;
+		}
+	}
 
     // Is the skeleton overlapping the player *at all*.
 	if (intersects_box_box())

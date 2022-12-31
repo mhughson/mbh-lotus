@@ -63,6 +63,8 @@ void stream_in_next_level()
 		// will attemp to "offset" that camera.
 		index16 = cam.pos_x;
 
+		banked_call(BANK_1, draw_player_static);
+
 		// Load the next room. NOTE: This is loading OVER top of the room in RAM 
 		// that will be visible during scroll, but does NOT override VRAM. This is
 		// a point of not return though, and the old remove must be scrolled out of
@@ -169,6 +171,8 @@ void stream_in_next_level()
 		// affect the actual camera during this sequence, as the player rendering
 		// will attemp to "offset" that camera.
 		index16 = cam.pos_x;
+
+		banked_call(BANK_1, draw_player_static);
 
 		// Load the next room. NOTE: This is loading OVER top of the room in RAM 
 		// that will be visible during scroll, but does NOT override VRAM. This is

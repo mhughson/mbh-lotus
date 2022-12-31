@@ -109,6 +109,23 @@
                  "width":16,
                  "x":64,
                  "y":128
+                }, 
+                {
+                 "height":16,
+                 "id":18,
+                 "name":"skeleton",
+                 "properties":[
+                        {
+                         "name":"payload",
+                         "type":"int",
+                         "value":0
+                        }],
+                 "rotation":0,
+                 "type":"skeleton",
+                 "visible":true,
+                 "width":16,
+                 "x":912,
+                 "y":80
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -117,7 +134,7 @@
          "y":0
         }],
  "nextlayerid":5,
- "nextobjectid":17,
+ "nextobjectid":19,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.7.0",
