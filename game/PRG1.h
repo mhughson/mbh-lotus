@@ -9,5 +9,6 @@ void draw_player();
 void draw_player_static();
 void draw_player_td();
 void draw_skeleton();
+void draw_bird();
 
 #endif /* BE4E8D12_51CB_4D34_A282_8D2D9C997AB4 */

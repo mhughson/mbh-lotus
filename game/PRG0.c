@@ -297,6 +297,20 @@ PROFILE_POKE(PROF_W);
 						{
 							switch (dynamic_objs.type[local_i])
 							{
+								case TRIG_BIRD:
+								{
+									in_dynamic_obj_index = local_i;
+									banked_call(BANK_4, update_bird);
+
+									// The update call might have killed them.
+									if (dynamic_objs.type[local_i] != TRIG_UNUSED && (dynamic_objs.state[local_i] & DYNAMIC_STATE_FROZEN) == 0)
+									{
+										commit_next_anim();
+										in_dynamic_obj_index = local_i;
+										banked_call(BANK_1, draw_bird);
+									}
+									break;									
+								}
 								case TRIG_SKELETON:
 								{
 									in_dynamic_obj_index = local_i;
@@ -305,18 +319,7 @@ PROFILE_POKE(PROF_W);
 									// The update call might have killed them.
 									if (dynamic_objs.type[local_i] != TRIG_UNUSED && (dynamic_objs.state[local_i] & DYNAMIC_STATE_FROZEN) == 0)
 									{
-										if (dynamic_objs.dead_time[in_dynamic_obj_index] > 0)
-										{
-											anim_index = ANIM_SKEL_SQUISHED;
-										}
-										else
-										{
-											anim_index = ANIM_SKEL_WALK_RIGHT;
-										}
-										global_working_anim = &dynamic_objs.sprite[local_i].anim;
-										queue_next_anim(anim_index);
 										commit_next_anim();
-
 										in_dynamic_obj_index = local_i;
 										banked_call(BANK_1, draw_skeleton);
 									}
@@ -329,6 +332,7 @@ PROFILE_POKE(PROF_W);
 							// try to wake it up.
 							switch (dynamic_objs.type[local_i])
 							{
+								case TRIG_BIRD:
 								case TRIG_SKELETON:
 								{
 									if (dynamic_objs.pos_x[local_i] > cam.thaw_left &&
@@ -451,7 +455,7 @@ PROFILE_POKE(PROF_W);
 			}
 		}
 
-gray_line();
+//gray_line();
 
 PROFILE_POKE(PROF_CLEAR)
 

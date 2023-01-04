@@ -124,8 +124,76 @@
                  "type":"skeleton",
                  "visible":true,
                  "width":16,
+                 "x":672,
+                 "y":160
+                }, 
+                {
+                 "height":16,
+                 "id":19,
+                 "name":"bird",
+                 "properties":[
+                        {
+                         "name":"payload",
+                         "type":"int",
+                         "value":0
+                        }],
+                 "rotation":0,
+                 "type":"bird",
+                 "visible":true,
+                 "width":16,
                  "x":912,
+                 "y":48
+                }, 
+                {
+                 "height":16,
+                 "id":20,
+                 "name":"skeleton",
+                 "properties":[
+                        {
+                         "name":"payload",
+                         "type":"int",
+                         "value":0
+                        }],
+                 "rotation":0,
+                 "type":"skeleton",
+                 "visible":true,
+                 "width":16,
+                 "x":464,
                  "y":80
+                }, 
+                {
+                 "height":16,
+                 "id":21,
+                 "name":"bird",
+                 "properties":[
+                        {
+                         "name":"payload",
+                         "type":"int",
+                         "value":0
+                        }],
+                 "rotation":0,
+                 "type":"bird",
+                 "visible":true,
+                 "width":16,
+                 "x":288,
+                 "y":80
+                }, 
+                {
+                 "height":16,
+                 "id":22,
+                 "name":"bird",
+                 "properties":[
+                        {
+                         "name":"payload",
+                         "type":"int",
+                         "value":0
+                        }],
+                 "rotation":0,
+                 "type":"bird",
+                 "visible":true,
+                 "width":16,
+                 "x":608,
+                 "y":32
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -134,7 +202,7 @@
          "y":0
         }],
  "nextlayerid":5,
- "nextobjectid":19,
+ "nextobjectid":23,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.7.0",

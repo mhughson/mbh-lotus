@@ -281,6 +281,7 @@ void load_and_process_map()
 			}
 
 			case TRIG_SKELETON:
+			case TRIG_BIRD:
 			{
 				dynamic_objs.type[local_dynamic_index] = loaded_obj_id;
 				dynamic_objs.pos_x[local_dynamic_index] = loaded_obj_x * 16;

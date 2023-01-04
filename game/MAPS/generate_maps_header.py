@@ -52,6 +52,7 @@ object_type_name_mapping = {
     "trans_point" : "1",
     "trans_edge" : "2",
     "skeleton" : "3",
+    "bird" : "4",
 }
 
 flag_names = [

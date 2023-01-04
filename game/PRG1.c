@@ -34,6 +34,7 @@ typedef struct anim_def
 #define CHR_SIDE_DASH 6
 #define CHR_TD 12
 #define CHR_SKEL 14
+#define CHR_BIRD 14
 
 const anim_def idle_right = { 20, 4, { 0, 1, 2, 3 }, CHR_SIDE };
 const anim_def walk_right = { 7, 4, { 4, 5, 6, 5 }, CHR_SIDE };
@@ -53,6 +54,9 @@ const anim_def walk_left_td 	= { 20, 2, { 15, 16 }, CHR_TD };
 
 const anim_def skel_walk_right	= { 20, 2, { 0, 1 }, CHR_SKEL};
 const anim_def skel_squished	= { 255, 1, { 2 }, CHR_SKEL};
+
+const anim_def bird_fly_right	= { 20, 2, { 3, 4 }, CHR_BIRD};
+const anim_def bird_fall_right	= { 5, 3, { 3, 5, 6 }, CHR_BIRD};
 
 const struct anim_def* sprite_anims[] =
 {
@@ -77,7 +81,12 @@ const struct anim_def* sprite_anims[] =
 
 	&skel_walk_right,
 	&skel_squished,
+
+	&bird_fly_right,
+	&bird_fall_right,
 };
+
+const char wobble_table[4] = { -1, 0, 1, 0 };
 
 unsigned char update_anim()
 {
@@ -187,5 +196,33 @@ void draw_skeleton()
 	oam_meta_spr(
 		dynamic_objs.pos_x[in_dynamic_obj_index] - cam.pos_x,
 		dynamic_objs.pos_y[in_dynamic_obj_index] - 1 - cam.pos_y,
+		meta_enemies_list[sprite_anims[global_working_anim->anim_current]->frames[global_working_anim->anim_frame]]);
+}
+
+void draw_bird()
+{
+	global_working_anim = &dynamic_objs.sprite[in_dynamic_obj_index].anim;
+	update_anim();
+
+	// At the start of the next frame, when this oam data will be display, swap to the correct
+	// sprite VRAM data.
+
+	// TODO: load into other slots.
+	chr_3_index_queued = sprite_anims[global_working_anim->anim_current]->chr_index;
+
+	if (dynamic_objs.dir_x[in_dynamic_obj_index] < 0)
+	{
+		SPR_FLIP_META = 1;
+	}
+	else
+	{
+		SPR_FLIP_META = 0;
+	}
+
+	SPR_OFFSCREEN_META = (dynamic_objs.pos_x[in_dynamic_obj_index]) < cam.pos_x || dynamic_objs.pos_x[in_dynamic_obj_index] >= (cam.pos_x + 256);
+
+	oam_meta_spr(
+		dynamic_objs.pos_x[in_dynamic_obj_index] - cam.pos_x,
+		dynamic_objs.pos_y[in_dynamic_obj_index] - 1 - cam.pos_y + (wobble_table[(tick_count >> 3) % 4]),
 		meta_enemies_list[sprite_anims[global_working_anim->anim_current]->frames[global_working_anim->anim_frame]]);
 }

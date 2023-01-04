@@ -51,6 +51,47 @@ unsigned char intersects_box_box()
 	return 1;
 }
 
+void update_common()
+{
+   // Is the skeleton overlapping the player *at all*.
+	if (intersects_box_box())
+	{
+        // Check if the player's feet are above the feet of the Skeleton.
+        // We will only consider this a "squish attack" if they are.
+        // TODO: I'm not quite sure why the player feet needs to be at "21" rather than their actual position of "20".
+		if ((dynamic_objs.pos_y[in_dynamic_obj_index] + 16) >= (high_2byte(player1.pos_y) + 21))
+		{
+			// if downward, bounce
+			if (player1.vel_y16 > 0)
+			{
+                // Big or normal bounce?
+                if (pad_all & PAD_A)
+                {
+				    player1.vel_y16 = -(JUMP_VEL_16bit) * 2;
+                }
+                else
+                {
+                    player1.vel_y16 = -(JUMP_VEL_16bit);
+                }
+
+                // Experimenting with zeroing out the X velocity
+                // of the player, to make it feel less "out of control".
+                player1.vel_x16 = 0;
+				sfx_play(5,0);
+
+                // Start the death timer for the skeleton.
+                dynamic_objs.dead_time[in_dynamic_obj_index] = 60;
+			}
+		}
+        // Only hurt the player if they are NOT jumping upward.
+        // This is to make the game feel more forgiving.
+		else if (player1.vel_y16 >= 0)
+		{
+			banked_call(BANK_0, kill_player);
+		}
+	}
+}
+
 void update_skeleton()
 {
 	static unsigned char local_offset;
@@ -66,6 +107,12 @@ void update_skeleton()
             // Timers has completed. Free up this object slot.
             dynamic_objs.type[in_dynamic_obj_index] = TRIG_UNUSED;
         }
+		else
+		{
+			anim_index = ANIM_SKEL_SQUISHED;
+			global_working_anim = &dynamic_objs.sprite[in_dynamic_obj_index].anim;
+			queue_next_anim(anim_index);
+		}
 
         // Skip the rest.
         return;
@@ -121,41 +168,78 @@ void update_skeleton()
 		}
 	}
 
-    // Is the skeleton overlapping the player *at all*.
-	if (intersects_box_box())
-	{
-        // Check if the player's feet are above the feet of the Skeleton.
-        // We will only consider this a "squish attack" if they are.
-        // TODO: I'm not quite sure why the player feet needs to be at "21" rather than their actual position of "20".
-		if ((dynamic_objs.pos_y[in_dynamic_obj_index] + 16) >= (high_2byte(player1.pos_y) + 21))
+	update_common();
+
+	anim_index = ANIM_SKEL_WALK_RIGHT;
+	global_working_anim = &dynamic_objs.sprite[in_dynamic_obj_index].anim;
+	queue_next_anim(anim_index);		
+}
+
+void update_bird()
+{
+	static unsigned char local_offset;
+
+    // Check if the Skeleton is dead.
+    if (dynamic_objs.dead_time[in_dynamic_obj_index] > 0)
+    {
+        // Decrement the death timer. We want the skeleton
+        // to stary visible in a squished state for a while.
+        --dynamic_objs.dead_time[in_dynamic_obj_index];
+		dynamic_objs.pos_y[in_dynamic_obj_index] += ((60 - dynamic_objs.dead_time[in_dynamic_obj_index]) >> 3);
+        if (dynamic_objs.dead_time[in_dynamic_obj_index] == 0 || dynamic_objs.pos_y[in_dynamic_obj_index] >= 240)
+        {
+            // Timers has completed. Free up this object slot.
+            dynamic_objs.type[in_dynamic_obj_index] = TRIG_UNUSED;
+        }
+		else
 		{
-			// if downward, bounce
-			if (player1.vel_y16 > 0)
-			{
-                // Big or normal bounce?
-                if (pad_all & PAD_A)
-                {
-				    player1.vel_y16 = -(JUMP_VEL_16bit) * 2;
-                }
-                else
-                {
-                    player1.vel_y16 = -(JUMP_VEL_16bit);
-                }
-
-                // Experimenting with zeroing out the X velocity
-                // of the player, to make it feel less "out of control".
-                player1.vel_x16 = 0;
-				sfx_play(5,0);
-
-                // Start the death timer for the skeleton.
-                dynamic_objs.dead_time[in_dynamic_obj_index] = 60;
-			}
+			anim_index = ANIM_BIRD_FALL_RIGHT;
+			global_working_anim = &dynamic_objs.sprite[in_dynamic_obj_index].anim;
+			queue_next_anim(anim_index);			
 		}
-        // Only hurt the player if they are NOT jumping upward.
-        // This is to make the game feel more forgiving.
-		else if (player1.vel_y16 >= 0)
+
+        // Skip the rest.
+        return;
+    }
+
+	if (tick_count % 2 == 0)
+	{
+		if (dynamic_objs.dir_x[in_dynamic_obj_index] < 0)
 		{
-			banked_call(BANK_0, kill_player);
+			--dynamic_objs.pos_x[in_dynamic_obj_index];
+		}
+		else
+		{
+			++dynamic_objs.pos_x[in_dynamic_obj_index];
 		}
 	}
+
+	if (dynamic_objs.pos_x[in_dynamic_obj_index] < cam.freeze_left ||
+		dynamic_objs.pos_x[in_dynamic_obj_index] > cam.freeze_right)
+	{
+		dynamic_objs.state[in_dynamic_obj_index] |= DYNAMIC_STATE_FROZEN;
+		return;
+	}
+
+	local_offset = 0;
+	if (dynamic_objs.dir_x[in_dynamic_obj_index] > 0)
+	{
+		local_offset = 1;
+	}
+
+	index16 = GRID_XY_TO_ROOM_INDEX((dynamic_objs.pos_x[in_dynamic_obj_index] / 16) + local_offset, dynamic_objs.pos_y[in_dynamic_obj_index] / 16);
+
+	tempFlags = GET_META_TILE_FLAGS(index16);
+
+	// Check if that point is in a solid metatile
+	if (tempFlags & FLAG_SOLID)
+	{
+		dynamic_objs.dir_x[in_dynamic_obj_index] *= -1;
+	}
+
+	update_common();
+
+	anim_index = ANIM_BIRD_FLY_RIGHT;
+	global_working_anim = &dynamic_objs.sprite[in_dynamic_obj_index].anim;
+	queue_next_anim(anim_index);
 }
