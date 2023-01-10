@@ -224,6 +224,7 @@ void load_and_process_map()
 	/* TODO: Confirm that sizeof() is returning the size of all elements. */
 	memfill(&trig_objs, TRIG_UNUSED, sizeof(trig_objs));
 	memfill(&dynamic_objs, TRIG_UNUSED, sizeof(dynamic_actors));
+	animation_data_count = 1; // 0 is player.
 
 	/* track the index of the last added object to fill the array up. */
 	local_index = 0;
@@ -289,8 +290,9 @@ void load_and_process_map()
 				dynamic_objs.dir_x[local_dynamic_index] = -1;
 				dynamic_objs.dir_y[local_dynamic_index] = -1;
 				dynamic_objs.payload[local_dynamic_index] = loaded_obj_payload;
-				dynamic_objs.dead_time[local_dynamic_index] = 0;
+				dynamic_objs.time_in_state[local_dynamic_index] = 0;
 				dynamic_objs.state[local_dynamic_index] = 0; // no state
+				dynamic_objs.anim_data_index[local_dynamic_index] = animation_data_count++;
 				++local_dynamic_index;
 				break;
 

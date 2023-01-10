@@ -95,74 +95,6 @@
                 }, 
                 {
                  "height":16,
-                 "id":16,
-                 "name":"skeleton",
-                 "properties":[
-                        {
-                         "name":"payload",
-                         "type":"int",
-                         "value":0
-                        }],
-                 "rotation":0,
-                 "type":"skeleton",
-                 "visible":true,
-                 "width":16,
-                 "x":64,
-                 "y":128
-                }, 
-                {
-                 "height":16,
-                 "id":18,
-                 "name":"skeleton",
-                 "properties":[
-                        {
-                         "name":"payload",
-                         "type":"int",
-                         "value":0
-                        }],
-                 "rotation":0,
-                 "type":"skeleton",
-                 "visible":true,
-                 "width":16,
-                 "x":672,
-                 "y":160
-                }, 
-                {
-                 "height":16,
-                 "id":19,
-                 "name":"bird",
-                 "properties":[
-                        {
-                         "name":"payload",
-                         "type":"int",
-                         "value":0
-                        }],
-                 "rotation":0,
-                 "type":"bird",
-                 "visible":true,
-                 "width":16,
-                 "x":912,
-                 "y":48
-                }, 
-                {
-                 "height":16,
-                 "id":20,
-                 "name":"skeleton",
-                 "properties":[
-                        {
-                         "name":"payload",
-                         "type":"int",
-                         "value":0
-                        }],
-                 "rotation":0,
-                 "type":"skeleton",
-                 "visible":true,
-                 "width":16,
-                 "x":464,
-                 "y":80
-                }, 
-                {
-                 "height":16,
                  "id":21,
                  "name":"bird",
                  "properties":[
@@ -192,8 +124,8 @@
                  "type":"bird",
                  "visible":true,
                  "width":16,
-                 "x":608,
-                 "y":32
+                 "x":688,
+                 "y":112
                 }],
          "opacity":1,
          "type":"objectgroup",

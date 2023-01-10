@@ -94,26 +94,26 @@ unsigned char update_anim()
     static unsigned char local_tmp1;
     static unsigned char local_tmp2;
     
-	cur_anim = sprite_anims[global_working_anim->anim_current];
+	cur_anim = sprite_anims[animation_data.anim_current[in_working_anim_index]];
 
 	// Note: In WnW this was done in each draw function manually, and I'm not sure why. Perhaps
 	//		 to ensure that the first frame got played before advancing?
-	++global_working_anim->anim_ticks;
+	++animation_data.anim_ticks[in_working_anim_index];
 
 	// optimization to avoid int compare.
-    local_tmp1 = global_working_anim->anim_ticks;
+    local_tmp1 = animation_data.anim_ticks[in_working_anim_index];
     local_tmp2 = cur_anim->ticks_per_frame;
     if (local_tmp1 >= local_tmp2)
 	{
-		global_working_anim->anim_ticks = 0;
-		++global_working_anim->anim_frame;
+		animation_data.anim_ticks[in_working_anim_index] = 0;
+		++animation_data.anim_frame[in_working_anim_index];
 
 		// optimization to avoid int compare.
-        local_tmp1 = global_working_anim->anim_frame;
+        local_tmp1 = animation_data.anim_frame[in_working_anim_index];
         local_tmp2 = cur_anim->anim_len;
         if (local_tmp1 >= local_tmp2)
 		{
-			global_working_anim->anim_frame = 0;
+			animation_data.anim_frame[in_working_anim_index] = 0;
 			return 1;
 		}
 	}
@@ -122,7 +122,7 @@ unsigned char update_anim()
 
 void draw_player()
 {
-	global_working_anim = &player1.sprite.anim;
+	in_working_anim_index = player1.anim_data_index;
 	update_anim();
 
 	draw_player_static();
@@ -132,7 +132,7 @@ void draw_player_static()
 {
 	// At the start of the next frame, when this oam data will be display, swap to the correct
 	// sprite VRAM data.
-	chr_index_queued = sprite_anims[player1.sprite.anim.anim_current]->chr_index;
+	chr_index_queued = sprite_anims[animation_data.anim_current[player1.anim_data_index]]->chr_index;
 
 	if (high_2byte(player1.pos_y) < 240 || high_2byte(player1.pos_y) > (0xffff - 16))
 	{
@@ -150,37 +150,37 @@ void draw_player_static()
 		oam_meta_spr(
 			high_2byte(player1.pos_x) - cam.pos_x, 
 			high_2byte(player1.pos_y) - 1 - cam.pos_y,
-			meta_player_list[sprite_anims[player1.sprite.anim.anim_current]->frames[player1.sprite.anim.anim_frame]]);
+			meta_player_list[sprite_anims[animation_data.anim_current[player1.anim_data_index]]->frames[animation_data.anim_frame[player1.anim_data_index]]]);
 	}
 }
 
 void draw_player_td()
 {
-	global_working_anim = &player1.sprite.anim;
+	in_working_anim_index = player1.anim_data_index;
 	update_anim();
 
 	// At the start of the next frame, when this oam data will be display, swap to the correct
 	// sprite VRAM data.
-	chr_index_queued = sprite_anims[player1.sprite.anim.anim_current]->chr_index;
+	chr_index_queued = sprite_anims[animation_data.anim_current[player1.anim_data_index]]->chr_index;
 	
 	SPR_FLIP_META = 0;
 	SPR_OFFSCREEN_META = 0;
 	oam_meta_spr(
 		high_2byte(player1.pos_x) - cam.pos_x, 
 		high_2byte(player1.pos_y) - 1 - cam.pos_y,
-		meta_player_td_list[sprite_anims[player1.sprite.anim.anim_current]->frames[player1.sprite.anim.anim_frame]]);
+		meta_player_td_list[sprite_anims[animation_data.anim_current[player1.anim_data_index]]->frames[animation_data.anim_frame[player1.anim_data_index]]]);
 }
 
 void draw_skeleton()
 {
-	global_working_anim = &dynamic_objs.sprite[in_dynamic_obj_index].anim;
+	in_working_anim_index = dynamic_objs.anim_data_index[in_dynamic_obj_index];
 	update_anim();
 
 	// At the start of the next frame, when this oam data will be display, swap to the correct
 	// sprite VRAM data.
 
 	// TODO: load into other slots.
-	chr_3_index_queued = sprite_anims[global_working_anim->anim_current]->chr_index;
+	chr_3_index_queued = sprite_anims[animation_data.anim_current[in_working_anim_index]]->chr_index;
 
 	if (dynamic_objs.dir_x[in_dynamic_obj_index] < 0)
 	{
@@ -196,19 +196,19 @@ void draw_skeleton()
 	oam_meta_spr(
 		dynamic_objs.pos_x[in_dynamic_obj_index] - cam.pos_x,
 		dynamic_objs.pos_y[in_dynamic_obj_index] - 1 - cam.pos_y,
-		meta_enemies_list[sprite_anims[global_working_anim->anim_current]->frames[global_working_anim->anim_frame]]);
+		meta_enemies_list[sprite_anims[animation_data.anim_current[in_working_anim_index]]->frames[animation_data.anim_frame[in_working_anim_index]]]);
 }
 
 void draw_bird()
 {
-	global_working_anim = &dynamic_objs.sprite[in_dynamic_obj_index].anim;
+	in_working_anim_index = dynamic_objs.anim_data_index[in_dynamic_obj_index];
 	update_anim();
 
 	// At the start of the next frame, when this oam data will be display, swap to the correct
 	// sprite VRAM data.
 
 	// TODO: load into other slots.
-	chr_3_index_queued = sprite_anims[global_working_anim->anim_current]->chr_index;
+	chr_3_index_queued = sprite_anims[animation_data.anim_current[in_working_anim_index]]->chr_index;
 
 	if (dynamic_objs.dir_x[in_dynamic_obj_index] < 0)
 	{
@@ -224,5 +224,5 @@ void draw_bird()
 	oam_meta_spr(
 		dynamic_objs.pos_x[in_dynamic_obj_index] - cam.pos_x,
 		dynamic_objs.pos_y[in_dynamic_obj_index] - 1 - cam.pos_y + (wobble_table[(tick_count >> 3) % 4]),
-		meta_enemies_list[sprite_anims[global_working_anim->anim_current]->frames[global_working_anim->anim_frame]]);
+		meta_enemies_list[sprite_anims[animation_data.anim_current[in_working_anim_index]]->frames[animation_data.anim_frame[in_working_anim_index]]]);
 }

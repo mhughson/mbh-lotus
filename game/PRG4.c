@@ -80,7 +80,8 @@ void update_common()
 				sfx_play(5,0);
 
                 // Start the death timer for the skeleton.
-                dynamic_objs.dead_time[in_dynamic_obj_index] = 60;
+                dynamic_objs.time_in_state[in_dynamic_obj_index] = 0;
+				dynamic_objs.state[in_dynamic_obj_index] |= DYNAMIC_STATE_DEAD;
 			}
 		}
         // Only hurt the player if they are NOT jumping upward.
@@ -97,12 +98,9 @@ void update_skeleton()
 	static unsigned char local_offset;
 
     // Check if the Skeleton is dead.
-    if (dynamic_objs.dead_time[in_dynamic_obj_index] > 0)
+    if ((dynamic_objs.state[in_dynamic_obj_index] & DYNAMIC_STATE_DEAD) != 0)
     {
-        // Decrement the death timer. We want the skeleton
-        // to stary visible in a squished state for a while.
-        --dynamic_objs.dead_time[in_dynamic_obj_index];
-        if (dynamic_objs.dead_time[in_dynamic_obj_index] == 0)
+        if (dynamic_objs.time_in_state[in_dynamic_obj_index] >= 60)
         {
             // Timers has completed. Free up this object slot.
             dynamic_objs.type[in_dynamic_obj_index] = TRIG_UNUSED;
@@ -110,7 +108,7 @@ void update_skeleton()
 		else
 		{
 			anim_index = ANIM_SKEL_SQUISHED;
-			global_working_anim = &dynamic_objs.sprite[in_dynamic_obj_index].anim;
+			in_working_anim_index = dynamic_objs.anim_data_index[in_dynamic_obj_index];
 			queue_next_anim(anim_index);
 		}
 
@@ -171,22 +169,24 @@ void update_skeleton()
 	update_common();
 
 	anim_index = ANIM_SKEL_WALK_RIGHT;
-	global_working_anim = &dynamic_objs.sprite[in_dynamic_obj_index].anim;
+	in_working_anim_index = dynamic_objs.anim_data_index[in_dynamic_obj_index];
 	queue_next_anim(anim_index);		
 }
+
+#define EASE_FRAMES 200
+// reversed
+const signed char ease_bird[EASE_FRAMES] =
+{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0,  };
 
 void update_bird()
 {
 	static unsigned char local_offset;
 
-    // Check if the Skeleton is dead.
-    if (dynamic_objs.dead_time[in_dynamic_obj_index] > 0)
+    // Check if the object is dead.
+    if ((dynamic_objs.state[in_dynamic_obj_index] & DYNAMIC_STATE_DEAD) != 0)
     {
-        // Decrement the death timer. We want the skeleton
-        // to stary visible in a squished state for a while.
-        --dynamic_objs.dead_time[in_dynamic_obj_index];
-		dynamic_objs.pos_y[in_dynamic_obj_index] += ((60 - dynamic_objs.dead_time[in_dynamic_obj_index]) >> 3);
-        if (dynamic_objs.dead_time[in_dynamic_obj_index] == 0 || dynamic_objs.pos_y[in_dynamic_obj_index] >= 240)
+		dynamic_objs.pos_y[in_dynamic_obj_index] += ((dynamic_objs.time_in_state[in_dynamic_obj_index]) >> 3);
+        if (dynamic_objs.time_in_state[in_dynamic_obj_index] >= 60 || dynamic_objs.pos_y[in_dynamic_obj_index] >= 240)
         {
             // Timers has completed. Free up this object slot.
             dynamic_objs.type[in_dynamic_obj_index] = TRIG_UNUSED;
@@ -194,7 +194,7 @@ void update_bird()
 		else
 		{
 			anim_index = ANIM_BIRD_FALL_RIGHT;
-			global_working_anim = &dynamic_objs.sprite[in_dynamic_obj_index].anim;
+			in_working_anim_index = dynamic_objs.anim_data_index[in_dynamic_obj_index];
 			queue_next_anim(anim_index);			
 		}
 
@@ -202,16 +202,26 @@ void update_bird()
         return;
     }
 
-	if (tick_count % 2 == 0)
+	if (dynamic_objs.dir_x[in_dynamic_obj_index] < 0)
+	{
+		dynamic_objs.pos_x[in_dynamic_obj_index] -= ease_bird[dynamic_objs.time_in_state[in_dynamic_obj_index]];
+	}
+	else
+	{
+		dynamic_objs.pos_x[in_dynamic_obj_index] += ease_bird[dynamic_objs.time_in_state[in_dynamic_obj_index]];
+	}
+	
+	if (dynamic_objs.time_in_state[in_dynamic_obj_index] >= EASE_FRAMES - 1)
 	{
 		if (dynamic_objs.dir_x[in_dynamic_obj_index] < 0)
 		{
-			--dynamic_objs.pos_x[in_dynamic_obj_index];
+			dynamic_objs.dir_x[in_dynamic_obj_index] = 1;
 		}
 		else
 		{
-			++dynamic_objs.pos_x[in_dynamic_obj_index];
+			dynamic_objs.dir_x[in_dynamic_obj_index] = -1;
 		}
+		dynamic_objs.time_in_state[in_dynamic_obj_index] = 0;
 	}
 
 	if (dynamic_objs.pos_x[in_dynamic_obj_index] < cam.freeze_left ||
@@ -240,6 +250,6 @@ void update_bird()
 	update_common();
 
 	anim_index = ANIM_BIRD_FLY_RIGHT;
-	global_working_anim = &dynamic_objs.sprite[in_dynamic_obj_index].anim;
+	in_working_anim_index = dynamic_objs.anim_data_index[in_dynamic_obj_index];
 	queue_next_anim(anim_index);
 }

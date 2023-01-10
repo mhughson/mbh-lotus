@@ -118,6 +118,10 @@ void main_real()
 
 	//music_play(1);
 
+	// If player is always 0, does it really need to store this index?
+	player1.anim_data_index = 0;
+	animation_data_count = 1;
+
 	go_to_state(STATE_TITLE);
 
 	// infinite loop
@@ -295,6 +299,10 @@ PROFILE_POKE(PROF_W);
 					{
 						if ((dynamic_objs.state[local_i] & DYNAMIC_STATE_FROZEN) == 0)
 						{
+							// Only advance when thawed, that way things like lookup offsets don't jump
+							// after a thaw.
+							++dynamic_objs.time_in_state[local_i];
+
 							switch (dynamic_objs.type[local_i])
 							{
 								case TRIG_BIRD:
@@ -839,7 +847,7 @@ void update_player()
 	if (dash_time > 0)
 	{
 		anim_index = ANIM_PLAYER_DASH;
-		global_working_anim = &player1.sprite.anim;
+		in_working_anim_index = player1.anim_data_index;
 		queue_next_anim(anim_index);
 		commit_next_anim();
 	}
@@ -848,14 +856,14 @@ void update_player()
 		if (player1.vel_y16 > 0)
 		{
 			anim_index = ANIM_PLAYER_FALL;
-			global_working_anim = &player1.sprite.anim;
+			in_working_anim_index = player1.anim_data_index;
 			queue_next_anim(anim_index);
 			commit_next_anim();
 		}
 		else
 		{
 			anim_index = ANIM_PLAYER_JUMP;
-			global_working_anim = &player1.sprite.anim;
+			in_working_anim_index = player1.anim_data_index;
 			queue_next_anim(anim_index);
 			commit_next_anim();
 		}
@@ -863,14 +871,14 @@ void update_player()
 	else if (pad_all & (PAD_RIGHT | PAD_LEFT))
 	{
 		anim_index = ANIM_PLAYER_RUN;
-		global_working_anim = &player1.sprite.anim;
+		in_working_anim_index = player1.anim_data_index;
 		queue_next_anim(anim_index);
 		commit_next_anim();
 	}
 	else
 	{
 		anim_index = ANIM_PLAYER_IDLE;
-		global_working_anim = &player1.sprite.anim;
+		in_working_anim_index = player1.anim_data_index;
 		queue_next_anim(anim_index);
 		commit_next_anim();
 	}

@@ -5,10 +5,10 @@
 #ifndef ONCE_MAIN_H
 #define ONCE_MAIN_H
 
-#define DEBUG_ENABLED 1
+#define DEBUG_ENABLED 0
 
 #if DEBUG_ENABLED
-#define PROFILE_POKE(val) //POKE((0x2001),(val));
+#define PROFILE_POKE(val) POKE((0x2001),(val));
 #else
 #define PROFILE_POKE(val)
 #endif
@@ -31,7 +31,7 @@
 
 // Used as both a potential versioning system, and also the value
 // padded at the start of XRAM to validate a valid save game.
-#define SAVE_VERSION 1
+#define SAVE_VERSION 2
 // The number of bytes that should contain the SAVE_VERSION at the 
 // start of XRAM to confirm that this is valid save data.
 #define NUM_SAVE_VERSION_VALIDATION 1
@@ -174,17 +174,19 @@ enum { BANK_0 = 0, BANK_1, BANK_2, BANK_3, BANK_4, BANK_5, BANK_6 };
 // Structs.
 //
 
+#define MAX_ANIM_INFO (16)
+
 typedef struct anim_info
 {
 	// index into sprite_anims array.
-	unsigned char anim_current;
-	unsigned char anim_queued;
+	unsigned char anim_current[MAX_ANIM_INFO];
+	unsigned char anim_queued[MAX_ANIM_INFO];
 
 	// how many ticks have passed since the last frame change.
-	unsigned char anim_ticks;
+	unsigned char anim_ticks[MAX_ANIM_INFO];
 
 	// the currently displaying frame of the current anim.
-	unsigned char anim_frame;
+	unsigned char anim_frame[MAX_ANIM_INFO];
 } anim_info;
 
 typedef struct camera
@@ -201,17 +203,9 @@ typedef struct camera
 	unsigned int thaw_right;
 } camera;
 
-// data speciic to player game objects.
-typedef struct animated_sprite
-{
-	// Stores all of the active animation info.
-	anim_info anim;
-
-} animated_sprite;
-
 typedef struct game_actor
 {
-	animated_sprite sprite;
+	unsigned char anim_data_index;
 
 	unsigned long pos_x;
 	unsigned long pos_y;
@@ -246,15 +240,16 @@ typedef struct trigger_objects
 
 
 #define MAX_DYNAMIC_OBJS (8)
-#define DYNAMIC_STATE_FROZEN (0b00000001)
+#define DYNAMIC_STATE_FROZEN 		(0b00000001)
+#define DYNAMIC_STATE_DEAD 			(0b00000010)
 
-#define FROZEN_OFFSET (128)
-#define THAW_OFFSET (96)
+#define FROZEN_OFFSET (64)
+#define THAW_OFFSET (32)
 
 
 typedef struct dynamic_actors
 {
-	animated_sprite sprite[MAX_DYNAMIC_OBJS];
+	unsigned char anim_data_index[MAX_DYNAMIC_OBJS];
 
 	unsigned int pos_x[MAX_DYNAMIC_OBJS];
 	unsigned int pos_y[MAX_DYNAMIC_OBJS];
@@ -266,13 +261,16 @@ typedef struct dynamic_actors
 
 	unsigned char payload[MAX_DYNAMIC_OBJS];	
 
-	unsigned char dead_time[MAX_DYNAMIC_OBJS];
+	unsigned char time_in_state[MAX_DYNAMIC_OBJS];
 
 	unsigned char state[MAX_DYNAMIC_OBJS];
 } dynamic_actors;
 
 // RAM
 //
+
+extern anim_info animation_data; // +1 for player.
+extern unsigned char animation_data_count; // counter as animation_data is used up.
 
 extern unsigned char tick_count;
 extern unsigned int tick_count16;
@@ -334,7 +332,7 @@ extern unsigned char in_dynamic_obj_index;
 extern unsigned char out_num_tiles;
 
 // Used by the anim functions to avoid passing in a parameter.
-extern anim_info* global_working_anim;
+extern unsigned char in_working_anim_index;
 
 extern game_actor player1;
 extern camera cam;

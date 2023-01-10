@@ -17,6 +17,9 @@
 // Initalized RAM variables
 //
 
+anim_info animation_data; // +1 for player.
+unsigned char animation_data_count; // counter as animation_data is used up.
+
 unsigned char tick_count;
 unsigned int tick_count16;
 unsigned int ticks_in_state16;
@@ -62,7 +65,7 @@ unsigned char in_dynamic_obj_index;
 
 unsigned char out_num_tiles;
 
-anim_info* global_working_anim;
+unsigned char in_working_anim_index;
 game_actor player1;
 camera cam;
 trigger_objects trig_objs;
@@ -134,19 +137,19 @@ void main (void)
 
 void queue_next_anim(unsigned char next_anim_index)
 {
-	global_working_anim->anim_queued = next_anim_index;
+	animation_data.anim_queued[in_working_anim_index] = next_anim_index;
 }
 
 void commit_next_anim()
 {
-	if (global_working_anim->anim_queued != 0xff && global_working_anim->anim_queued != global_working_anim->anim_current)
+	if (animation_data.anim_queued[in_working_anim_index] != 0xff && animation_data.anim_queued[in_working_anim_index] != animation_data.anim_current[in_working_anim_index])
 	{
-		global_working_anim->anim_current = global_working_anim->anim_queued;
-		global_working_anim->anim_frame = 0;
-		global_working_anim->anim_ticks = 0;
+		animation_data.anim_current[in_working_anim_index] = animation_data.anim_queued[in_working_anim_index];
+		animation_data.anim_frame[in_working_anim_index] = 0;
+		animation_data.anim_ticks[in_working_anim_index] = 0;
 	}
 
-	global_working_anim->anim_queued = 0xff;
+	animation_data.anim_queued[in_working_anim_index] = 0xff;
 }
 
 #define FADE_DELAY 2

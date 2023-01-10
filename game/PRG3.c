@@ -260,7 +260,7 @@ void update_player_td()
 		//player1.moving=1
 	}
 
-	global_working_anim = &player1.sprite.anim;
+	in_working_anim_index = player1.anim_data_index;
 	queue_next_anim(anim_index);
 	commit_next_anim();
 
