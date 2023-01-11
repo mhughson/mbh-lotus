@@ -11,7 +11,7 @@
 
 FT_BASE_ADR		= $0100		;page in RAM, should be $xx00
 FT_DPCM_OFF		= $f000		;$c000..$ffc0, 64-byte steps
-FT_SFX_STREAMS	= 1			;number of sound effects played at once, 1..4
+FT_SFX_STREAMS	= 4			;number of sound effects played at once, 1..4
 
 FT_THREAD       = 1		;undefine if you call sound effects in the same thread as sound update
 FT_PAL_SUPPORT	= 1		;undefine to exclude PAL support
@@ -57,7 +57,7 @@ CTRL_PORT1	=$4016
 CTRL_PORT2	=$4017
 
 OAM_BUF		=$0200
-PAL_BUF		=$01c0
+;PAL_BUF		=$01c0
 VRAM_BUF	=$0700
 
 
@@ -122,6 +122,13 @@ SPR_OFFSCREEN_META:	.res 1
 _SPR_OFFSCREEN_META = SPR_OFFSCREEN_META
 .export _SPR_OFFSCREEN_META
 
+; bss segment added my mhughson. not really sure if this is correct :|
+.segment "BSS"
+
+; originally hardcode to $01c0, inside hardware stack memory, 
+; but was getting hit with stack overflow.
+; https://www.nesdev.org/wiki/Stack
+PAL_BUF:			.res 32 
 
 .segment "HEADER"
 

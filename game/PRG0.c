@@ -95,6 +95,11 @@ void main_real()
 			checkpoint_room_index = 0xff;
 			checkpoint_spawn_id = 0xff;
 
+			// Clear all the game options to a default value. Currently
+			// using 1 because that is ON for the only 2 settings: audio.
+			// As more settings are added, this might need to change.
+			memfill(game_option_list_values, 1, OPTION_LIST_LEN);
+
 			break;
 		}
 	}
@@ -463,7 +468,7 @@ PROFILE_POKE(PROF_W);
 			}
 		}
 
-//gray_line();
+gray_line();
 
 PROFILE_POKE(PROF_CLEAR)
 
@@ -637,6 +642,7 @@ void update_player()
 						player1.vel_y16 = -FP_WHOLE_16(5); // FP_WHOLE(-5);
 						dash_time = 0;
 						dash_count = 0;
+						SFX_PLAY_WRAPPER(15);
 					}
 					else
 					{
@@ -682,7 +688,7 @@ void update_player()
 			// The moment you just, the dash is over, but
 			// we don't reset the dash_count until you land.
             dash_time = 0;
-			sfx_play(5,0);
+			SFX_PLAY_WRAPPER(5);
 		}
 		else if (jump_count < 1 && pad_all_new & PAD_A)
 		{
@@ -715,6 +721,8 @@ void update_player()
 		// and continuing to hold A, resulting in the "continue jump"
 		// logic overwriting the upward velocity when they hit a wall.
 		jump_held_count = 0;
+
+		SFX_PLAY_WRAPPER(10);
 	}
 	else if (dash_time > 0)
 	{
@@ -1277,7 +1285,7 @@ void go_to_state(unsigned char new_state)
 			ppu_on_all();
 //			music_play(0);
 			fade_from_black();
-			music_play(0);
+			MUSIC_PLAY_WRAPPER(0);
 			break;
 		}
 

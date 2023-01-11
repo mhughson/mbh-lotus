@@ -77,7 +77,12 @@ void update_common()
                 // Experimenting with zeroing out the X velocity
                 // of the player, to make it feel less "out of control".
                 player1.vel_x16 = 0;
-				sfx_play(5,0);
+				SFX_PLAY_WRAPPER(5);
+
+				// Let them dash again after bouncing off an enemy, kind of like if they
+				// landed on the ground and jumped.
+				// NOTE: This is different than the PC version.
+				dash_count = 0;
 
                 // Start the death timer for the skeleton.
                 dynamic_objs.time_in_state[in_dynamic_obj_index] = 0;

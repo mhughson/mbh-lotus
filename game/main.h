@@ -31,7 +31,7 @@
 
 // Used as both a potential versioning system, and also the value
 // padded at the start of XRAM to validate a valid save game.
-#define SAVE_VERSION 2
+#define SAVE_VERSION 3
 // The number of bytes that should contain the SAVE_VERSION at the 
 // start of XRAM to confirm that this is valid save data.
 #define NUM_SAVE_VERSION_VALIDATION 1
@@ -98,6 +98,15 @@
 #define QUEUE_DRAW_COL 2
 #define QUEUE_DRAW_ROW_ATTR 3
 #define QUEUE_DRAW_COL_ATTR 4
+
+#define OPTION_INDEX_MUSIC 0
+#define OPTION_INDEX_SOUND 1
+
+// NOTE: cur_sfx_chan goes out of range of FT_SFX_STREAMS, but that seems to be fine.
+#define SFX_PLAY_WRAPPER(id) if (game_option_list_values[OPTION_INDEX_SOUND]) { sfx_play((id), ++cur_sfx_chan); }
+// play a sound effect that is treated like music to the user (jingles, etc).
+#define SFX_MUSIC_PLAY_WRAPPER(id) if (game_option_list_values[OPTION_INDEX_MUSIC]) { sfx_play((id), ++cur_sfx_chan); }
+#define MUSIC_PLAY_WRAPPER(id) if (game_option_list_values[OPTION_INDEX_MUSIC]) { music_play((id)); }
 
 // IRQ COMMANDS
 // All IRQ operations should ideally be wrapped in a command to 
@@ -373,6 +382,10 @@ extern unsigned char cur_nametable_x_bottom;
 
 extern unsigned char cur_room_type;
 
+// Counter used to ensure each sound effect ends up on a different
+// channel. (no regard to priority)
+extern unsigned char cur_sfx_chan;
+
 // Player
 extern unsigned char anim_index;
 extern unsigned char grounded;
@@ -412,6 +425,8 @@ extern unsigned char current_room_attr[MAX_ROOM_NUM_TILES / 4];
 extern unsigned char cur_metatiles[META_TILE_SET_NUM_BYTES];
 extern unsigned char checkpoint_room_index;
 extern unsigned char checkpoint_spawn_id;
+#define OPTION_LIST_LEN 2
+extern unsigned char game_option_list_values[OPTION_LIST_LEN];
 
 // Functions
 //

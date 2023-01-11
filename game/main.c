@@ -97,6 +97,8 @@ unsigned char cur_nametable_x_top;
 unsigned char cur_nametable_x_bottom;
 unsigned char cur_room_type;
 
+unsigned char cur_sfx_chan;
+
 unsigned char anim_index;
 unsigned char grounded;
 unsigned char jump_held_count;
@@ -123,6 +125,7 @@ unsigned char current_room_attr[(MAX_ROOM_NUM_TILES) / 4];
 unsigned char cur_metatiles[META_TILE_SET_NUM_BYTES];
 unsigned char checkpoint_room_index;
 unsigned char checkpoint_spawn_id;
+unsigned char game_option_list_values[OPTION_LIST_LEN];
 #pragma bss-name(pop)
 
 #pragma rodata-name ("CODE")
