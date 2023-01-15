@@ -75,6 +75,74 @@
                  "width":16,
                  "x":240,
                  "y":96
+                }, 
+                {
+                 "height":16,
+                 "id":16,
+                 "name":"skeleton",
+                 "properties":[
+                        {
+                         "name":"payload",
+                         "type":"int",
+                         "value":0
+                        }],
+                 "rotation":0,
+                 "type":"skeleton",
+                 "visible":true,
+                 "width":16,
+                 "x":208,
+                 "y":128
+                }, 
+                {
+                 "height":16,
+                 "id":17,
+                 "name":"skeleton",
+                 "properties":[
+                        {
+                         "name":"payload",
+                         "type":"int",
+                         "value":0
+                        }],
+                 "rotation":0,
+                 "type":"skeleton",
+                 "visible":true,
+                 "width":16,
+                 "x":192,
+                 "y":128
+                }, 
+                {
+                 "height":16,
+                 "id":18,
+                 "name":"skeleton",
+                 "properties":[
+                        {
+                         "name":"payload",
+                         "type":"int",
+                         "value":0
+                        }],
+                 "rotation":0,
+                 "type":"skeleton",
+                 "visible":true,
+                 "width":16,
+                 "x":176,
+                 "y":128
+                }, 
+                {
+                 "height":16,
+                 "id":19,
+                 "name":"skeleton",
+                 "properties":[
+                        {
+                         "name":"payload",
+                         "type":"int",
+                         "value":0
+                        }],
+                 "rotation":0,
+                 "type":"skeleton",
+                 "visible":true,
+                 "width":16,
+                 "x":160,
+                 "y":128
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -83,7 +151,7 @@
          "y":0
         }],
  "nextlayerid":5,
- "nextobjectid":16,
+ "nextobjectid":20,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.7.0",

@@ -47,7 +47,7 @@ const unsigned char bg_bank_sets[NUM_BG_BANK_SETS][NUM_BG_BANKS] =
 unsigned char irq_array[32];
 unsigned char irq_array_buffer[32];
 
-unsigned char oam_base;
+//unsigned char oam_base;
 
 #if DEBUG_ENABLED
 // Debug hack to test teleporting around a map.
@@ -64,6 +64,7 @@ void main_real()
 	unsigned int local_old_cam_x;
 	unsigned char cur_bg_bank;
 	unsigned char local_i;
+	signed char local_inc;
 
 	set_mirroring(MIRROR_VERTICAL);
 
@@ -141,8 +142,8 @@ PROFILE_POKE(PROF_W)
 
 		oam_clear();
 
-		oam_base += (39 * 4);
-		oam_set(oam_base);
+		//oam_base += (39 * 4);
+		//oam_set(oam_base);
 
 		// When a VRAM update is queued, we can't do it while the screen is
 		// drawing or it will change the visuals for the *previous* frame, which
@@ -297,8 +298,88 @@ PROFILE_POKE(PROF_W);
 					}
 				}
 
+				// Handle case where the state changed in update_player()
+				// We want to make sure that the state changes hold (eg. scroll)
+				// and don't get overwritten through the rest of this state.
+				if (cur_state != STATE_GAME)
+				{
+					clear_vram_buffer();
+					break;
+				}
+
+				if (cur_room_type == 1)
+				{
+					banked_call(BANK_3, update_cam_td);
+				}
+				else
+				{
+				#define CAM_DEAD_ZONE 16
+
+				// move the camera to the player if needed.
+				if (high_2byte(player1.pos_x) > cam.pos_x + (128 + CAM_DEAD_ZONE) && cam.pos_x < cur_room_width_pixels-256)
+				{
+					cam.pos_x = MIN(cur_room_width_pixels-256, high_2byte(player1.pos_x) - (128 + CAM_DEAD_ZONE));
+				}
+				else if (high_2byte(player1.pos_x) < cam.pos_x + (128 - CAM_DEAD_ZONE) && cam.pos_x > 0 ) //(cam.pos_x / 256) == ((high_2byte(player1.pos_x) - 64) / 256))
+				{
+					// TODO: There is probably a chance the rolls over to -1 if the player doesn't start at 0,0. Can't clamp
+					//		 because pos_x is unsigned. Need to detect roll over and clamp to 0.
+					local_old_cam_x = cam.pos_x;
+					cam.pos_x = high_2byte(player1.pos_x) - (128 - CAM_DEAD_ZONE);
+					if (local_old_cam_x < cam.pos_x) cam.pos_x = 0;
+				}
+
+				// This should really be >> 4 (every 16 pixels) but that will miss the initial
+				// row loading. Could update "load_map" but the nametable logic is kind of annoying
+				// for the non-vram version. Will dig in more later.
+				if ((local_old_cam_x >> 3) < (cam.pos_x >> 3) || cur_nametable_y_right != 0)
+				{
+					in_x_tile = 1 + (cam.pos_x + 256) / 16;
+					in_x_pixel = 16 + (cam.pos_x + 256);
+					cur_nametable_y = cur_nametable_y_right;
+					vram_buffer_load_column();
+
+					cur_nametable_y_right += NAMETABLE_TILES_8_UPDATED_PER_FRAME;
+					if (cur_nametable_y_right >= 30) cur_nametable_y_right = 0;					
+				}
+				if ((local_old_cam_x >> 3) > (cam.pos_x >> 3) || cur_nametable_y_left != 0)
+				{
+					in_x_tile = (cam.pos_x) / 16;
+					in_x_pixel = (cam.pos_x);
+					cur_nametable_y = cur_nametable_y_left;
+					vram_buffer_load_column();
+
+					cur_nametable_y_left += NAMETABLE_TILES_8_UPDATED_PER_FRAME;
+					if (cur_nametable_y_left >= 30) cur_nametable_y_left = 0;		
+				}
+
+				// update the freeze and thaw values at the end of the frame.
+				cam.freeze_left = (cam.pos_x >= FROZEN_OFFSET ? cam.pos_x - FROZEN_OFFSET : 0);
+				cam.freeze_right = (cam.pos_x <= cur_room_width_pixels - 256 - FROZEN_OFFSET ? cam.pos_x + 256 + FROZEN_OFFSET : cur_room_width_pixels);
+				cam.thaw_left = (cam.pos_x >= THAW_OFFSET ? cam.pos_x - THAW_OFFSET : 0);
+				cam.thaw_right = (cam.pos_x <= cur_room_width_pixels - 256 - THAW_OFFSET ? cam.pos_x + 256 + THAW_OFFSET : cur_room_width_pixels);	
+
+				// cur_col is the last column to be loaded, aka the right
+				// hand side of the screen. The scroll amount is relative to the 
+				// left hand side of the screen, so offset by 256.
+				set_scroll_x(cam.pos_x);
+
+				banked_call(BANK_1, draw_player);
+
+				// flip flop the order that objects are drawn to create "flickering".
+				if (tick_count % 2 == 0)
+				{
+					local_i = 0;
+					local_inc = 1;
+				}
+				else
+				{
+					local_i = MAX_DYNAMIC_OBJS - 1;
+					local_inc = -1;
+				}
+
 				// update the trigger objects.
-				for (local_i = 0; local_i < MAX_DYNAMIC_OBJS; ++local_i)
+				for (; local_i < MAX_DYNAMIC_OBJS; local_i += local_inc)
 				{
 					if (dynamic_objs.type[local_i] != TRIG_UNUSED)
 					{
@@ -358,75 +439,7 @@ PROFILE_POKE(PROF_W);
 							}							
 						}
 					}
-				}				
-
-				// Handle case where the state changed in update_player()
-				// We want to make sure that the state changes hold (eg. scroll)
-				// and don't get overwritten through the rest of this state.
-				if (cur_state != STATE_GAME)
-				{
-					clear_vram_buffer();
-					break;
-				}
-
-				if (cur_room_type == 1)
-				{
-					banked_call(BANK_3, update_cam_td);
-				}
-				else
-				{
-				#define CAM_DEAD_ZONE 16
-
-				// move the camera to the player if needed.
-				if (high_2byte(player1.pos_x) > cam.pos_x + (128 + CAM_DEAD_ZONE) && cam.pos_x < cur_room_width_pixels-256)
-				{
-					cam.pos_x = MIN(cur_room_width_pixels-256, high_2byte(player1.pos_x) - (128 + CAM_DEAD_ZONE));
-				}
-				else if (high_2byte(player1.pos_x) < cam.pos_x + (128 - CAM_DEAD_ZONE) && cam.pos_x > 0 ) //(cam.pos_x / 256) == ((high_2byte(player1.pos_x) - 64) / 256))
-				{
-					// TODO: There is probably a chance the rolls over to -1 if the player doesn't start at 0,0. Can't clamp
-					//		 because pos_x is unsigned. Need to detect roll over and clamp to 0.
-					local_old_cam_x = cam.pos_x;
-					cam.pos_x = high_2byte(player1.pos_x) - (128 - CAM_DEAD_ZONE);
-					if (local_old_cam_x < cam.pos_x) cam.pos_x = 0;
-				}
-
-				// This should really be >> 4 (every 16 pixels) but that will miss the initial
-				// row loading. Could update "load_map" but the nametable logic is kind of annoying
-				// for the non-vram version. Will dig in more later.
-				if ((local_old_cam_x >> 3) < (cam.pos_x >> 3) || cur_nametable_y_right != 0)
-				{
-					in_x_tile = 1 + (cam.pos_x + 256) / 16;
-					in_x_pixel = 16 + (cam.pos_x + 256);
-					cur_nametable_y = cur_nametable_y_right;
-					vram_buffer_load_column();
-
-					cur_nametable_y_right += NAMETABLE_TILES_8_UPDATED_PER_FRAME;
-					if (cur_nametable_y_right >= 30) cur_nametable_y_right = 0;					
-				}
-				if ((local_old_cam_x >> 3) > (cam.pos_x >> 3) || cur_nametable_y_left != 0)
-				{
-					in_x_tile = (cam.pos_x) / 16;
-					in_x_pixel = (cam.pos_x);
-					cur_nametable_y = cur_nametable_y_left;
-					vram_buffer_load_column();
-
-					cur_nametable_y_left += NAMETABLE_TILES_8_UPDATED_PER_FRAME;
-					if (cur_nametable_y_left >= 30) cur_nametable_y_left = 0;		
-				}
-
-				banked_call(BANK_1, draw_player);
-
-				// update the freeze and thaw values at the end of the frame.
-				cam.freeze_left = (cam.pos_x >= FROZEN_OFFSET ? cam.pos_x - FROZEN_OFFSET : 0);
-				cam.freeze_right = (cam.pos_x <= cur_room_width_pixels - 256 - FROZEN_OFFSET ? cam.pos_x + 256 + FROZEN_OFFSET : cur_room_width_pixels);
-				cam.thaw_left = (cam.pos_x >= THAW_OFFSET ? cam.pos_x - THAW_OFFSET : 0);
-				cam.thaw_right = (cam.pos_x <= cur_room_width_pixels - 256 - THAW_OFFSET ? cam.pos_x + 256 + THAW_OFFSET : cur_room_width_pixels);	
-
-				// cur_col is the last column to be loaded, aka the right
-				// hand side of the screen. The scroll amount is relative to the 
-				// left hand side of the screen, so offset by 256.
-				set_scroll_x(cam.pos_x);
+				}					
 
 #if DEBUG_ENABLED
 				if (pad_all_new & PAD_SELECT)
@@ -468,7 +481,7 @@ PROFILE_POKE(PROF_W);
 			}
 		}
 
-gray_line();
+//gray_line();
 
 PROFILE_POKE(PROF_CLEAR)
 
