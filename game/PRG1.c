@@ -134,7 +134,11 @@ void draw_player_static()
 	// sprite VRAM data.
 	chr_index_queued = sprite_anims[animation_data.anim_current[player1.anim_data_index]]->chr_index;
 
-	if (high_2byte(player1.pos_y) < 240 || high_2byte(player1.pos_y) > (0xffff - 16))
+	// When jumping UP past the top of the screen, the rendering loops into the attr table (240-256).
+	// That gives us 16 pixels where the sprite can continue to draw offscreen, without popping up
+	// on the bottom of the screen.
+	// NOTE: Had to switch from -16 to -13 to avoid a few pixels spilling over. Not sure why.
+	if (high_2byte(player1.pos_y) < 240 || high_2byte(player1.pos_y) > (0xffff - 13))
 	{
 		if (player1.dir_x < 0)
 		{
