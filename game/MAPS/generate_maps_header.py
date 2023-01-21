@@ -51,8 +51,9 @@ object_type_name_mapping = {
     "player_spawn_point" : "0",
     "trans_point" : "1",
     "trans_edge" : "2",
-    "skeleton" : "3",
-    "bird" : "4",
+    "trans_edge_vert" : "3",
+    "skeleton" : "4",
+    "bird" : "5",
 }
 
 flag_names = [

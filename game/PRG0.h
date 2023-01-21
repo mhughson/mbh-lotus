@@ -11,6 +11,7 @@ void copy_current_map_to_nametable();
 void vram_buffer_load_2x2_metatile();
 void vram_buffer_load_column();
 void vram_buffer_load_column_full();
+void vram_buffer_load_row_full();
 void go_to_state(unsigned char new_state);
 void set_chr_bank_for_current_room();
 void load_level_pal();

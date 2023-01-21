@@ -10,6 +10,7 @@
 void get_cur_room_world_and_level();
 
 void stream_in_next_level();
+void stream_in_next_level_vert();
 
 // Copy over the metatile set to RAM.
 void set_metatile_set();

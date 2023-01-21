@@ -271,6 +271,7 @@ void load_and_process_map()
 
 			case TRIG_TRANS_POINT:
 			case TRIG_TRANS_EDGE:
+			case TRIG_TRANS_EDGE_VERT:
 			{
 				trig_objs.type[local_index] = loaded_obj_id;
 				trig_objs.pos_x_tile[local_index] = loaded_obj_x;

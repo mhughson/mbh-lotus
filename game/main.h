@@ -232,6 +232,7 @@ typedef enum TRIGGER_OBJECT_TYPES
 	TRIG_PLAYER_SPAWN_POINT = 0,
 	TRIG_TRANS_POINT,
 	TRIG_TRANS_EDGE,
+	TRIG_TRANS_EDGE_VERT,
 	TRIG_SKELETON,
 	TRIG_BIRD,
 
@@ -316,7 +317,7 @@ extern unsigned int draw_queue[DRAW_QUEUE_SIZE];
 // At some point I think I will need to keep the current 2 nametables of level data in RAM, so that I can
 // edit it on the fly (eg. destructable blocks). Reserving it for now, since this is a large chunk of memory
 // that will be challenging to peel back after its used.
-#define RAINY_DAY_RAM_SIZE (200)
+#define RAINY_DAY_RAM_SIZE (128)
 extern unsigned char rainy_day_ram[RAINY_DAY_RAM_SIZE];
 
 
