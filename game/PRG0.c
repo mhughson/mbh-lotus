@@ -272,7 +272,7 @@ PROFILE_POKE(PROF_W);
 								index = 1;
 								if (pad_all & PAD_LEFT) index = 0;
 								// NOTE: Only checking for X collision so that this spans the height of the screen.
-								if ((high_2byte(player1.pos_x) + y_collision_offsets[index] ) / 16 == trig_objs.pos_x_tile[local_i])
+								if ((high_2byte(player1.pos_x) + x_collision_offsets[index] ) / 16 == trig_objs.pos_x_tile[local_i] || (pad_all & PAD_SELECT))
 								{
 									// Figure out if we are headed left or right based on the position in world.
 									if (trig_objs.pos_x_tile[local_i] > 8)
@@ -289,6 +289,34 @@ PROFILE_POKE(PROF_W);
 									cur_room_index = (trig_objs.payload[local_i]) & 0b00011111;
 
 									banked_call(BANK_2, stream_in_next_level);
+									// Avoid triggering additional things in the newly loaded level.
+									goto skip_remaining;
+								}
+								break;
+							}
+
+							case TRIG_TRANS_EDGE_VERT:
+							{
+								index = 2;
+								in_stream_direction = 1;
+								// only check for top vert edges if we are moving upwards.
+								if (trig_objs.pos_y_tile[local_i] < 8)
+								{
+									index = 0;
+									in_stream_direction = 0;
+									if (player1.vel_y16 >= 0)
+									{
+										break;
+									}
+								}
+
+								if ((high_2byte(player1.pos_y) + y_collision_offsets[index] ) / 16 == trig_objs.pos_y_tile[local_i])
+								{
+									// Right 5 bits are the destination level.
+									// Left 3 bits are currently unused.
+									cur_room_index = (trig_objs.payload[local_i]) & 0b00011111;
+
+									banked_call(BANK_2, stream_in_next_level_vert);
 									// Avoid triggering additional things in the newly loaded level.
 									goto skip_remaining;
 								}
@@ -1233,6 +1261,98 @@ void vram_buffer_load_column_full()
 	//local_x = (in_x_tile / 2) * 2;
 
 	for (local_y = 0; local_y < (15); local_y+=2)
+	{
+		local_i = 0;
+
+		// room index.
+		local_index16 = GRID_XY_TO_ROOM_INDEX(local_x, local_y);
+		// meta tile palette index.
+		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
+		local_att_index16+=4;
+		// bit shift amount
+		local_i |= (cur_metatiles[local_att_index16]);
+
+		local_index16++;//local_index16 = local_index16 + 1; //(local_y * 16) + (local_x + 1);
+		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
+		local_att_index16+=4;
+		local_i |= (cur_metatiles[local_att_index16]) << 2;
+
+		local_index16 = local_index16 + cur_room_width_tiles; //((local_y + 1) * 16) + (local_x);
+		local_index16--;
+		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
+		local_att_index16+=4;
+		local_i |= (cur_metatiles[local_att_index16]) << 4;
+
+		local_index16++;// = local_index16 + 1; //((local_y + 1) * 16) + (local_x + 1);
+		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
+		local_att_index16+=4;
+		local_i |= (cur_metatiles[local_att_index16]) << 6;	
+
+		one_vram_buffer(local_i, get_at_addr(nametable_index, (local_x) * CELL_SIZE, ((local_y * CELL_SIZE))));
+	}
+}
+
+void vram_buffer_load_row_full()
+{
+	// TODO: Remove int is a significant perf improvment.
+	static unsigned char local_x;
+	static unsigned char local_y;
+	static unsigned char local_i;
+	static unsigned int local_index16;
+	static unsigned int local_att_index16;
+	static unsigned char nametable_index;
+	static unsigned char tile_offset;
+	static unsigned char tile_offset2;
+
+	static unsigned char array_temp8;
+
+	// Slightly hacky logic to determine which nametable to load into
+	// and potentially REVERSE the logic, if asked to. Very specific
+	// to the level transition logic.
+	// if (cam.pos_x % 512 < 256)
+	// {
+	// 	nametable_index = in_flip_nt ? 0 : 1; // in A, show B
+	// }
+	// else
+	// {
+	// 	nametable_index = in_flip_nt ? 1 : 0; // in B, show A
+	// }
+
+	// todo: calculate based on x pos.
+	nametable_index = 0;
+
+	// TILES
+
+	tile_offset = (((in_y_pixel % 16) / 8) * 2);
+	tile_offset2 = tile_offset+1;
+
+	local_index16 = GRID_XY_TO_ROOM_INDEX(0, in_y_tile);
+
+	for (local_i = 0; local_i < 32; )
+	{
+		local_att_index16 = current_room[local_index16] * META_TILE_NUM_BYTES;
+
+		// single column of tiles
+		array_temp8 = cur_metatiles[local_att_index16 + tile_offset];
+		nametable_col[local_i] = array_temp8;
+		local_i++;
+		array_temp8 = cur_metatiles[local_att_index16 + tile_offset2];
+		nametable_col[local_i] = array_temp8;
+		local_i++;
+
+		++local_index16;
+	}
+
+	multi_vram_buffer_horz(nametable_col, (unsigned char)32, get_ppu_addr(nametable_index, 0, in_y_pixel));
+
+	// ATTRIBUTES
+
+	// Attributes are in 2x2 meta tile chunks, so we need to round down to the nearest,
+	// multiple of 2 (eg. if you pass in index 5, we want to start on 4).
+	local_y = (in_y_tile & 0xFFFE);//local_x = (in_x_tile / 2) * 2;
+	//local_x = (in_x_tile / 2) * 2;
+
+	for (local_x = 0; local_x < (16); local_x+=2)
 	{
 		local_i = 0;
 
