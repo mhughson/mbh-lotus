@@ -219,23 +219,27 @@ void stream_in_next_level_vert()
 
 			index16 -= SCROLL_SPEED;
 			// Scroll the camera without affecting "cam" struct.
-			scroll(0,index16);			
+			scroll(cam.pos_x,index16);			
 		}
 
-#if 0
+		index16 -= SCROLL_SPEED;
+		// Scroll the camera without affecting "cam" struct.
+		scroll(cam.pos_x,index16);	
+
+#if 1
 		// This point we have loaded the first nametable of content from the new level,
 		// and scrolled it into view.
 		// The chunk of code does the same thing, but for the OTHER nametable, and does
 		// NOT scroll the camera.
-		for (local_i16 = cur_room_width_pixels; local_i16 > (cur_room_width_pixels - 256); local_i16-=8)
+		for (local_i16 = cur_room_height_pixels-1; local_i16 >= (cur_room_height_pixels - 240 + SCROLL_SPEED); local_i16-=SCROLL_SPEED)
 		{
 			// Load in a full column of tile data. Don't time slice in this case
 			// as perf shouldn't be an issue, and time slicing would furth complicate
 			// this sequence.
-			in_x_tile = local_i16 / 16;
-			in_x_pixel = local_i16;
+			in_y_tile = local_i16 / 16;
+			in_y_pixel = local_i16;
 			in_flip_nt = 1;
-			banked_call(BANK_0, vram_buffer_load_column_full);
+			banked_call(BANK_0, vram_buffer_load_row_full);
 
 			// Wait for the frame to be drawn, clear out the sprite data and vram buffer
 			// for the next frame, all within this tight loop.
@@ -245,19 +249,30 @@ void stream_in_next_level_vert()
 
 			// Draw the player without updating the animation, as it looks
 			// weird if they "moon walk" across the screen.
-			banked_call(BANK_1, draw_player_static);
+			banked_call(BANK_1, draw_player_static);	
 		}
 #endif // 0
 
 		// Move the cam now we we don't see the extra 3 tiles pop in.
 		player1.pos_y = FP_WHOLE(cur_room_height_pixels - 31);
 		cam.pos_y = cur_room_height_pixels - 240;
+		cam.pos_x = 0;
 		// Both nametables are identicle so this camera pop should be completely
 		// unnoticed.
-		scroll(0, cam.pos_y);
+		scroll(cam.pos_x, cam.pos_y);
 
-		// We don't need the 3 extra columns for the left side, because natural
-		// scrolling doesn't have the issue with missing columns.
+		// Load in 3 extra columns, as the default scrolling logic will miss those.
+		for (local_i16 = 256; local_i16 < (256+32); local_i16+=8)
+		{
+			in_x_tile = local_i16 / 16;
+			in_x_pixel = local_i16;
+			in_flip_nt = 0;
+			banked_call(BANK_0, vram_buffer_load_column_full);
+			banked_call(BANK_1, draw_player_static);
+			ppu_wait_nmi();
+			oam_clear();
+			clear_vram_buffer();
+		}	
 	}
 }
 

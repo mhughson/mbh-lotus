@@ -1309,17 +1309,14 @@ void vram_buffer_load_row_full()
 	// Slightly hacky logic to determine which nametable to load into
 	// and potentially REVERSE the logic, if asked to. Very specific
 	// to the level transition logic.
-	// if (cam.pos_x % 512 < 256)
-	// {
-	// 	nametable_index = in_flip_nt ? 0 : 1; // in A, show B
-	// }
-	// else
-	// {
-	// 	nametable_index = in_flip_nt ? 1 : 0; // in B, show A
-	// }
-
-	// todo: calculate based on x pos.
-	nametable_index = 0;
+	if (cam.pos_x % 512 < 256)
+	{
+		nametable_index = in_flip_nt ? 1 : 0;
+	}
+	else
+	{
+		nametable_index = in_flip_nt ? 0 : 1;
+	}
 
 	// TILES
 
