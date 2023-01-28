@@ -28,6 +28,8 @@ const unsigned char (* const metatile_sets[9])[128*META_TILE_NUM_BYTES] =
 void stream_in_next_level_vert()
 {
 	static unsigned long player_steps;
+	static unsigned int local_x_offset16;
+
 	/*
 	How to support scrolling in levels not divisible by 512:
 	eg. A B A | A | A B A B A
@@ -47,6 +49,14 @@ void stream_in_next_level_vert()
 	stream in next area at the edge of the screen. At the end, pop up to top,
 	and then if needed halt and stream into Nametable A. Figuring out if you
 	want to go to Nametable A or B might be a challenge.
+
+	Metroid:
+
+	Switches mirroring bases on section.
+	1) While door closes, camera slides to align with nameable.
+	2) Flip mirror mode.
+	3) Scroll next level into view.
+	4) Pop camera within same mirror (seems in needed)
 */
 
 	static unsigned int local_i16;
@@ -176,6 +186,13 @@ void stream_in_next_level_vert()
 
 		banked_call(BANK_1, draw_player_static);
 
+		// Save the offset from the left of the current nametable. This will be used to keep us at the same 
+		// relative location at the destination.
+		// First get the left edge of the current nametable.
+		local_x_offset16 = (high_2byte(player1.pos_x) / 256) * 256;
+		// Next get the delta to the player's position from that left edge.
+		local_x_offset16 = high_2byte(player1.pos_x) - local_x_offset16;
+
 		// Load the next room. NOTE: This is loading OVER top of the room in RAM 
 		// that will be visible during scroll, but does NOT override VRAM. This is
 		// a point of not return though, and the old remove must be scrolled out of
@@ -189,10 +206,22 @@ void stream_in_next_level_vert()
 
 		player_steps = ((FP_WHOLE(cur_room_height_pixels - 31) % FP_WHOLE(240)) - (player1.pos_y % FP_WHOLE(240))) / (240 / SCROLL_SPEED);
 
+		// If transitioning to the right most edge of the destination
+		// level, start the level streaming on the left edge of that
+		// final nametable.
+		if (in_vert_dest_right)
+		{
+			in_x_tile = cur_room_width_tiles - 16;;
+		}
+		else
+		{
+			in_x_tile = 0;
+		}
+
 		// We know that the camera is right at the edge of the screen, just by the
 		// nature of the camera system, and so as a result, we know that we need to
 		// scroll 256 pixels to scroll the next room fully into view.
-		for (local_i16 = cur_room_height_pixels-1; local_i16 >= (cur_room_height_pixels - 240 + SCROLL_SPEED); local_i16-=SCROLL_SPEED)
+		for (local_i16 = cur_room_height_pixels-1; local_i16 >= SCROLL_SPEED; local_i16-=SCROLL_SPEED)
 		{
 			// Load in a full column of tile data. Don't time slice in this case
 			// as perf shouldn't be an issue, and time slicing would furth complicate
@@ -202,11 +231,7 @@ void stream_in_next_level_vert()
 			in_flip_nt = 0;
 			banked_call(BANK_0, vram_buffer_load_row_full);
 
-			// Wait for the frame to be drawn, clear out the sprite data and vram buffer
-			// for the next frame, all within this tight loop.
-			ppu_wait_nmi();
-			oam_clear();
-			clear_vram_buffer();
+
 
 			// Start moving stuff after streaming in 1 column so that we don't see 
 			// the first column appear after the camera has already moved.
@@ -219,19 +244,29 @@ void stream_in_next_level_vert()
 
 			index16 -= SCROLL_SPEED;
 			// Scroll the camera without affecting "cam" struct.
-			scroll(cam.pos_x,index16);			
+			scroll(cam.pos_x,index16);		
+
+			// Wait for the frame to be drawn, clear out the sprite data and vram buffer
+			// for the next frame, all within this tight loop.
+			// Do this at the end of the loop, so that the final changes
+			// are rendered before exiting loop.
+			ppu_wait_nmi();
+			oam_clear();
+			clear_vram_buffer();				
 		}
 
 		index16 -= SCROLL_SPEED;
 		// Scroll the camera without affecting "cam" struct.
 		scroll(cam.pos_x,index16);	
+		// Fix flicker
+		banked_call(BANK_1, draw_player_static);	
 
 #if 1
 		// This point we have loaded the first nametable of content from the new level,
 		// and scrolled it into view.
 		// The chunk of code does the same thing, but for the OTHER nametable, and does
 		// NOT scroll the camera.
-		for (local_i16 = cur_room_height_pixels-1; local_i16 >= (cur_room_height_pixels - 240 + SCROLL_SPEED); local_i16-=SCROLL_SPEED)
+		for (local_i16 = cur_room_height_pixels-8; local_i16 < cur_room_height_pixels; local_i16-=8)
 		{
 			// Load in a full column of tile data. Don't time slice in this case
 			// as perf shouldn't be an issue, and time slicing would furth complicate
@@ -254,9 +289,24 @@ void stream_in_next_level_vert()
 #endif // 0
 
 		// Move the cam now we we don't see the extra 3 tiles pop in.
-		player1.pos_y = FP_WHOLE(cur_room_height_pixels - 31);
+		if (in_vert_dest_right)
+		{
+			player1.pos_x = FP_WHOLE((cur_room_width_pixels - 256) + local_x_offset16);
+		}
+		else
+		{
+			player1.pos_x = FP_WHOLE(local_x_offset16);
+		}
+		//player1.pos_y = FP_WHOLE(cur_room_height_pixels - 31);
 		cam.pos_y = cur_room_height_pixels - 240;
-		cam.pos_x = 0;
+		if (in_vert_dest_right)
+		{
+			cam.pos_x = cur_room_width_pixels - 256;
+		}
+		else
+		{
+			cam.pos_x = 0;
+		}
 		// Both nametables are identicle so this camera pop should be completely
 		// unnoticed.
 		scroll(cam.pos_x, cam.pos_y);
@@ -273,6 +323,9 @@ void stream_in_next_level_vert()
 			oam_clear();
 			clear_vram_buffer();
 		}	
+
+		// extra call to stop flicker.
+		banked_call(BANK_1, draw_player_static);
 	}
 }
 
@@ -411,7 +464,10 @@ void stream_in_next_level()
 			ppu_wait_nmi();
 			oam_clear();
 			clear_vram_buffer();
-		}	
+		}
+
+		// Extra draw to avoid flicker on final frame.
+		banked_call(BANK_1, draw_player_static);
 	}
 	else if (in_stream_direction == 0)
 	{

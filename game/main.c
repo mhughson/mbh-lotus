@@ -62,6 +62,7 @@ unsigned char in_is_streaming;
 unsigned char in_destination_spawn_id;
 unsigned char in_stream_direction;
 unsigned char in_dynamic_obj_index;
+unsigned char in_vert_dest_right;
 
 unsigned char out_num_tiles;
 

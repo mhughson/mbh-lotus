@@ -310,11 +310,14 @@ PROFILE_POKE(PROF_W);
 									}
 								}
 
-								if ((high_2byte(player1.pos_y) + y_collision_offsets[index] ) / 16 == trig_objs.pos_y_tile[local_i])
+								if ((high_2byte(player1.pos_y) + y_collision_offsets[index] ) / 16 == trig_objs.pos_y_tile[local_i] &&
+									(high_2byte(player1.pos_x)) / 16 >= trig_objs.pos_x_tile[local_i] && (high_2byte(player1.pos_x)) / 16 <= trig_objs.pos_x_tile[local_i] + 8)
 								{
 									// Right 5 bits are the destination level.
-									// Left 3 bits are currently unused.
+									// Bit 6 is 1 if destination should be right edge of map.
+									// Left 2 bits are currently unused.
 									cur_room_index = (trig_objs.payload[local_i]) & 0b00011111;
+									in_vert_dest_right = (trig_objs.payload[local_i]) & PAYLOAD_TRANS_EDGE_VERT_DEST_MASK;
 
 									banked_call(BANK_2, stream_in_next_level_vert);
 									// Avoid triggering additional things in the newly loaded level.
@@ -1323,7 +1326,7 @@ void vram_buffer_load_row_full()
 	tile_offset = (((in_y_pixel % 16) / 8) * 2);
 	tile_offset2 = tile_offset+1;
 
-	local_index16 = GRID_XY_TO_ROOM_INDEX(0, in_y_tile);
+	local_index16 = GRID_XY_TO_ROOM_INDEX(in_x_tile, in_y_tile);
 
 	for (local_i = 0; local_i < 32; )
 	{
@@ -1354,7 +1357,7 @@ void vram_buffer_load_row_full()
 		local_i = 0;
 
 		// room index.
-		local_index16 = GRID_XY_TO_ROOM_INDEX(local_x, local_y);
+		local_index16 = GRID_XY_TO_ROOM_INDEX(local_x + in_x_tile, local_y);
 		// meta tile palette index.
 		local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES);
 		local_att_index16+=4;

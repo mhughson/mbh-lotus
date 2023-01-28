@@ -239,6 +239,8 @@ typedef enum TRIGGER_OBJECT_TYPES
 	TRIG_UNUSED = 0xff,
 } TRIGGER_OBJECT_TYPES;
 
+#define PAYLOAD_TRANS_EDGE_VERT_DEST_MASK 0b00100000
+
 #define MAX_TRIGGERS (8)
 typedef struct trigger_objects
 {
@@ -338,6 +340,8 @@ extern unsigned char in_destination_spawn_id;
 extern unsigned char in_stream_direction;
 
 extern unsigned char in_dynamic_obj_index;
+
+extern unsigned char in_vert_dest_right;
 
 extern unsigned char out_num_tiles;
 
