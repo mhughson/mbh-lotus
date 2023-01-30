@@ -306,9 +306,18 @@ PROFILE_POKE(PROF_W);
 									in_stream_direction = 0;
 									if (player1.vel_y16 >= 0)
 									{
-										break;
+										continue;;
 									}
 								}
+								else if (trig_objs.pos_y_tile[local_i] > 8)
+								{
+									index = 2;
+									in_stream_direction = 1;
+									if (player1.vel_y16 <= 0)
+									{
+										continue;;
+									}
+								}								
 
 								if ((high_2byte(player1.pos_y) + y_collision_offsets[index] ) / 16 == trig_objs.pos_y_tile[local_i] &&
 									(high_2byte(player1.pos_x)) / 16 >= trig_objs.pos_x_tile[local_i] && (high_2byte(player1.pos_x)) / 16 <= trig_objs.pos_x_tile[local_i] + 8)

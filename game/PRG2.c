@@ -65,17 +65,22 @@ void stream_in_next_level_vert()
 	//if (high_2byte(player1.pos_x) > cur_room_width_pixels - 24)
 	if (in_stream_direction == 1)
 	{
-
-		// WARNING: THIS DIRECTION NOT YET IMPLEMENTED
 	
 #define SCROLL_SPEED (4)
 
 		// Store the camera position as in a temp variable, as we don't want
 		// affect the actual camera during this sequence, as the player rendering
 		// will attemp to "offset" that camera.
-		index16 = cam.pos_x;
+		index16 = 0; //cam.pos_y;
 
 		banked_call(BANK_1, draw_player_static);
+
+		// Save the offset from the left of the current nametable. This will be used to keep us at the same 
+		// relative location at the destination.
+		// First get the left edge of the current nametable.
+		local_x_offset16 = (high_2byte(player1.pos_x) / 256) * 256;
+		// Next get the delta to the player's position from that left edge.
+		local_x_offset16 = high_2byte(player1.pos_x) - local_x_offset16;
 
 		// Load the next room. NOTE: This is loading OVER top of the room in RAM 
 		// that will be visible during scroll, but does NOT override VRAM. This is
@@ -86,39 +91,41 @@ void stream_in_next_level_vert()
 
 		// We need to do this once before entering the loop so that the 
 		// first frame is not missing the player.
-		banked_call(BANK_1, draw_player_static);
+		banked_call(BANK_1, draw_player_static);		
 
-		// Calculate how far the player needs to travel, and then divide that by the 
-		// number of steps the camera will take during the transition, and that is
-		// how much the player should move each frame.
-		// NOTE: The number of steps (64) is NOT wrapped in FP_WHOLE because we want
-		//		 to divide FP distance into 64 chunks, not into (64<<16) chunks.
-		player_steps = ((player1.pos_x % FP_WHOLE(256)) - FP_WHOLE(16)) / (256 / SCROLL_SPEED);
+		player_steps = ((player1.pos_y % FP_WHOLE(240)) - 31) / (240 / SCROLL_SPEED);
+
+		// If transitioning to the right most edge of the destination
+		// level, start the level streaming on the left edge of that
+		// final nametable.
+		if (in_vert_dest_right)
+		{
+			in_x_tile = cur_room_width_tiles - 16;;
+		}
+		else
+		{
+			in_x_tile = 0;
+		}
 
 		// We know that the camera is right at the edge of the screen, just by the
 		// nature of the camera system, and so as a result, we know that we need to
 		// scroll 256 pixels to scroll the next room fully into view.
-		for (local_i16 = 0; local_i16 < 256; local_i16+=SCROLL_SPEED)
+		for (local_i16 = 0; local_i16 <= (cur_room_height_pixels - SCROLL_SPEED); local_i16+=SCROLL_SPEED)
 		{
 			// Load in a full column of tile data. Don't time slice in this case
 			// as perf shouldn't be an issue, and time slicing would furth complicate
 			// this sequence.
-			in_x_tile = local_i16 / 16;
-			in_x_pixel = local_i16;
+			in_y_tile = local_i16 / 16;
+			in_y_pixel = local_i16;
 			in_flip_nt = 0;
-			banked_call(BANK_0, vram_buffer_load_column_full);
+			banked_call(BANK_0, vram_buffer_load_row_full);
 
-			// Wait for the frame to be drawn, clear out the sprite data and vram buffer
-			// for the next frame, all within this tight loop.
-			ppu_wait_nmi();
-			oam_clear();
-			clear_vram_buffer();
+
 
 			// Start moving stuff after streaming in 1 column so that we don't see 
 			// the first column appear after the camera has already moved.
 
-			// Slowly move the player towards the destination.
-			player1.pos_x -= (player_steps);
+			player1.pos_y -= player_steps;
 
 			// Draw the player without updating the animation, as it looks
 			// weird if they "moon walk" across the screen.
@@ -126,22 +133,37 @@ void stream_in_next_level_vert()
 
 			index16 += SCROLL_SPEED;
 			// Scroll the camera without affecting "cam" struct.
-			scroll(index16,0);			
+			scroll(cam.pos_x,index16);		
+
+			// Wait for the frame to be drawn, clear out the sprite data and vram buffer
+			// for the next frame, all within this tight loop.
+			// Do this at the end of the loop, so that the final changes
+			// are rendered before exiting loop.'
+			ppu_wait_nmi();
+			oam_clear();
+			clear_vram_buffer();				
 		}
 
+		// index16 += SCROLL_SPEED;
+		// // Scroll the camera without affecting "cam" struct.
+		// scroll(cam.pos_x,index16);	
+		// Fix flicker
+		banked_call(BANK_1, draw_player_static);	
+
+#if 1
 		// This point we have loaded the first nametable of content from the new level,
 		// and scrolled it into view.
 		// The chunk of code does the same thing, but for the OTHER nametable, and does
 		// NOT scroll the camera.
-		for (local_i16 = 0; local_i16 < 256; local_i16+=8)
+		for (local_i16 = 0; local_i16 <= cur_room_height_pixels-8; local_i16+=8)
 		{
 			// Load in a full column of tile data. Don't time slice in this case
 			// as perf shouldn't be an issue, and time slicing would furth complicate
 			// this sequence.
-			in_x_tile = local_i16 / 16;
-			in_x_pixel = local_i16;
+			in_y_tile = local_i16 / 16;
+			in_y_pixel = local_i16;
 			in_flip_nt = 1;
-			banked_call(BANK_0, vram_buffer_load_column_full);
+			banked_call(BANK_0, vram_buffer_load_row_full);
 
 			// Wait for the frame to be drawn, clear out the sprite data and vram buffer
 			// for the next frame, all within this tight loop.
@@ -151,15 +173,32 @@ void stream_in_next_level_vert()
 
 			// Draw the player without updating the animation, as it looks
 			// weird if they "moon walk" across the screen.
-			banked_call(BANK_1, draw_player_static);
+			banked_call(BANK_1, draw_player_static);	
 		}
+#endif // 0
 
 		// Move the cam now we we don't see the extra 3 tiles pop in.
-		player1.pos_x = FP_WHOLE(16);
-		cam.pos_x = 0;
+		if (in_vert_dest_right)
+		{
+			player1.pos_x = FP_WHOLE((cur_room_width_pixels - 256) + local_x_offset16);
+		}
+		else
+		{
+			player1.pos_x = FP_WHOLE(local_x_offset16);
+		}
+		//player1.pos_y = FP_WHOLE(cur_room_height_pixels - 31);
+		cam.pos_y = cur_room_height_pixels - 240;
+		if (in_vert_dest_right)
+		{
+			cam.pos_x = cur_room_width_pixels - 256;
+		}
+		else
+		{
+			cam.pos_x = 0;
+		}
 		// Both nametables are identicle so this camera pop should be completely
 		// unnoticed.
-		scroll(cam.pos_x,0);	
+		scroll(cam.pos_x, cam.pos_y);
 
 		// Load in 3 extra columns, as the default scrolling logic will miss those.
 		for (local_i16 = 256; local_i16 < (256+32); local_i16+=8)
@@ -173,6 +212,9 @@ void stream_in_next_level_vert()
 			oam_clear();
 			clear_vram_buffer();
 		}	
+
+		// extra call to stop flicker.
+		banked_call(BANK_1, draw_player_static);
 	}
 	else if (in_stream_direction == 0)
 	{
