@@ -58,7 +58,7 @@ const anim_def skel_squished	= { 255, 1, { 2 }, CHR_SKEL};
 const anim_def bird_fly_right	= { 20, 2, { 3, 4 }, CHR_BIRD};
 const anim_def bird_fall_right	= { 5, 3, { 3, 5, 6 }, CHR_BIRD};
 
-const struct anim_def* sprite_anims[] =
+const struct anim_def * const sprite_anims[] =
 {
 	&idle_right,
 
