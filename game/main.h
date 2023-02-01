@@ -173,7 +173,7 @@ enum
 
 enum { STATE_BOOT, STATE_TITLE, STATE_GAME, STATE_OVER };
 
-enum { BANK_0 = 0, BANK_1, BANK_2, BANK_3, BANK_4, BANK_5, BANK_6 };
+enum { BANK_0 = 0, BANK_1, BANK_2, BANK_3, BANK_4, BANK_5, BANK_6, BANK_7 };
 
 #pragma bss-name(push, "ZEROPAGE")
 #pragma bss-name(pop)
@@ -410,6 +410,11 @@ extern unsigned char dash_count;
 
 extern unsigned char chr_index_queued;
 extern unsigned char chr_3_index_queued;
+
+#define NUM_Y_COLLISION_OFFSETS 3
+extern const unsigned char y_collision_offsets[NUM_Y_COLLISION_OFFSETS];
+#define NUM_X_COLLISION_OFFSETS 2
+extern const unsigned char x_collision_offsets[NUM_X_COLLISION_OFFSETS];
 
 // assembly exports.
 extern unsigned char SPR_FLIP_META;

@@ -116,6 +116,9 @@ unsigned char dash_count;
 unsigned char chr_index_queued;
 unsigned char chr_3_index_queued;
 
+const unsigned char y_collision_offsets[NUM_Y_COLLISION_OFFSETS] = { 1, 10, 19 };
+const unsigned char x_collision_offsets[NUM_X_COLLISION_OFFSETS] = { 0, 12 };
+
 #pragma bss-name(push, "XRAM")
 // extra RAM at $6000-$7fff
 //unsigned char wram_array[0x2000];
