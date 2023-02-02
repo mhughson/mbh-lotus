@@ -249,7 +249,7 @@ void load_and_process_map()
 					// point the player in the right direction, but for the side scrolling
 					// levels, they enter on the extreme ends of the levels and so we just
 					// face them away from the edge that will exit.
-					if (cur_room_type == 0)
+					if (cur_room_type == ROOM_TYPE_SIDE)
 					{
 						player1.dir_x = 1;
 

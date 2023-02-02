@@ -93,7 +93,8 @@ void stream_in_next_level_vert()
 		// first frame is not missing the player.
 		banked_call(BANK_1, draw_player_static);		
 
-		player_steps = ((player1.pos_y % FP_WHOLE(240)) - 31) / (240 / SCROLL_SPEED);
+		// -48 to account for status bar.
+		player_steps = ((player1.pos_y % FP_WHOLE(240)) - 31 - 48) / (240 / SCROLL_SPEED);
 
 		// If transitioning to the right most edge of the destination
 		// level, start the level streaming on the left edge of that
@@ -246,7 +247,8 @@ void stream_in_next_level_vert()
 		// first frame is not missing the player.
 		banked_call(BANK_1, draw_player_static);		
 
-		player_steps = ((FP_WHOLE(cur_room_height_pixels - 31) % FP_WHOLE(240)) - (player1.pos_y % FP_WHOLE(240))) / (240 / SCROLL_SPEED);
+		// - 48 to account for status bar.
+		player_steps = ((FP_WHOLE(cur_room_height_pixels - 31 - 48) % FP_WHOLE(240)) - (player1.pos_y % FP_WHOLE(240))) / (240 / SCROLL_SPEED);
 
 		// If transitioning to the right most edge of the destination
 		// level, start the level streaming on the left edge of that

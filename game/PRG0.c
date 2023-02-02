@@ -211,6 +211,23 @@ PROFILE_POKE(PROF_W)
 
 			case STATE_GAME:
 			{
+				// No status bar on the top down areas.
+				if (cur_room_type == ROOM_TYPE_SIDE)
+				{
+					IRQ_CMD_BEGIN;
+
+					IRQ_CMD_CHR_MODE_0(get_chr_mode_0());
+					
+					// All the commands after this point will run after this scanline is drawn.
+					IRQ_CMD_SCANLINE(191);
+					// Swap the first 4k section of graphics with the 36th chunk of graphics.
+					IRQ_CMD_CHR_MODE_0(40);
+					//IRQ_CMD_H_SCROLL(0);
+					IRQ_CMD_H_V_SCROLL(0,192,0);
+					
+					// Signal the end of the commands.
+					IRQ_CMD_END;
+				}	
 
 				if (tick_count % 16 == 0)
 				{
@@ -225,13 +242,13 @@ PROFILE_POKE(PROF_W)
 				local_old_cam_x = cam.pos_x;
 
 PROFILE_POKE(PROF_G);
-				if (cur_room_type == 1)
+				if (cur_room_type == ROOM_TYPE_TOP)
 				{
 					banked_call(BANK_3, update_player_td);
 				}
 				else
 				{
-					update_player();
+					banked_call(BANK_7, update_player);
 				}
 PROFILE_POKE(PROF_W);
 
@@ -249,7 +266,7 @@ PROFILE_POKE(PROF_W);
 								// This means that we want to add "doors" again, they will need to restore the
 								// Y check, or be a new TRIG type (which also require UP to be pressed).
 								if ((high_2byte(player1.pos_x) + 8) / 16 == trig_objs.pos_x_tile[local_i] &&
-									(cur_room_type == 0 ||
+									(cur_room_type == ROOM_TYPE_SIDE ||
 									(high_2byte(player1.pos_y) + 8) / 16 == trig_objs.pos_y_tile[local_i]))
 								{
 									cur_state = 0xff;
@@ -347,7 +364,7 @@ PROFILE_POKE(PROF_W);
 					break;
 				}
 
-				if (cur_room_type == 1)
+				if (cur_room_type == ROOM_TYPE_TOP)
 				{
 					banked_call(BANK_3, update_cam_td);
 				}
@@ -1137,6 +1154,22 @@ void go_to_state(unsigned char new_state)
 			fade_from_white();
 		}
 	}
+}
+
+unsigned char get_chr_mode_0()
+{
+	switch(cur_room_metatile_index)
+	{
+		case 0:
+		{
+			return (0);
+		}
+
+		case 1:
+		{
+			return (24);
+		}
+	}	
 }
 
 void set_chr_bank_for_current_room()

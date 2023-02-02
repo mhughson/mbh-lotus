@@ -108,6 +108,9 @@
 #define SFX_MUSIC_PLAY_WRAPPER(id) if (game_option_list_values[OPTION_INDEX_MUSIC]) { sfx_play((id), ++cur_sfx_chan); }
 #define MUSIC_PLAY_WRAPPER(id) if (game_option_list_values[OPTION_INDEX_MUSIC]) { music_play((id)); }
 
+#define ROOM_TYPE_SIDE (0)
+#define ROOM_TYPE_TOP (1)
+
 // IRQ COMMANDS
 // All IRQ operations should ideally be wrapped in a command to 
 // enforce the byte formats.
@@ -123,8 +126,19 @@
 #define IRQ_CMD_WRITE_2001(val) 	IRQ_CMD(IRQ_WRITE_2001); \
 									IRQ_CMD(val);
 
+// See: https://www.nesdev.org/wiki/PPU_scrolling#Split_X/Y_scroll
+#define IRQ_CMD_H_V_SCROLL(x_val, y_val, nt_id)	IRQ_CMD(IRQ_H_V_SCROLL); \
+												IRQ_CMD((nt_id << 2)); \
+												IRQ_CMD(y_val); \
+												IRQ_CMD(x_val); \
+												IRQ_CMD((unsigned char)(((y_val & 0xf8) << 2) | (x_val >> 3))); 
+
 #define IRQ_CMD_H_SCROLL(scroll_val) IRQ_CMD(IRQ_H_SCROLL); \
 								     IRQ_CMD(scroll_val);
+
+#define IRQ_CMD_SET_PPU_ADDRESS(hi, lo) IRQ_CMD(IRQ_SET_PPU_ADDR); \
+										IRQ_CMD((hi)); \
+										IRQ_CMD((lo));
 
 #define IRQ_CMD_CHR_MODE_0(bank_id) IRQ_CMD(IRQ_CHR_MODE_0); \
 									IRQ_CMD(IRQ_CHR_BANK(bank_id));

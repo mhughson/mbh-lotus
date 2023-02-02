@@ -238,10 +238,14 @@ irq_parser:
 @loop:
 	lda (mmc3_ptr), y ; get value from array
 	iny
+	; 0 set if a == fd
 	cmp #$fd ;very short wait
+	; goto loop if 0 set, aka a == fd
 	beq @loop
 	
+	; Carry set if a >= fe
 	cmp #$fe ;fe-ff wait or exit
+	; goto wait if carry set, aka a >= fe
 	bcs @wait
 	
 	cmp #$f0
@@ -256,6 +260,7 @@ irq_parser:
 	lda (mmc3_ptr), y ; get value from array
 	iny
 	cpx #$f0
+	; goto @2 if a != f0
 	bne @2
 	sta $2000 ; f0
 	jmp @loop
@@ -265,8 +270,40 @@ irq_parser:
 	sta $2001 ; f1
 	jmp @loop
 @3:
-	cpx #$f5 
+	; X/Y Split based on:
+	; https://www.nesdev.org/wiki/PPU_scrolling#Split_X/Y_scroll
+	cpx #$f2
 	bne @4
+	ldx #3
+
+; Not needed for X+Y scrolling.
+; @better_timing_hv: ; don't change till near the end of the line
+; 	dex
+; 	bne @better_timing_hv
+	
+	; Nametable number << 2
+	sta $2006
+
+	;Y to $2005
+	lda (mmc3_ptr), y ; get value from array
+	iny	
+	sta $2005
+
+	;X to $2005
+	lda (mmc3_ptr), y ; get value from array
+	iny	
+	sta $2005
+
+	; Low byte of nametable address to $2006, 
+	; which is ((Y & $F8) << 2) | (X >> 3)
+	lda (mmc3_ptr), y ; get value from array
+	iny	
+	sta $2006
+
+	jmp @loop	
+@4:
+	cpx #$f5 
+	bne @5
 	ldx #3
 @better_timing: ; don't change till near the end of the line
 	dex
@@ -275,7 +312,9 @@ irq_parser:
 	sta $2005 ; f5
 	sta $2005 ; second value doesn't matter
 	jmp @loop
-@4:
+@5:
+	; Can assume f6 at this point because all other options
+	; have already been eliminated.
 	sta $2006 ; f6
 	lda (mmc3_ptr), y ; get 2nd value from array
 	iny	

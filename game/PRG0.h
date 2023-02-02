@@ -13,6 +13,7 @@ void vram_buffer_load_column();
 void vram_buffer_load_column_full();
 void vram_buffer_load_row_full();
 void go_to_state(unsigned char new_state);
+unsigned char get_chr_mode_0();
 void set_chr_bank_for_current_room();
 void load_level_pal();
 void kill_player();
