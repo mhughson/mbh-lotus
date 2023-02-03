@@ -118,6 +118,8 @@ unsigned char chr_3_index_queued;
 
 const unsigned char y_collision_offsets[NUM_Y_COLLISION_OFFSETS] = { 1, 10, 19 };
 const unsigned char x_collision_offsets[NUM_X_COLLISION_OFFSETS] = { 0, 12 };
+unsigned char irq_array[32];
+unsigned char irq_array_buffer[32];
 
 #pragma bss-name(push, "XRAM")
 // extra RAM at $6000-$7fff
@@ -207,4 +209,42 @@ void fade_from_white()
 	delay(FADE_DELAY);
 	pal_bright(4);
 //	delay(FADE_DELAY);
+}
+
+
+
+unsigned char get_chr_mode_0()
+{
+	switch(cur_room_metatile_index)
+	{
+		case 0:
+		{
+			return (0);
+		}
+
+		case 1:
+		{
+			return (24);
+		}
+	}	
+}
+
+void set_chr_bank_for_current_room()
+{
+	switch(cur_room_metatile_index)
+	{
+		case 0:
+		{
+			set_chr_mode_0(0);
+			set_chr_mode_1(2);
+			break;
+		}
+
+		case 1:
+		{
+			set_chr_mode_0(24);
+			set_chr_mode_1(26);
+			break;
+		}
+	}	
 }

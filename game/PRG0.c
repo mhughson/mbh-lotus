@@ -46,9 +46,6 @@ const unsigned char bg_bank_sets[NUM_BG_BANK_SETS][NUM_BG_BANKS] =
 	{ 26, 28, 30, 32 },
 };
 
-unsigned char irq_array[32];
-unsigned char irq_array_buffer[32];
-
 //unsigned char oam_base;
 
 #if DEBUG_ENABLED
@@ -1154,42 +1151,6 @@ void go_to_state(unsigned char new_state)
 			fade_from_white();
 		}
 	}
-}
-
-unsigned char get_chr_mode_0()
-{
-	switch(cur_room_metatile_index)
-	{
-		case 0:
-		{
-			return (0);
-		}
-
-		case 1:
-		{
-			return (24);
-		}
-	}	
-}
-
-void set_chr_bank_for_current_room()
-{
-	switch(cur_room_metatile_index)
-	{
-		case 0:
-		{
-			set_chr_mode_0(0);
-			set_chr_mode_1(2);
-			break;
-		}
-
-		case 1:
-		{
-			set_chr_mode_0(24);
-			set_chr_mode_1(26);
-			break;
-		}
-	}	
 }
 
 void load_level_pal()

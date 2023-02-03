@@ -29,6 +29,7 @@ void stream_in_next_level_vert()
 {
 	static unsigned long player_steps;
 	static unsigned int local_x_offset16;
+	static unsigned char local_scanline;
 
 	/*
 	How to support scrolling in levels not divisible by 512:
@@ -94,7 +95,7 @@ void stream_in_next_level_vert()
 		banked_call(BANK_1, draw_player_static);		
 
 		// -48 to account for status bar.
-		player_steps = ((player1.pos_y % FP_WHOLE(240)) - 31 - 48) / (240 / SCROLL_SPEED);
+		player_steps = ((player1.pos_y % FP_WHOLE(240)) - 31 - 48) / (192 / SCROLL_SPEED);
 
 		// If transitioning to the right most edge of the destination
 		// level, start the level streaming on the left edge of that
@@ -111,7 +112,7 @@ void stream_in_next_level_vert()
 		// We know that the camera is right at the edge of the screen, just by the
 		// nature of the camera system, and so as a result, we know that we need to
 		// scroll 256 pixels to scroll the next room fully into view.
-		for (local_i16 = 0; local_i16 <= (cur_room_height_pixels - SCROLL_SPEED); local_i16+=SCROLL_SPEED)
+		for (local_i16 = 0; local_i16 <= (192 - SCROLL_SPEED); local_i16+=SCROLL_SPEED)
 		{
 			// Load in a full column of tile data. Don't time slice in this case
 			// as perf shouldn't be an issue, and time slicing would furth complicate
@@ -134,7 +135,37 @@ void stream_in_next_level_vert()
 
 			index16 += SCROLL_SPEED;
 			// Scroll the camera without affecting "cam" struct.
-			scroll(cam.pos_x,index16);		
+			scroll(cam.pos_x,index16);
+
+			if (index16 <= 192)
+			{
+				// technically this is starting a line late, but it makes the logic simpler as it doesn
+				// have to account for -1 result for the scanline.
+				local_scanline = 240-index16-48;
+
+				IRQ_CMD_BEGIN;
+				// Restore the level graphics.
+				IRQ_CMD_CHR_MODE_0(get_chr_mode_0());	
+				// All the commands after this point will run after this scanline is drawn.
+				IRQ_CMD_SCANLINE(local_scanline);
+				// Because the level loads in the from the top, we can just jump to the
+				// top of the screen and it works out.
+				IRQ_CMD_H_V_SCROLL(0,0,(high_2byte(player1.pos_x) / 256) % 2);
+
+				// All the commands after this point will run after this scanline is drawn.
+				// -2 prevent shift during scroll
+				IRQ_CMD_SCANLINE(191-(local_scanline)-2);
+				// Status bar graphics
+				IRQ_CMD_CHR_MODE_0(40);
+				// Status bar. Does this need a Y at all?
+				IRQ_CMD_H_V_SCROLL(0,192,0);	
+			
+				// Signal the end of the commands.
+				IRQ_CMD_END;						
+			}
+
+			while(!is_irq_done() ){ }
+			memcpy(irq_array, irq_array_buffer, sizeof(irq_array));	
 
 			// Wait for the frame to be drawn, clear out the sprite data and vram buffer
 			// for the next frame, all within this tight loop.
@@ -149,8 +180,16 @@ void stream_in_next_level_vert()
 		// // Scroll the camera without affecting "cam" struct.
 		// scroll(cam.pos_x,index16);	
 		// Fix flicker
-		banked_call(BANK_1, draw_player_static);	
-
+		scroll(cam.pos_x,0);
+		banked_call(BANK_1, draw_player_static);
+		IRQ_CMD_BEGIN;
+		IRQ_CMD_CHR_MODE_0(get_chr_mode_0());	
+		IRQ_CMD_SCANLINE(191);
+		IRQ_CMD_CHR_MODE_0(40);
+		IRQ_CMD_H_V_SCROLL(0,192,0);		
+		IRQ_CMD_END;
+		while(!is_irq_done() ){ }
+		memcpy(irq_array, irq_array_buffer, sizeof(irq_array));	
 #if 1
 		// This point we have loaded the first nametable of content from the new level,
 		// and scrolled it into view.
@@ -225,7 +264,7 @@ void stream_in_next_level_vert()
 		// Store the camera position as in a temp variable, as we don't want
 		// affect the actual camera during this sequence, as the player rendering
 		// will attemp to "offset" that camera.
-		index16 = 240; //cam.pos_y;
+		index16 = 192; //cam.pos_y;
 
 		banked_call(BANK_1, draw_player_static);
 
@@ -248,7 +287,7 @@ void stream_in_next_level_vert()
 		banked_call(BANK_1, draw_player_static);		
 
 		// - 48 to account for status bar.
-		player_steps = ((FP_WHOLE(cur_room_height_pixels - 31 - 48) % FP_WHOLE(240)) - (player1.pos_y % FP_WHOLE(240))) / (240 / SCROLL_SPEED);
+		player_steps = ((FP_WHOLE(cur_room_height_pixels - 31 - 48) % FP_WHOLE(240)) - (player1.pos_y % FP_WHOLE(240))) / (192 / SCROLL_SPEED);
 
 		// If transitioning to the right most edge of the destination
 		// level, start the level streaming on the left edge of that
@@ -265,7 +304,7 @@ void stream_in_next_level_vert()
 		// We know that the camera is right at the edge of the screen, just by the
 		// nature of the camera system, and so as a result, we know that we need to
 		// scroll 256 pixels to scroll the next room fully into view.
-		for (local_i16 = cur_room_height_pixels-1; local_i16 >= SCROLL_SPEED; local_i16-=SCROLL_SPEED)
+		for (local_i16 = 191; local_i16 >= SCROLL_SPEED; local_i16-=SCROLL_SPEED)
 		{
 			// Load in a full column of tile data. Don't time slice in this case
 			// as perf shouldn't be an issue, and time slicing would furth complicate
@@ -288,7 +327,36 @@ void stream_in_next_level_vert()
 
 			index16 -= SCROLL_SPEED;
 			// Scroll the camera without affecting "cam" struct.
-			scroll(cam.pos_x,index16);		
+			scroll(cam.pos_x,index16);	
+
+//			if (index16 <= 192)
+			{
+				// technically this is starting a line late, but it makes the logic simpler as it doesn
+				// have to account for -1 result for the scanline.
+				local_scanline = 240-index16-48;
+
+				IRQ_CMD_BEGIN;
+				// Restore the level graphics.
+				IRQ_CMD_CHR_MODE_0(get_chr_mode_0());	
+				// All the commands after this point will run after this scanline is drawn.
+				IRQ_CMD_SCANLINE(local_scanline-1);
+				// Because the level loads in the from the top, we can just jump to the
+				// top of the screen and it works out.
+				IRQ_CMD_H_V_SCROLL(0,0,0);
+
+				// All the commands after this point will run after this scanline is drawn.
+				IRQ_CMD_SCANLINE(191-(local_scanline)-1);
+				// Status bar graphics
+				IRQ_CMD_CHR_MODE_0(40);
+				// Status bar. Does this need a Y at all?
+				IRQ_CMD_H_V_SCROLL(0,192,0);	
+			
+				// Signal the end of the commands.
+				IRQ_CMD_END;						
+			}
+
+			while(!is_irq_done() ){ }
+			memcpy(irq_array, irq_array_buffer, sizeof(irq_array));				
 
 			// Wait for the frame to be drawn, clear out the sprite data and vram buffer
 			// for the next frame, all within this tight loop.
@@ -301,9 +369,17 @@ void stream_in_next_level_vert()
 
 		index16 -= SCROLL_SPEED;
 		// Scroll the camera without affecting "cam" struct.
-		scroll(cam.pos_x,index16);	
+		scroll(cam.pos_x,0);	
 		// Fix flicker
-		banked_call(BANK_1, draw_player_static);	
+		banked_call(BANK_1, draw_player_static);
+		IRQ_CMD_BEGIN;
+		IRQ_CMD_CHR_MODE_0(get_chr_mode_0());
+		IRQ_CMD_SCANLINE(191);
+		IRQ_CMD_CHR_MODE_0(40);
+		IRQ_CMD_H_V_SCROLL(0,192,0);		
+		IRQ_CMD_END;
+		while(!is_irq_done() ){ }
+		memcpy(irq_array, irq_array_buffer, sizeof(irq_array));			
 
 #if 1
 		// This point we have loaded the first nametable of content from the new level,

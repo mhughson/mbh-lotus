@@ -430,6 +430,9 @@ extern const unsigned char y_collision_offsets[NUM_Y_COLLISION_OFFSETS];
 #define NUM_X_COLLISION_OFFSETS 2
 extern const unsigned char x_collision_offsets[NUM_X_COLLISION_OFFSETS];
 
+extern unsigned char irq_array[32];
+extern unsigned char irq_array_buffer[32];
+
 // assembly exports.
 extern unsigned char SPR_FLIP_META;
  #pragma zpsym ("SPR_FLIP_META"); // zero-page
@@ -463,5 +466,9 @@ void fade_to_black();
 void fade_from_black();
 void fade_to_white();
 void fade_from_white();
+
+
+unsigned char get_chr_mode_0();
+void set_chr_bank_for_current_room();
 
 #endif // ONCE_MAIN_H
