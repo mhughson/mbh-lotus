@@ -238,7 +238,6 @@ PROFILE_POKE(PROF_W)
 				// we can detect if it moved by the end of the frame.
 				local_old_cam_x = cam.pos_x;
 
-PROFILE_POKE(PROF_G);
 				if (cur_room_type == ROOM_TYPE_TOP)
 				{
 					banked_call(BANK_3, update_player_td);
@@ -247,7 +246,6 @@ PROFILE_POKE(PROF_G);
 				{
 					banked_call(BANK_7, update_player);
 				}
-PROFILE_POKE(PROF_W);
 
 				// update the trigger objects.
 				for (local_i = 0; local_i < MAX_TRIGGERS; ++local_i)
@@ -394,7 +392,7 @@ PROFILE_POKE(PROF_W);
 					vram_buffer_load_column();
 
 					cur_nametable_y_right += NAMETABLE_TILES_8_UPDATED_PER_FRAME;
-					if (cur_nametable_y_right >= 30) cur_nametable_y_right = 0;					
+					if (cur_nametable_y_right >= 24) cur_nametable_y_right = 0;					
 				}
 				if ((local_old_cam_x >> 3) > (cam.pos_x >> 3) || cur_nametable_y_left != 0)
 				{
@@ -404,7 +402,7 @@ PROFILE_POKE(PROF_W);
 					vram_buffer_load_column();
 
 					cur_nametable_y_left += NAMETABLE_TILES_8_UPDATED_PER_FRAME;
-					if (cur_nametable_y_left >= 30) cur_nametable_y_left = 0;		
+					if (cur_nametable_y_left >= 24) cur_nametable_y_left = 0;		
 				}
 
 				// update the freeze and thaw values at the end of the frame.
@@ -863,7 +861,7 @@ void vram_buffer_load_column_full()
 
 	local_index16 = GRID_XY_TO_ROOM_INDEX(in_x_tile, 0);
 
-	for (local_i = 0; local_i < 30; )
+	for (local_i = 0; local_i < 24; )
 	{
 		local_att_index16 = current_room[local_index16] * META_TILE_NUM_BYTES;
 
@@ -878,7 +876,7 @@ void vram_buffer_load_column_full()
 		local_index16 += cur_room_width_tiles;
 	}
 
-	multi_vram_buffer_vert(nametable_col, (unsigned char)30, get_ppu_addr(nametable_index, in_x_pixel, 0));
+	multi_vram_buffer_vert(nametable_col, (unsigned char)24, get_ppu_addr(nametable_index, in_x_pixel, 0));
 
 
 	// ATTRIBUTES
@@ -888,7 +886,7 @@ void vram_buffer_load_column_full()
 	local_x = (in_x_tile & 0xFFFE);//local_x = (in_x_tile / 2) * 2;
 	//local_x = (in_x_tile / 2) * 2;
 
-	for (local_y = 0; local_y < (15); local_y+=2)
+	for (local_y = 0; local_y < (12); local_y+=2)
 	{
 		local_i = 0;
 

@@ -195,7 +195,7 @@ void stream_in_next_level_vert()
 		// and scrolled it into view.
 		// The chunk of code does the same thing, but for the OTHER nametable, and does
 		// NOT scroll the camera.
-		for (local_i16 = 0; local_i16 <= cur_room_height_pixels-8; local_i16+=8)
+		for (local_i16 = 0; local_i16 <= 192-8; local_i16+=8)
 		{
 			// Load in a full column of tile data. Don't time slice in this case
 			// as perf shouldn't be an issue, and time slicing would furth complicate
@@ -386,7 +386,7 @@ void stream_in_next_level_vert()
 		// and scrolled it into view.
 		// The chunk of code does the same thing, but for the OTHER nametable, and does
 		// NOT scroll the camera.
-		for (local_i16 = cur_room_height_pixels-8; local_i16 < cur_room_height_pixels; local_i16-=8)
+		for (local_i16 = 192-8; local_i16 < 192; local_i16-=8)
 		{
 			// Load in a full column of tile data. Don't time slice in this case
 			// as perf shouldn't be an issue, and time slicing would furth complicate

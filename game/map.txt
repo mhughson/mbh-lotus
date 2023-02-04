@@ -25,7 +25,7 @@ PRG1.o:
     BANK1             Offs=000000  Size=000A91  Align=00001  Fill=0000
 PRG2.o:
     BSS               Offs=000339  Size=00000F  Align=00001  Fill=0000
-    BANK2             Offs=000000  Size=00172E  Align=00001  Fill=0000
+    BANK2             Offs=000000  Size=001718  Align=00001  Fill=0000
 PRG3.o:
     BSS               Offs=000348  Size=000031  Align=00001  Fill=0000
     BANK3             Offs=000000  Size=001A2F  Align=00001  Fill=0000
@@ -167,7 +167,7 @@ XRAM                  006000  0076C4  0016C5  00001
 BANK0                 008000  009A09  001A0A  00001
 BANK1                 008000  008A90  000A91  00001
 BANK12                008000  00945E  00145F  00001
-BANK2                 008000  00972D  00172E  00001
+BANK2                 008000  009717  001718  00001
 BANK3                 008000  009A2E  001A2F  00001
 BANK4                 008000  0088CE  0008CF  00001
 BANK5                 008000  009994  001995  00001
@@ -256,7 +256,7 @@ _scroll                   00E588 RLA    _set_chr_bank_for_current_room 00AF85 RL
 _set_chr_mode_0           00E135 RLA    _set_chr_mode_1           00E13E RLA    
 _set_chr_mode_2           00E147 RLA    _set_chr_mode_3           00E150 RLA    
 _set_chr_mode_4           00E159 RLA    _set_irq_ptr              00E18F RLA    
-_set_metatile_set         0096F3 RLA    _set_mirroring            00E180 RLA    
+_set_metatile_set         0096DD RLA    _set_mirroring            00E180 RLA    
 _set_prg_8000             00E11C RLA    _set_scroll_x             00A11D RLA    
 _set_vram_buffer          00A001 RLA    _sfx_play                 00E68D RLA    
 _stream_in_next_level     008812 RLA    _stream_in_next_level_vert 008C1E RLA    
@@ -379,7 +379,7 @@ _get_cur_room_palettes    00900A RLA    _get_cur_room_metatile_set 009042 RLA
 _load_and_process_map     009122 RLA    _vram_buffer_load_column_full 00921F RLA    
 _vram_buffer_load_row_full 0094B3 RLA    _copy_bg_to_current_room_b 0094DE RLA    
 _copy_original_room_to_current_b 009512 RLA    _get_obj_id_b             009560 RLA    
-_get_next_object_b        0095E8 RLA    _set_metatile_set         0096F3 RLA    
+_get_next_object_b        0095E8 RLA    _set_metatile_set         0096DD RLA    
 _get_cur_room_palettes_b  0096F6 RLA    _get_cur_room_metatile_set_b 00973F RLA    
 _get_cur_room_bit_flags_b 00976B RLA    _get_cur_room_special_type_b 009792 RLA    
 _get_cur_room_music_track_b 0097B9 RLA    _get_cur_room_world_and_level_b 0097E0 RLA    
@@ -993,7 +993,7 @@ callax (call.o):
 copydata (copydata.o):
     crt0.o                    crt0.s(30)
 deceaxy (ldec.o):
-    PRG2.o                    PRG2.s(4835)
+    PRG2.o                    PRG2.s(4826)
 decsp2 (decsp2.o):
     PRG3.o                    PRG3.s(4931)
     PRG3.o                    PRG3.s(4931)
@@ -1034,16 +1034,16 @@ incsp4 (incsp4.o):
     lcmp.o                    runtime/lcmp.s(9)
 laddeq (laddeq.o):
     PRG7.o                    PRG7.s(1332)
-    PRG2.o                    PRG2.s(4835)
-    PRG2.o                    PRG2.s(4835)
+    PRG2.o                    PRG2.s(4826)
+    PRG2.o                    PRG2.s(4826)
 ldaidx (ldai.o):
     PRG4.o                    PRG4.s(2031)
     PRG4.o                    PRG4.s(2031)
     PRG1.o                    PRG1.s(2293)
     PRG1.o                    PRG1.s(2293)
 lsubeq (lsubeq.o):
-    PRG2.o                    PRG2.s(4835)
-    PRG2.o                    PRG2.s(4835)
+    PRG2.o                    PRG2.s(4826)
+    PRG2.o                    PRG2.s(4826)
 mul8x16 (mul8.o):
     mul.o                     runtime/mul.s(8)
 mul8x16a (mul8.o):
@@ -1106,7 +1106,7 @@ ptr4 (zeropage.o):
     mul.o                     runtime/mul.s(10)
     ludiv.o                   runtime/ludiv.s(10)
 push0 (pushax.o):
-    PRG2.o                    PRG2.s(4835)
+    PRG2.o                    PRG2.s(4826)
     PRG0.o                    PRG0.s(5241)
 pusha (pusha.o):
     PRG7.o                    PRG7.s(1332)
@@ -1126,9 +1126,9 @@ pusha (pusha.o):
     PRG3.o                    PRG3.s(4931)
     PRG3.o                    PRG3.s(4931)
     PRG3.o                    PRG3.s(4931)
-    PRG2.o                    PRG2.s(4835)
-    PRG2.o                    PRG2.s(4835)
-    PRG2.o                    PRG2.s(4835)
+    PRG2.o                    PRG2.s(4826)
+    PRG2.o                    PRG2.s(4826)
+    PRG2.o                    PRG2.s(4826)
     PRG0.o                    PRG0.s(5241)
     PRG0.o                    PRG0.s(5241)
     PRG0.o                    PRG0.s(5241)
@@ -1157,9 +1157,9 @@ pushax (pushax.o):
     PRG3.o                    PRG3.s(4931)
     PRG3.o                    PRG3.s(4931)
     PRG3.o                    PRG3.s(4931)
-    PRG2.o                    PRG2.s(4835)
-    PRG2.o                    PRG2.s(4835)
-    PRG2.o                    PRG2.s(4835)
+    PRG2.o                    PRG2.s(4826)
+    PRG2.o                    PRG2.s(4826)
+    PRG2.o                    PRG2.s(4826)
     PRG1.o                    PRG1.s(2293)
     PRG1.o                    PRG1.s(2293)
     PRG0.o                    PRG0.s(5241)
@@ -1168,8 +1168,8 @@ pushax (pushax.o):
     mmc3_code.o               mmc3\mmc3_code.s(179)
 pusheax (lpush.o):
     PRG3.o                    PRG3.s(4931)
-    PRG2.o                    PRG2.s(4835)
-    PRG2.o                    PRG2.s(4835)
+    PRG2.o                    PRG2.s(4826)
+    PRG2.o                    PRG2.s(4826)
 shlax3 (aslax3.o):
     PRG7.o                    PRG7.s(1332)
     PRG5.o                    PRG5.s(6183)
@@ -1216,15 +1216,15 @@ shrax4 (shrax4.o):
     PRG3.o                    PRG3.s(4931)
     PRG3.o                    PRG3.s(4931)
     PRG3.o                    PRG3.s(4931)
-    PRG2.o                    PRG2.s(4835)
-    PRG2.o                    PRG2.s(4835)
+    PRG2.o                    PRG2.s(4826)
+    PRG2.o                    PRG2.s(4826)
     PRG0.o                    PRG0.s(5241)
     PRG0.o                    PRG0.s(5241)
     PRG0.o                    PRG0.s(5241)
 shreax2 (shreax2.o):
-    PRG2.o                    PRG2.s(4835)
+    PRG2.o                    PRG2.s(4826)
 shreax4 (shreax4.o):
-    PRG2.o                    PRG2.s(4835)
+    PRG2.o                    PRG2.s(4826)
 sp (zeropage.o):
     lcmp.o                    runtime/lcmp.s(10)
     decsp4.o                  runtime/decsp4.s(8)
@@ -1283,7 +1283,7 @@ sreg (zeropage.o):
     PRG2.o                    PRG2.s(10)
     PRG0.o                    PRG0.s(10)
 staspidx (staspidx.o):
-    PRG2.o                    PRG2.s(4835)
+    PRG2.o                    PRG2.s(4826)
     PRG0.o                    PRG0.s(5241)
 staxspidx (staxspi.o):
     PRG4.o                    PRG4.s(2031)
@@ -1330,13 +1330,12 @@ tosadda0 (add.o):
 tosaddeax (ladd.o):
     PRG3.o                    PRG3.s(4931)
 tosandeax (land.o):
-    PRG2.o                    PRG2.s(4835)
+    PRG2.o                    PRG2.s(4826)
 tosicmp (icmp.o):
     PRG4.o                    PRG4.s(2031)
     PRG3.o                    PRG3.s(4931)
     PRG3.o                    PRG3.s(4931)
-    PRG2.o                    PRG2.s(4835)
-    PRG2.o                    PRG2.s(4835)
+    PRG2.o                    PRG2.s(4826)
     PRG1.o                    PRG1.s(2293)
     PRG1.o                    PRG1.s(2293)
     PRG0.o                    PRG0.s(5241)
@@ -1367,10 +1366,10 @@ tossubax (sub.o):
     PRG1.o                    PRG1.s(2293)
 tossubeax (lsub.o):
     PRG3.o                    PRG3.s(4931)
-    PRG2.o                    PRG2.s(4835)
-    PRG2.o                    PRG2.s(4835)
+    PRG2.o                    PRG2.s(4826)
+    PRG2.o                    PRG2.s(4826)
 tosudiv0ax (ludiv.o):
-    PRG2.o                    PRG2.s(4835)
+    PRG2.o                    PRG2.s(4826)
 tosuleeax (lule.o):
     PRG3.o                    PRG3.s(4931)
 tosumoda0 (umod.o):
@@ -1385,7 +1384,7 @@ tosumodax (umod.o):
     PRG3.o                    PRG3.s(4931)
     PRG0.o                    PRG0.s(5241)
 tosumodeax (lumod.o):
-    PRG2.o                    PRG2.s(4835)
+    PRG2.o                    PRG2.s(4826)
 tosumula0 (mul8.o):
     PRG5.o                    PRG5.s(6183)
 udiv16 (udiv.o):
