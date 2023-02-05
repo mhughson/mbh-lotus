@@ -214,6 +214,13 @@ PROFILE_POKE(PROF_W)
 					IRQ_CMD_BEGIN;
 
 					IRQ_CMD_CHR_MODE_0(get_chr_mode_0());
+					if (tick_count % 16 == 0)
+					{
+						cur_bg_bank = (cur_bg_bank + 1) % 4;
+						// The second half of the background CHR is 
+						// used for animations.
+						IRQ_CMD_CHR_MODE_1(bg_bank_sets[cur_room_metatile_index][cur_bg_bank]);
+					}
 					
 					// All the commands after this point will run after this scanline is drawn.
 					IRQ_CMD_SCANLINE(191);
@@ -225,14 +232,6 @@ PROFILE_POKE(PROF_W)
 					// Signal the end of the commands.
 					IRQ_CMD_END;
 				}	
-
-				if (tick_count % 16 == 0)
-				{
-					cur_bg_bank = (cur_bg_bank + 1) % 4;
-					// The second half of the background CHR is 
-					// used for animations.
-					set_chr_mode_1(bg_bank_sets[cur_room_metatile_index][cur_bg_bank]);
-				}
 
 				// store the camera position at the start of the frame, so that
 				// we can detect if it moved by the end of the frame.
