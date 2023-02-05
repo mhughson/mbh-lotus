@@ -342,7 +342,7 @@ void stream_in_next_level_vert()
 				IRQ_CMD_SCANLINE(local_scanline-1);
 				// Because the level loads in the from the top, we can just jump to the
 				// top of the screen and it works out.
-				IRQ_CMD_H_V_SCROLL(0,0,0);
+				IRQ_CMD_H_V_SCROLL(0,0,(high_2byte(player1.pos_x) / 256) % 2);
 
 				// All the commands after this point will run after this scanline is drawn.
 				IRQ_CMD_SCANLINE(191-(local_scanline)-1);
