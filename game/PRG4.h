@@ -3,6 +3,7 @@
 
 void load_screen_title();
 void load_screen_gameover();
+void load_status_bar();
 
 void update_skeleton();
 void update_bird();

@@ -15,6 +15,8 @@
 
 #include "NES_ST/screen_title.h"
 #include "NES_ST/screen_gameover.h"
+#include "NES_ST/screen_status_bar.h"
+#include "NES_ST/screen_empty.h"
 
 void load_screen_title()
 {
@@ -30,6 +32,14 @@ void load_screen_gameover()
 {
 	vram_adr(NTADR_A(0,0));
     vram_unrle(screen_gameover);
+}
+
+void load_status_bar()
+{
+	vram_adr(NTADR_A(0,0));
+    vram_unrle(screen_status_bar);
+	vram_adr(NTADR_B(0,0));
+    vram_unrle(screen_empty);
 }
 
 // NOTE: Very specific to player->skeleton collision right now

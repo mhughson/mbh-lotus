@@ -18,6 +18,7 @@
         "map_funcs.h": "c",
         "prg5.h": "c",
         "maps_b.h": "c",
-        "nes.h": "c"
+        "nes.h": "c",
+        "screen_status_bar.h": "c"
     }
 }

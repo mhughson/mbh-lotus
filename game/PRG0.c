@@ -567,10 +567,14 @@ void copy_current_map_to_nametable()
 	static unsigned char local_loop;
 	static unsigned char local_offset;
 	static unsigned int cam_y;
+	static unsigned char local_y_max;
 
 	//shake_remaining = 0;
 
 	//banked_call(BANK_5, copy_and_process_map_data);
+
+	local_y_max = 15;
+	if (cur_room_type == ROOM_TYPE_SIDE) local_y_max = 12;
 
 	// Figure out where the start of the nametable the left
 	// side of the camera is in. This is where we will start
@@ -593,7 +597,11 @@ void copy_current_map_to_nametable()
 		nt = NAMETABLE_B;
 	}
 
-	for (y = 0; y < 15; ++y)
+	// First load the status bar, so that it can be overwriten by the 
+	// level data after.
+	banked_call(BANK_4, load_status_bar);
+
+	for (y = 0; y < local_y_max; ++y)
 	{
 		for (x = 0; x < 16; ++x)
 		{
@@ -616,7 +624,7 @@ void copy_current_map_to_nametable()
 	// logic works. For example, incrementing from table B
 	// to table C, is ok because table C is a copy of A.
 	nt += 0x400;
-	for (y = 0; y < 15; ++y)
+	for (y = 0; y < local_y_max; ++y)
 	{
 		for (x = 0; x < 16; ++x)
 		{
@@ -628,20 +636,6 @@ void copy_current_map_to_nametable()
 			vram_write(&cur_metatiles[index16+2], 2);
 		}
 	}
-
-	// clear the bottom row. Only really needed on 1 screen levels since others will already have
-	// black areas.
-	for (y = 12; y < 15; ++y)
-	{
-		for (x = 0; x < 16; ++x)
-		{
-			index16 = 0;
-			vram_adr(NTADR(nt,x*2,(((y*2) + (cam.pos_y / 8)) % 30)));	
-			vram_write(&cur_metatiles[index16], 2);
-			vram_adr(NTADR(nt,x*2,((y*2) + ((cam.pos_y / 8)) + 1) % 30));	
-			vram_write(&cur_metatiles[index16+2], 2);
-		}
-	}	
 
 	// Go back to the start of the first nametable.
 	nt-=0x400;
@@ -656,7 +650,7 @@ void copy_current_map_to_nametable()
 	// Loop through left and right nametables.
 	for (local_loop = 0; local_loop < 2; ++local_loop)
 	{
-		for (y = 0; y < 15; y+=2)
+		for (y = 0; y < local_y_max; y+=2)
 		{
 			for (x = 0; x < 16; x+=2)
 			{
