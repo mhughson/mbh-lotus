@@ -1069,7 +1069,8 @@ void go_to_state(unsigned char new_state)
 			irq_array[0] = 0xff;
 			irq_array_buffer[0] = 0xff;
 
-			music_stop();
+			//music_stop();
+			MUSIC_PLAY_WRAPPER(1);
 			scroll(0,0);
 			cam.pos_x = 0;
 
