@@ -608,6 +608,8 @@ void copy_current_map_to_nametable()
 			vram_write(&cur_metatiles[index16+2], 2);
 		}
 	}
+
+	// TODO: Load status bar
  	
 	// Because nametable data is duplicated in memory, and
 	// because we only support vertical mirroring atm, this
@@ -626,6 +628,20 @@ void copy_current_map_to_nametable()
 			vram_write(&cur_metatiles[index16+2], 2);
 		}
 	}
+
+	// clear the bottom row. Only really needed on 1 screen levels since others will already have
+	// black areas.
+	for (y = 12; y < 15; ++y)
+	{
+		for (x = 0; x < 16; ++x)
+		{
+			index16 = 0;
+			vram_adr(NTADR(nt,x*2,(((y*2) + (cam.pos_y / 8)) % 30)));	
+			vram_write(&cur_metatiles[index16], 2);
+			vram_adr(NTADR(nt,x*2,((y*2) + ((cam.pos_y / 8)) + 1) % 30));	
+			vram_write(&cur_metatiles[index16+2], 2);
+		}
+	}	
 
 	// Go back to the start of the first nametable.
 	nt-=0x400;
