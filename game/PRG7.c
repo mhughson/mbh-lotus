@@ -148,18 +148,7 @@ void update_player()
 
 					if (dash_time > 0)
 					{
-						if (player1.vel_x16 < 0)
-						{
-							player1.vel_x16 = 448; // 1.75
-						}
-						else
-						{
-							player1.vel_x16 = -448;
-						}
-						player1.vel_y16 = -FP_WHOLE_16(5); // FP_WHOLE(-5);
-						dash_time = 0;
-						dash_count = 0;
-						SFX_PLAY_WRAPPER(15);
+						bounce_player();
 					}
 					else
 					{

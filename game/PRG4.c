@@ -66,10 +66,18 @@ void update_common()
    // Is the skeleton overlapping the player *at all*.
 	if (intersects_box_box())
 	{
+		if (dash_time > 0)
+		{
+			bounce_player();
+
+			// Start the death timer for the skeleton.
+			dynamic_objs.time_in_state[in_dynamic_obj_index] = 0;
+			dynamic_objs.state[in_dynamic_obj_index] |= DYNAMIC_STATE_DEAD;
+		}
         // Check if the player's feet are above the feet of the Skeleton.
         // We will only consider this a "squish attack" if they are.
         // TODO: I'm not quite sure why the player feet needs to be at "21" rather than their actual position of "20".
-		if ((dynamic_objs.pos_y[in_dynamic_obj_index] + 16) >= (high_2byte(player1.pos_y) + 21))
+		else if ((dynamic_objs.pos_y[in_dynamic_obj_index] + 16) >= (high_2byte(player1.pos_y) + 21))
 		{
 			// if downward, bounce
 			if (player1.vel_y16 > 0)

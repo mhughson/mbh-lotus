@@ -248,3 +248,25 @@ void set_chr_bank_for_current_room()
 		}
 	}	
 }
+
+void bounce_player()
+{
+	if (player1.vel_x16 < 0)
+	{
+		player1.vel_x16 = 448; // 1.75
+	}
+	else
+	{
+		player1.vel_x16 = -448;
+	}
+	player1.vel_y16 = -FP_WHOLE_16(5); // FP_WHOLE(-5);
+	dash_time = 0;
+	dash_count = 0;
+
+	// needed for the 'hitting an enemy case' as the "check for being grounded"
+	// logic won't run again, until the player update, but there is a check
+	// earyly in player update that zero's out x velocity if grounded.
+	grounded = 0;
+	
+	SFX_PLAY_WRAPPER(15);
+}
