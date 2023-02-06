@@ -142,27 +142,6 @@ PROFILE_POKE(PROF_W)
 		//oam_base += (39 * 4);
 		//oam_set(oam_base);
 
-		// When a VRAM update is queued, we can't do it while the screen is
-		// drawing or it will change the visuals for the *previous* frame, which
-		// are in the middle of being rendered (as these changes take place instantly).
-		if (chr_index_queued != 0xff)
-		{
-			// TODO: Eventually we might want to support setting the other parts of
-			// 		 VRAM as well.
-			set_chr_mode_2(chr_index_queued);
-			// HACK: Currently the sprites assume 2k of VRAM. Eventually
-			//		 we will want to redo the metasprites to operate on
-			//	 	 1k slices to make better use of the space.
-			set_chr_mode_3(chr_index_queued + 1);
-			chr_index_queued = 0xff;
-		}
-
-		if (chr_3_index_queued != 0xff)
-		{
-			set_chr_mode_4(chr_3_index_queued);
-			chr_3_index_queued = 0xff;
-		}
-
 		pad_all = pad_poll(0) | pad_poll(1); // read the first controller
 		pad_all_new = get_pad_new(0) | get_pad_new(1); // newly pressed button. do pad_poll first
 
@@ -221,6 +200,27 @@ PROFILE_POKE(PROF_W)
 						// used for animations.
 						IRQ_CMD_CHR_MODE_1(bg_bank_sets[cur_room_metatile_index][cur_bg_bank]);
 					}
+
+					// When a VRAM update is queued, we can't do it while the screen is
+					// drawing or it will change the visuals for the *previous* frame, which
+					// are in the middle of being rendered (as these changes take place instantly).
+					if (chr_index_queued != 0xff)
+					{
+						// TODO: Eventually we might want to support setting the other parts of
+						// 		 VRAM as well.
+						IRQ_CMD_CHR_MODE_2(chr_index_queued);
+						// HACK: Currently the sprites assume 2k of VRAM. Eventually
+						//		 we will want to redo the metasprites to operate on
+						//	 	 1k slices to make better use of the space.
+						IRQ_CMD_CHR_MODE_3(chr_index_queued + 1);
+						chr_index_queued = 0xff;
+					}
+
+					if (chr_3_index_queued != 0xff)
+					{
+						IRQ_CMD_CHR_MODE_4(chr_3_index_queued);
+						chr_3_index_queued = 0xff;
+					}					
 					
 					// All the commands after this point will run after this scanline is drawn.
 					IRQ_CMD_SCANLINE(191);

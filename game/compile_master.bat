@@ -63,7 +63,7 @@ IF DEFINED code (
 	move /Y %name%.dbg BUILD\ 
 	move /Y labels.txt BUILD\ 
 	move /Y main.s BUILD\ 
-	move /Y mmc3\mmc3_code.s BUILD\ 
+REM	move /Y mmc3\mmc3_code.s BUILD\ 
 	move /Y PRG0.s BUILD\ 
 	move /Y PRG1.s BUILD\ 
 	move /Y PRG2.s BUILD\
