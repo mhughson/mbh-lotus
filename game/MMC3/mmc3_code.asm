@@ -30,11 +30,14 @@
 	mmc3_8001_CHR:	.res 1
 	mmc3_ptr:		.res 2 ; array for the irq parser
 	mmc3_index:		.res 1 ; index to this array
+	mmc3_irq_buffer_offset: .res 1 ; when starting a new frame of irq command parsing, which index should be used
 	irq_done:		.res 1
+	mmc3_LAST_REG_SEL:	.res 1
 
+	_mmc3_irq_buffer_offset = mmc3_irq_buffer_offset
 	
     .exportzp BP_BANK_8000, mmc3_8000_PRG, mmc3_8001_PRG, mmc3_8000_CHR, mmc3_8001_CHR
-	.exportzp mmc3_ptr, mmc3_index, irq_done
+	.exportzp mmc3_ptr, mmc3_index, _mmc3_irq_buffer_offset, irq_done
 	
 
 .segment "STARTUP"
@@ -55,7 +58,7 @@ _set_prg_8000:
 	sta mmc3_8001_PRG
 	lda #(6 | A12_INVERT)
 	sta mmc3_8000_PRG
-	jmp safe_bank_swapping
+	jmp safe_bank_swapping_prg
 
 
 ; returns the current bank at $8000-9fff	
@@ -70,7 +73,7 @@ _set_prg_a000:
 	sta mmc3_8001_PRG
 	lda #(7 | A12_INVERT)
 	sta mmc3_8000_PRG
-	jmp safe_bank_swapping
+	jmp safe_bank_swapping_prg
 
 
 ; only changes the A register, all these
@@ -79,42 +82,42 @@ _set_chr_mode_0:
 	sta mmc3_8001_CHR
 	lda #(0 | A12_INVERT)
 	sta mmc3_8000_CHR
-	jmp safe_bank_swapping
+	jmp safe_bank_swapping_chr
 
 	
 _set_chr_mode_1:
 	sta mmc3_8001_CHR
 	lda #(1 | A12_INVERT)
 	sta mmc3_8000_CHR
-	jmp safe_bank_swapping
+	jmp safe_bank_swapping_chr
 
 	
 _set_chr_mode_2:
 	sta mmc3_8001_CHR
 	lda #(2 | A12_INVERT)
 	sta mmc3_8000_CHR
-	jmp safe_bank_swapping
+	jmp safe_bank_swapping_chr
 
 	
 _set_chr_mode_3:
 	sta mmc3_8001_CHR
 	lda #(3 | A12_INVERT)
 	sta mmc3_8000_CHR
-	jmp safe_bank_swapping
+	jmp safe_bank_swapping_chr
 
 	
 _set_chr_mode_4:
 	sta mmc3_8001_CHR
 	lda #(4 | A12_INVERT)
 	sta mmc3_8000_CHR
-	jmp safe_bank_swapping
+	jmp safe_bank_swapping_chr
 
 	
 _set_chr_mode_5:
 	sta mmc3_8001_CHR
 	lda #(5 | A12_INVERT)
 	sta mmc3_8000_CHR
-	jmp safe_bank_swapping
+	jmp safe_bank_swapping_chr
 
 	
 	
@@ -133,12 +136,21 @@ _set_chr_mode_5:
 ; However, the main code can safely do CHR changes if  
 ; the IRQ system is not changing CHR
 
-safe_bank_swapping:
+safe_bank_swapping_chr:
 	lda mmc3_8000_CHR
+	; shadow register
+	; gets restored in irq
+	sta mmc3_LAST_REG_SEL
 	sta $8000
 	lda mmc3_8001_CHR
 	sta $8001
+	rts
+
+safe_bank_swapping_prg:
 	lda mmc3_8000_PRG
+	; shadow register
+	; gets restored in irq
+	sta mmc3_LAST_REG_SEL
 	sta $8000
 	lda mmc3_8001_PRG
 	sta $8001
@@ -335,14 +347,24 @@ irq_parser:
 
 @chr_change:
 ;f7-fc change a CHR set
+;NOTE: We do not use safe_bank_swapping_chr here because we
+;	   want to preserve the parameters of that function as well
+;	   as the shadow register, in the event that this was fired
+;	   in the middle of a main thread call to swap CHR or PRG.
 	sec
 	sbc #$f7 ;should result in 0-5
 	ora #A12_INVERT
-	sta mmc3_8000_CHR
+	sta $8000
 	lda (mmc3_ptr), y ; get next value
 	iny
-	sta mmc3_8001_CHR
-	jsr safe_bank_swapping
+	sta $8001
+
+	; Restore the shadow register. In the even that this was NOT
+	; triggered in the middle of a call to safe_bank_swapping_*
+	; this will just be left as a dangling write to $8000 with
+	; no impact.
+	lda mmc3_LAST_REG_SEL
+	sta $8000
 	jmp @loop
 	
 @scanline:

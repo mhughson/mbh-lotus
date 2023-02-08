@@ -41,8 +41,12 @@ nmi:
 	tya
 	pha
 	
-	lda #0
+	; copy over the offset into the irq buffer.
+	; the buffer is doubled in length to avoid interupts
+	; reading from the data as it is being written to.
+	lda mmc3_irq_buffer_offset
 	sta mmc3_index
+	lda #0
 	sta irq_done
 
 	lda <PPU_MASK_VAR	;if rendering is disabled, do not access the VRAM at all
@@ -145,6 +149,12 @@ nmi:
 	
 
 ;switch the music into the prg bank first
+
+; TODO: This is not thread safe. We should be restoring
+;		the shadow register after, as this might have been
+;		triggered in the middle of a call to 
+; 		safe_bank_swapping_prg!
+
 	lda BP_BANK_8000 ;save current prg bank
 	pha
 	lda #SOUND_BANK

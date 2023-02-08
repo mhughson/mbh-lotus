@@ -5,7 +5,7 @@
 #ifndef ONCE_MAIN_H
 #define ONCE_MAIN_H
 
-#define DEBUG_ENABLED 1
+#define DEBUG_ENABLED 0
 
 #if DEBUG_ENABLED
 #define PROFILE_POKE(val) POKE((0x2001),(val));
@@ -114,9 +114,13 @@
 // IRQ COMMANDS
 // All IRQ operations should ideally be wrapped in a command to 
 // enforce the byte formats.
-#define IRQ_CMD(cmd) irq_array_buffer[irq_index++] = (cmd);
+#define IRQ_BUFFER_LEN (32)
 
-#define IRQ_CMD_BEGIN irq_index = 0;
+#define IRQ_CMD(cmd) irq_array[irq_index++] = (cmd);
+
+// Writes to the "off" part of the buffer.
+// TODO: Can this be done faster?
+#define IRQ_CMD_BEGIN 	    		irq_index = mmc3_irq_buffer_start_offsets[(irq_cur_buffer_index + 1) % 2];
 
 #define IRQ_CMD_SCANLINE(line_num) 	IRQ_CMD(IRQ_SCANLINE(line_num));
 
@@ -155,7 +159,13 @@
 
 #define IRQ_CMD_END IRQ_CMD(IRQ_END);
 
-#define IRQ_CMD_FLUSH memcpy(irq_array, irq_array_buffer, sizeof(irq_array)); 
+// Swap the "active" buffer. The eor stuff just swaps 0->1 or 1->0
+#define IRQ_CMD_FLUSH 		__asm__ ("lda %v", irq_cur_buffer_index); \
+    						__asm__ ("eor #1"); \
+    						__asm__ ("and #1"); \
+    						__asm__ ("sta %v", irq_cur_buffer_index); \
+    						mmc3_irq_buffer_offset = mmc3_irq_buffer_start_offsets[irq_cur_buffer_index];
+							
 
 
 enum
@@ -430,14 +440,19 @@ extern const unsigned char y_collision_offsets[NUM_Y_COLLISION_OFFSETS];
 #define NUM_X_COLLISION_OFFSETS 2
 extern const unsigned char x_collision_offsets[NUM_X_COLLISION_OFFSETS];
 
-extern unsigned char irq_array[32];
-extern unsigned char irq_array_buffer[32];
+// 2x 32 byte buffers. Ping Pong back and forth for double buffer.
+extern unsigned char irq_array[IRQ_BUFFER_LEN * 2];
+extern unsigned char irq_cur_buffer_index;
+extern const unsigned char mmc3_irq_buffer_start_offsets[2];
 
 // assembly exports.
 extern unsigned char SPR_FLIP_META;
  #pragma zpsym ("SPR_FLIP_META"); // zero-page
 extern unsigned char SPR_OFFSCREEN_META;
  #pragma zpsym ("SPR_OFFSCREEN_META");
+ extern unsigned char mmc3_irq_buffer_offset;
+ #pragma zpsym ("mmc3_irq_buffer_offset");
+
 
 
 // XRAM

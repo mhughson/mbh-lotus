@@ -143,6 +143,40 @@
                  "width":16,
                  "x":80,
                  "y":96
+                }, 
+                {
+                 "height":16,
+                 "id":24,
+                 "name":"skeleton",
+                 "properties":[
+                        {
+                         "name":"payload",
+                         "type":"int",
+                         "value":0
+                        }],
+                 "rotation":0,
+                 "type":"skeleton",
+                 "visible":true,
+                 "width":16,
+                 "x":80,
+                 "y":16
+                }, 
+                {
+                 "height":16,
+                 "id":25,
+                 "name":"skeleton",
+                 "properties":[
+                        {
+                         "name":"payload",
+                         "type":"int",
+                         "value":0
+                        }],
+                 "rotation":0,
+                 "type":"skeleton",
+                 "visible":true,
+                 "width":16,
+                 "x":128,
+                 "y":128
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -151,7 +185,7 @@
          "y":0
         }],
  "nextlayerid":5,
- "nextobjectid":24,
+ "nextobjectid":26,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.7.0",

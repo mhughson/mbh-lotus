@@ -161,11 +161,10 @@ void stream_in_next_level_vert()
 				IRQ_CMD_H_V_SCROLL(0,192,0);	
 			
 				// Signal the end of the commands.
-				IRQ_CMD_END;						
+				IRQ_CMD_END;				
 			}
 
-			while(!is_irq_done() ){ }
-			memcpy(irq_array, irq_array_buffer, sizeof(irq_array));	
+			IRQ_CMD_FLUSH;
 
 			// Wait for the frame to be drawn, clear out the sprite data and vram buffer
 			// for the next frame, all within this tight loop.
@@ -188,8 +187,7 @@ void stream_in_next_level_vert()
 		IRQ_CMD_CHR_MODE_0(40);
 		IRQ_CMD_H_V_SCROLL(0,192,0);		
 		IRQ_CMD_END;
-		while(!is_irq_done() ){ }
-		memcpy(irq_array, irq_array_buffer, sizeof(irq_array));	
+		IRQ_CMD_FLUSH;
 #if 1
 		// This point we have loaded the first nametable of content from the new level,
 		// and scrolled it into view.
@@ -355,8 +353,7 @@ void stream_in_next_level_vert()
 				IRQ_CMD_END;						
 			}
 
-			while(!is_irq_done() ){ }
-			memcpy(irq_array, irq_array_buffer, sizeof(irq_array));				
+			IRQ_CMD_FLUSH;
 
 			// Wait for the frame to be drawn, clear out the sprite data and vram buffer
 			// for the next frame, all within this tight loop.
@@ -378,8 +375,7 @@ void stream_in_next_level_vert()
 		IRQ_CMD_CHR_MODE_0(40);
 		IRQ_CMD_H_V_SCROLL(0,192,0);		
 		IRQ_CMD_END;
-		while(!is_irq_done() ){ }
-		memcpy(irq_array, irq_array_buffer, sizeof(irq_array));			
+		IRQ_CMD_FLUSH;
 
 #if 1
 		// This point we have loaded the first nametable of content from the new level,

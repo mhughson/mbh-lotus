@@ -46,6 +46,8 @@ const unsigned char bg_bank_sets[NUM_BG_BANK_SETS][NUM_BG_BANKS] =
 	{ 26, 28, 30, 32 },
 };
 
+const unsigned char mmc3_irq_buffer_start_offsets[] = { 0, IRQ_BUFFER_LEN };
+
 //unsigned char oam_base;
 
 #if DEBUG_ENABLED
@@ -65,8 +67,7 @@ void main_real()
 
 	set_mirroring(MIRROR_VERTICAL);
 
-	irq_array[0] = IRQ_END; // end of data
-	irq_array_buffer[0] = IRQ_END;
+	memfill(irq_array, IRQ_END, (IRQ_BUFFER_LEN * 2));
 	set_irq_ptr(irq_array); // point to this array
 	
 	
@@ -187,51 +188,57 @@ PROFILE_POKE(PROF_W)
 
 			case STATE_GAME:
 			{
+				// TODO: Can this be moved to the end of the frame
+				//		 so that animations triggering CHR swap
+				//		 can be visible for in the NEXT frame?
+				IRQ_CMD_BEGIN;
+
+				x = irq_index;
+				y = mmc3_irq_buffer_offset;
+
+				IRQ_CMD_CHR_MODE_0(get_chr_mode_0());
+				if (tick_count % 16 == 0)
+				{
+					cur_bg_bank = (cur_bg_bank + 1) % 4;
+					// The second half of the background CHR is 
+					// used for animations.
+					IRQ_CMD_CHR_MODE_1(bg_bank_sets[cur_room_metatile_index][cur_bg_bank]);
+				}
+
+				// When a VRAM update is queued, we can't do it while the screen is
+				// drawing or it will change the visuals for the *previous* frame, which
+				// are in the middle of being rendered (as these changes take place instantly).
+				if (chr_index_queued != 0xff)
+				{
+					// TODO: Eventually we might want to support setting the other parts of
+					// 		 VRAM as well.
+					IRQ_CMD_CHR_MODE_2(chr_index_queued);
+					// HACK: Currently the sprites assume 2k of VRAM. Eventually
+					//		 we will want to redo the metasprites to operate on
+					//	 	 1k slices to make better use of the space.
+					IRQ_CMD_CHR_MODE_3(chr_index_queued + 1);
+					chr_index_queued = 0xff;
+				}
+
+				if (chr_3_index_queued != 0xff)
+				{
+					IRQ_CMD_CHR_MODE_4(chr_3_index_queued);
+					chr_3_index_queued = 0xff;
+				}
+					
 				// No status bar on the top down areas.
 				if (cur_room_type == ROOM_TYPE_SIDE)
 				{
-					IRQ_CMD_BEGIN;
-
-					IRQ_CMD_CHR_MODE_0(get_chr_mode_0());
-					if (tick_count % 16 == 0)
-					{
-						cur_bg_bank = (cur_bg_bank + 1) % 4;
-						// The second half of the background CHR is 
-						// used for animations.
-						IRQ_CMD_CHR_MODE_1(bg_bank_sets[cur_room_metatile_index][cur_bg_bank]);
-					}
-
-					// When a VRAM update is queued, we can't do it while the screen is
-					// drawing or it will change the visuals for the *previous* frame, which
-					// are in the middle of being rendered (as these changes take place instantly).
-					if (chr_index_queued != 0xff)
-					{
-						// TODO: Eventually we might want to support setting the other parts of
-						// 		 VRAM as well.
-						IRQ_CMD_CHR_MODE_2(chr_index_queued);
-						// HACK: Currently the sprites assume 2k of VRAM. Eventually
-						//		 we will want to redo the metasprites to operate on
-						//	 	 1k slices to make better use of the space.
-						IRQ_CMD_CHR_MODE_3(chr_index_queued + 1);
-						chr_index_queued = 0xff;
-					}
-
-					if (chr_3_index_queued != 0xff)
-					{
-						IRQ_CMD_CHR_MODE_4(chr_3_index_queued);
-						chr_3_index_queued = 0xff;
-					}					
-					
 					// All the commands after this point will run after this scanline is drawn.
 					IRQ_CMD_SCANLINE(191);
 					// Swap the first 4k section of graphics with the 36th chunk of graphics.
 					IRQ_CMD_CHR_MODE_0(40);
 					//IRQ_CMD_H_SCROLL(0);
 					IRQ_CMD_H_V_SCROLL(0,192,0);
-					
-					// Signal the end of the commands.
-					IRQ_CMD_END;
 				}	
+					
+				// Signal the end of the commands.
+				IRQ_CMD_END;
 
 				// store the camera position at the start of the frame, so that
 				// we can detect if it moved by the end of the frame.
@@ -534,18 +541,12 @@ PROFILE_POKE(PROF_W)
 
 //gray_line();
 
+	// Swap the active and inactive buffers.
+	IRQ_CMD_FLUSH;
+
 PROFILE_POKE(PROF_CLEAR)
 
-		// wait till the irq system is done before changing it
-		// this could waste a lot of CPU time, so we do it last
-		while(!is_irq_done() ){ // have we reached the 0xff, end of data
-							// is_irq_done() returns zero if not done
-			// do nothing while we wait
-		}
 
-		// copy from double_buffer to the irq_array
-		// memcpy(void *dst,void *src,unsigned int len);
-		memcpy(irq_array, irq_array_buffer, sizeof(irq_array)); 
 	}
 }
 
@@ -1065,8 +1066,7 @@ void go_to_state(unsigned char new_state)
 			ppu_off();
 
 			// Clear out any IRQ tasks before kicking off the next section.
-			irq_array[0] = 0xff;
-			irq_array_buffer[0] = 0xff;
+			memfill(irq_array, IRQ_END, (IRQ_BUFFER_LEN * 2));
 
 			//music_stop();
 			MUSIC_PLAY_WRAPPER(1);
