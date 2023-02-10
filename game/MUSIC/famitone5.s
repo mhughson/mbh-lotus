@@ -1,14 +1,16 @@
-;FamiTone5.1 unofficial
+;FamiTone5.2022.Mar.12
 ;fork of Famitone2 v1.15 by Shiru 04'17
 ;for ca65
-;Revision 6-22-2019, Doug Fraker, to be used with text2vol5
+;Revision 1-21-2021, Doug Fraker, to be used with text2vol5
 ;added volume column and support for all NES notes
 ;added support for 1xx,2xx,3xx,4xx,Qxx,Rxx effects
 ;added support for duty envelopes and sound fx > 256 bytes
-;Pal support has been removed, don't use it
+;Pal support fixed, volume table exact now
+;Nov 2021, fixed bug, disabling FT_SFX_ENABLE was broken
+;2022.Mar.12 moved variables to be contiguous
 
 
-.export FamiToneInit, FamiToneMusicPlay, FamiToneSfxPlay, FamiToneSfxInit, FamiToneUpdate
+.export FamiToneInit, FamiToneMusicPlay, FamiToneUpdate
 
 
 
@@ -17,45 +19,7 @@
 
 ;FT_TEMP:	.res 3
 
-
-.segment "BSS"
-
-volume_Sq1:	.res 1
-volume_Sq2:	.res 1	
-volume_Nz:	.res 1	
-vol_change:	.res 1	
-multiple1:	.res 1	
-multiple2:	.res 1	
-
-vibrato_depth1:	.res 1 ;zero = off
-vibrato_depth2:	.res 1
-vibrato_depth3:	.res 1
-vibrato_count:	.res 1 ;goes up every frame, shared by all
-
-slide_mode1: .res 1 ;0 = off, 1 = up, 2 = down, 3 = portamento, 4 q/r
-slide_mode2: .res 1
-slide_mode3: .res 1
-slide_speed1:	.res 1 ;how much each frame, zero = off
-slide_speed2:	.res 1
-slide_speed3:	.res 1
-slide_count_low1:	.res 1 ;how much to add / subtract from low byte - cumulative
-slide_count_low2:	.res 1
-slide_count_low3:	.res 1
-slide_count_high1:	.res 1 ; how much to add / subtract from high byte
-slide_count_high2:	.res 1
-slide_count_high3:	.res 1
-
-temp_low:		.res 1 ;low byte of frequency
-temp_high:		.res 1
-channel:		.res 1 ;25 new variables
-
-temp_duty:		.res 1
-qr_flag:		.res 1
-qr_offset:		.res 1
-qr_rate:		.res 1
-zero_flag1:		.res 1 ;for remembering if 100,200,300
-zero_flag2:		.res 1
-zero_flag3:		.res 1
+;variables moved below
 
 MAX_NOTE = 88
 
@@ -73,14 +37,21 @@ MAX_NOTE = 88
 ;FT_SFX_ENABLE	= 1		;undefine to exclude all sound effects code
 ;FT_THREAD		= 1		;undefine if you are calling sound effects from the same thread as the sound update call
 
-;FT_PAL_SUPPORT	= 0			;undefine to exclude PAL support
+;FT_PAL_SUPPORT	= 1			;undefine to exclude PAL support
 ;FT_NTSC_SUPPORT	= 1			;undefine to exclude NTSC support
 
+	.if(FT_SFX_ENABLE)
+.export FamiToneSfxPlay, FamiToneSfxInit
+	.endif
 
 
 ;internal defines
 
-;   removed FT_PITCH_FIX
+	.if(FT_PAL_SUPPORT & FT_NTSC_SUPPORT)
+FT_PITCH_FIX = 1			;add PAL/NTSC pitch correction code only when both modes are enabled
+	.else
+FT_PITCH_FIX = 0	
+	.endif
 
 FT_DPCM_PTR		= (FT_DPCM_OFF&$3fff)>>6
 
@@ -220,6 +191,7 @@ FT_SFX_CH0			= FT_SFX_STRUCT_SIZE*0
 FT_SFX_CH1			= FT_SFX_STRUCT_SIZE*1
 FT_SFX_CH2			= FT_SFX_STRUCT_SIZE*2
 FT_SFX_CH3			= FT_SFX_STRUCT_SIZE*3
+SIZE_FT_SFX = FT_SFX_STRUCT_SIZE*FT_SFX_STREAMS
 
 
 ;aliases for the APU registers
@@ -247,19 +219,19 @@ APU_SND_CHN		= $4015
 
 ;aliases for the APU registers in the output buffer
 
-	.if(!FT_SFX_ENABLE)				;if sound effects are disabled, write to the APU directly
-FT_MR_PULSE1_V		= APU_PL1_VOL
-FT_MR_PULSE1_L		= APU_PL1_LO
-FT_MR_PULSE1_H		= APU_PL1_HI
-FT_MR_PULSE2_V		= APU_PL2_VOL
-FT_MR_PULSE2_L		= APU_PL2_LO
-FT_MR_PULSE2_H		= APU_PL2_HI
-FT_MR_TRI_V			= APU_TRI_LINEAR
-FT_MR_TRI_L			= APU_TRI_LO
-FT_MR_TRI_H			= APU_TRI_HI
-FT_MR_NOISE_V		= APU_NOISE_VOL
-FT_MR_NOISE_F		= APU_NOISE_LO
-	.else								;otherwise write to the output buffer
+;	.if(!FT_SFX_ENABLE)				;if sound effects are disabled, write to the APU directly
+;FT_MR_PULSE1_V		= APU_PL1_VOL
+;FT_MR_PULSE1_L		= APU_PL1_LO
+;FT_MR_PULSE1_H		= APU_PL1_HI
+;FT_MR_PULSE2_V		= APU_PL2_VOL
+;FT_MR_PULSE2_L		= APU_PL2_LO
+;FT_MR_PULSE2_H		= APU_PL2_HI
+;FT_MR_TRI_V			= APU_TRI_LINEAR
+;FT_MR_TRI_L			= APU_TRI_LO
+;FT_MR_TRI_H			= APU_TRI_HI
+;FT_MR_NOISE_V		= APU_NOISE_VOL
+;FT_MR_NOISE_F		= APU_NOISE_LO
+;	.else								;otherwise write to the output buffer
 FT_MR_PULSE1_V		= FT_OUT_BUF
 FT_MR_PULSE1_L		= FT_OUT_BUF+1
 FT_MR_PULSE1_H		= FT_OUT_BUF+2
@@ -271,8 +243,54 @@ FT_MR_TRI_L			= FT_OUT_BUF+7
 FT_MR_TRI_H			= FT_OUT_BUF+8
 FT_MR_NOISE_V		= FT_OUT_BUF+9
 FT_MR_NOISE_F		= FT_OUT_BUF+10
-	.endif
+;	.endif
 
+; mhughson - with the new variables, famitone was overwriting
+; the stack memory. Moved this to the front of BSS memory, and
+; shifted the start of BSS memory to 32 bytes later, to reserve
+; this space.
+FT_EXTRA = $0300 ;FT_SFX_BASE_ADR+SIZE_FT_SFX
+volume_Sq1 = FT_EXTRA
+volume_Sq2 = FT_EXTRA+1	
+volume_Nz = FT_EXTRA+2	
+vol_change = FT_EXTRA+3	
+multiple1 = FT_EXTRA+4	
+
+vibrato_depth1 = FT_EXTRA+5 ;zero = off
+vibrato_depth2 = FT_EXTRA+6
+vibrato_depth3 = FT_EXTRA+7
+vibrato_count = FT_EXTRA+8 ;goes up every frame, shared by all
+
+slide_mode1 = FT_EXTRA+9 ;0 = off, 1 = up, 2 = down, 3 = portamento, 4 q/r
+slide_mode2 = FT_EXTRA+10
+slide_mode3 = FT_EXTRA+11
+slide_speed1 = FT_EXTRA+12 ;how much each frame, zero = off
+slide_speed2 = FT_EXTRA+13
+slide_speed3 = FT_EXTRA+14
+slide_count_low1 = FT_EXTRA+15 ;how much to add / subtract from low byte - cumulative
+slide_count_low2 = FT_EXTRA+16
+slide_count_low3 = FT_EXTRA+17
+slide_count_high1 = FT_EXTRA+18 ; how much to add / subtract from high byte
+slide_count_high2 = FT_EXTRA+19
+slide_count_high3 = FT_EXTRA+20
+
+temp_low = FT_EXTRA+21 ;low byte of frequency ***
+temp_high = FT_EXTRA+22
+channel = FT_EXTRA+23
+
+temp_duty = FT_EXTRA+24
+qr_flag = FT_EXTRA+25
+qr_offset = FT_EXTRA+26
+qr_rate = FT_EXTRA+27
+zero_flag1 = FT_EXTRA+28 ;for remembering if 100,200,300
+zero_flag2 = FT_EXTRA+29
+zero_flag3 = FT_EXTRA+30 ;31 new variables
+
+POST_FT = FT_EXTRA+31
+LAST_FT = POST_FT-1
+
+;.out .sprintf("last FT variable at %x", LAST_FT)
+;.out .sprintf("safe to use at %x", POST_FT)
 
 
 ;------------------------------------------------------------------------------
@@ -288,7 +306,20 @@ FamiToneInit:
 	stx <FT_TEMP_PTR_L
 	sty <FT_TEMP_PTR_H
 
-;   removed pal support
+	.if(FT_PITCH_FIX)
+	tax						;set SZ flags for A
+	beq @pal
+	lda #(NoteTable_Count-_FT2NoteTableLSB) ;64
+@pal:
+	.else
+	.if(FT_PAL_SUPPORT)
+	lda #0
+	.endif
+	.if(FT_NTSC_SUPPORT)
+	lda #(NoteTable_Count-_FT2NoteTableLSB) ;64
+	.endif
+	.endif
+	sta FT_PAL_ADJUST
 
 	jsr FamiToneMusicStop	;initialize channels and envelopes
 
@@ -315,10 +346,10 @@ FamiToneInit:
 	sta APU_TRI_LINEAR
 	lda #$00				;load noise length
 	sta APU_NOISE_HI
-	lda #0				;change to 63 for medium, change to 127 for quiet
-						;also, change to 63 if using DPCM effects
-	sta APU_DMC_RAW		; , for louder Triangle Channel
-						
+;	lda #0				;change to 63 for medium, change to 127 for quiet
+;						;also, change to 63 if using DPCM effects
+;	sta APU_DMC_RAW		; , for louder Triangle Channel
+; removed, not needed, should be zero on reset						
 
 	lda #$30				;volumes to 0
 	sta APU_PL1_VOL
@@ -449,12 +480,13 @@ FamiToneMusicPlay:
 	cpx #.lobyte(FT_CHANNELS)+FT_CHANNELS_ALL
 	bne @set_channels
 
-
-;  	lda FT_PAL_ADJUST		;read tempo for PAL or NTSC
-;	beq @pal ;   removed pal support
+	.if(FT_PAL_SUPPORT)
+	lda FT_PAL_ADJUST		;read tempo for PAL or NTSC
+	beq @pal
+	.endif
 	iny
 	iny
-;@pal:
+@pal:
 
 	lda (FT_TEMP_PTR),y		;read the tempo step
 	sta FT_TEMPO_STEP_L
@@ -561,11 +593,10 @@ FamiToneUpdate:
 	bcs :+
 	lda zero_flag1
 	bne :+
-	ldx FT_CH1_NOTE
-	lda _FT2NoteTableLSB,x
+	lda FT_CH1_NOTE
+	jsr get_freq ;returns a low, x high
 	sta slide_count_low1
-	lda _FT2NoteTableMSB,x
-	sta slide_count_high1
+	stx slide_count_high1
 :	
 	
 	ldx #.lobyte(FT_CH1_ENVS)
@@ -591,11 +622,10 @@ FamiToneUpdate:
 	bcs :+
 	lda zero_flag2
 	bne :+
-	ldx FT_CH2_NOTE
-	lda _FT2NoteTableLSB,x
-	sta slide_count_low1+1
-	lda _FT2NoteTableMSB,x
-	sta slide_count_high1+1
+	lda FT_CH2_NOTE
+	jsr get_freq ;returns a low, x high
+	sta slide_count_low2
+	stx slide_count_high2
 :	
 	
 	ldx #.lobyte(FT_CH2_ENVS)
@@ -615,11 +645,10 @@ FamiToneUpdate:
 	bcs :+
 	lda zero_flag3
 	bne :+
-	ldx FT_CH3_NOTE
-	lda _FT2NoteTableLSB,x
-	sta slide_count_low1+2
-	lda _FT2NoteTableMSB,x
-	sta slide_count_high1+2	
+	lda FT_CH3_NOTE	
+	jsr get_freq ;returns a low, x high
+	sta slide_count_low3
+	stx slide_count_high3
 :		
 	
 	ldx #.lobyte(FT_CH3_ENVS)
@@ -738,7 +767,10 @@ update_sound:
 	beq ch1cut
 	clc
 	adc FT_CH1_NOTE_OFF
-		;removed pal pitch fix **
+	.if(FT_PITCH_FIX)
+	clc
+	adc FT_PAL_ADJUST
+	.endif
 	tax
 	lda FT_CH1_PITCH_OFF
 	tay
@@ -751,11 +783,11 @@ update_sound:
 @ch1sign:
 	adc _FT2NoteTableMSB,x
 
-	.if(!FT_SFX_ENABLE)
-	cmp FT_PULSE1_PREV
-	beq @ch1prev
-	sta FT_PULSE1_PREV
-	.endif
+;	.if(!FT_SFX_ENABLE)
+;	cmp FT_PULSE1_PREV
+;	beq @ch1prev
+;	sta FT_PULSE1_PREV
+;	.endif
 
 	sta temp_high	; FT_MR_PULSE1_H
 @ch1prev:
@@ -791,7 +823,10 @@ ch1cut:
 	beq ch2cut
 	clc
 	adc FT_CH2_NOTE_OFF
-		;removed pal pitch fix **
+	.if(FT_PITCH_FIX)
+	clc
+	adc FT_PAL_ADJUST
+	.endif
 	tax
 	lda FT_CH2_PITCH_OFF
 	tay
@@ -804,11 +839,11 @@ ch1cut:
 @ch2sign:
 	adc _FT2NoteTableMSB,x
 
-	.if(!FT_SFX_ENABLE)
-	cmp FT_PULSE2_PREV
-	beq @ch2prev
-	sta FT_PULSE2_PREV
-	.endif
+;	.if(!FT_SFX_ENABLE)
+;	cmp FT_PULSE2_PREV
+;	beq @ch2prev
+;	sta FT_PULSE2_PREV
+;	.endif
 
 	sta temp_high 	;   FT_MR_PULSE2_H
 @ch2prev:
@@ -837,7 +872,10 @@ ch2cut:
 	beq ch3cut
 	clc
 	adc FT_CH3_NOTE_OFF
-		;removed pal pitch fix **
+	.if(FT_PITCH_FIX)
+	clc
+	adc FT_PAL_ADJUST
+	.endif
 	tax
 	lda FT_CH3_PITCH_OFF
 	tay
@@ -912,6 +950,8 @@ ch4cut:
 	ldx #FT_SFX_CH3
 	jsr _FT2SfxUpdate
 	.endif
+;FT_SFX_ENABLE
+	.endif
 
 
 	;send data from the output buffer to the APU
@@ -950,7 +990,7 @@ ch4cut:
 	lda FT_OUT_BUF+10	;noise period
 	sta APU_NOISE_LO
 
-	.endif
+;	.endif
 
 	.if(FT_THREAD)
 	pla
@@ -962,9 +1002,28 @@ ch4cut:
 	rts
 	
 	
+get_freq:	
+;	a = note
+;	returns a low, x high
+	ora #0
+	beq @skip
 	
+	.if(FT_PITCH_FIX)
+	clc
+	adc FT_PAL_ADJUST
+	.endif
+	tax
+	lda _FT2NoteTableLSB,x 
+	pha
+	lda _FT2NoteTableMSB,x
+	tax
+	pla
+	rts 
+@skip:
+	tax ;a and x zero
+	rts
 
-
+	
 duty_table:
 .byte $30,$70,$b0,$f0
 duty_table_nz: ;noise
@@ -1069,10 +1128,10 @@ Apply_Portamento:
 	lda slide_count_low1, y
 	ora slide_count_high1, y
 	bne :+
-	ldx FT_CH1_NOTE, y ;note
-	lda _FT2NoteTableLSB,x
+	lda FT_CH1_NOTE, y ;note
+	jsr get_freq ;returns a low, x high
 	sta slide_count_low1, y
-	lda _FT2NoteTableMSB,x
+	txa ;no stx abs, y opcode
 	sta slide_count_high1, y
 :
 
@@ -1163,11 +1222,9 @@ Compare_Sub:
 	
 Use_Note:
 	lda FT_CH1_NOTE, y
-	tax
-	lda _FT2NoteTableLSB,x	;destination frequency
+	jsr get_freq ;returns a low, x high
 	sta temp_low
-	lda _FT2NoteTableMSB,x
-	sta temp_high
+	stx temp_high
 	rts
 	
 	
@@ -1443,11 +1500,11 @@ read_byte:
 	sta FT_CHN_NOTE,x ;new destination
 	stx <FT_TEMP_VAR1 ;save x
 	pla ;get note
-	tax
 	ldy channel
-	lda _FT2NoteTableLSB,x
+;	a = note
+	jsr get_freq ;returns a low, x high
 	sta slide_count_low1, y
-	lda _FT2NoteTableMSB,x
+	txa ;no stx abs, y opcode
 	sta slide_count_high1, y
 	lda #4 ;QR slide
 	sta slide_mode1, y
@@ -1727,12 +1784,20 @@ _FT2SamplePlay:
 
 FamiToneSfxInit:
 
-;removed pal pitch fix  
-
 	stx <FT_TEMP_PTR_L
 	sty <FT_TEMP_PTR_H
 	
 	ldy #0
+	
+	.if(FT_PITCH_FIX)
+
+	lda FT_PAL_ADJUST		;add 2 to the sound list pointer for PAL
+	bne @ntsc
+	iny
+	iny
+@ntsc:
+
+	.endif
 	
 	lda (FT_TEMP_PTR),y		;read and store pointer to the effects list
 	sta FT_SFX_ADR_L
@@ -1927,11 +1992,23 @@ _FT2SfxUpdate:
 _FT2DummyEnvelope:
 	.byte $c0,$00,$00
 
-;PAL support has been removed
+
 
 _FT2NoteTableLSB:
-
-	.byte $00
+	.if(FT_PAL_SUPPORT)
+	.byte $00 ;PAL ;nesdev wiki, Celius
+	.byte $60,$f6,$92,$34,$db,$86,$37,$ec,$a5,$62,$23,$e8
+	.byte $b0,$7b,$49,$19,$ed,$c3,$9b,$75,$52,$31,$11,$f3
+	.byte $d7,$bd,$a4,$8c,$76,$61,$4d,$3a,$29,$18,$08,$f9
+	.byte $eb,$de,$d1,$c6,$ba,$b0,$a6,$9d,$94,$8b,$84,$7c
+	.byte $75,$6e,$68,$62,$5d,$57,$52,$4e,$49,$45,$41,$3e
+	.byte $3a,$37,$34,$31,$2e,$2b,$29,$26,$24,$22,$20,$1e
+	.byte $1d,$1b,$19,$18,$16,$15,$14,$13,$12,$11,$10,$0f
+	.byte $0e,$0d,$0c
+	.endif
+NoteTable_Count: 	
+	.if(FT_NTSC_SUPPORT)
+	.byte $00 ;NTSC
 	.byte $f1,$7e,$13,$ad,$4d,$f3,$9d,$4c,$00,$b8,$74,$34
 	.byte $f8,$bf,$89,$56,$26,$f9,$ce,$a6,$80,$5c,$3a,$1a
 	.byte $fb,$df,$c4,$ab,$93,$7c,$67,$52,$3f,$2d,$1c,$0c
@@ -1940,55 +2017,70 @@ _FT2NoteTableLSB:
 	.byte $3f,$3b,$38,$34,$31,$2f,$2c,$29,$27,$25,$23,$21
 	.byte $1f,$1d,$1b,$1a,$18,$17,$15,$14,$13,$12,$11,$10 
 	.byte $0f,$0e,$0d
+	.endif
+	
 
 _FT2NoteTableMSB:
-
-	.byte $00
-	.byte $07,$07,$07,$06,$06,$05,$05,$05,$05,$04,$04,$04 ;12
-	.byte $03,$03,$03,$03,$03,$02,$02,$02,$02,$02,$02,$02 ;24
-	.byte $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01 ;36
-	.byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00 ;48
-	.byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00 ;60
-	.byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00 ;72
-	.byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00 ;84
-	.byte $00,$00,$00 ;87
-
+	.if(FT_PAL_SUPPORT)
+	.byte $00 ;PAL
+	.byte $07,$06,$06,$06,$05,$05,$05,$04,$04,$04,$04,$03 
+	.byte $03,$03,$03,$03,$02,$02,$02,$02,$02,$02,$02,$01 
+	.byte $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$00 
+	.byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00 
+	.byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00 
+	.byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00 
+	.byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00 
+	.byte $00,$00,$00
+	.endif
+	.if(FT_NTSC_SUPPORT)
+	.byte $00 ;NTSC
+	.byte $07,$07,$07,$06,$06,$05,$05,$05,$05,$04,$04,$04
+	.byte $03,$03,$03,$03,$03,$02,$02,$02,$02,$02,$02,$02
+	.byte $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01
+	.byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+	.byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+	.byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+	.byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+	.byte $00,$00,$00
+	.endif
+	
 	
 	
 Multiply: 
+			; **
 			;a = note volume
 			;x = volume column
-			;from 6502.org
-			
-	
-	sta multiple1
-	lda multiple1 ;set flag
-	beq M_3 ;skip if already zero
-	inx
-	stx multiple2
-	
-	ldx #8
-M_1:
-	asl a		;it is NOT necessary to initialize A
-	asl multiple1
-	bcc M_2
-	clc
-	adc multiple2
 
-M_2:
-	dex
-	bne M_1
-	;a = product
-; now shift right so value = 0-f
-	lsr a
-	lsr a
-	lsr a
-	lsr a
-	beq M_4 ;if zero, round up to 1
-M_3:
+	stx multiple1
+	asl a
+	asl a
+	asl a
+	asl a
+	ora multiple1
+	tax
+	lda ft_volume_table, x
 	rts
-M_4:
-	lda #1
-	rts
+			
+ft_volume_table:
+	.byte 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+	.byte 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+	.byte 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2
+ 	.byte 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3
+ 	.byte 0, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 4
+ 	.byte 0, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5
+ 	.byte 0, 1, 1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 4, 5, 5, 6
+ 	.byte 0, 1, 1, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7
+ 	.byte 0, 1, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 8 
+ 	.byte 0, 1, 1, 1, 2, 3, 3, 4, 4, 5, 6, 6, 7, 7, 8, 9 
+ 	.byte 0, 1, 1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 8, 8, 9, 10 
+ 	.byte 0, 1, 1, 2, 2, 3, 4, 5, 5, 6, 7, 8, 8, 9, 10, 11 
+ 	.byte 0, 1, 1, 2, 3, 4, 4, 5, 6, 7, 8, 8, 9, 10, 11, 12 
+ 	.byte 0, 1, 1, 2, 3, 4, 5, 6, 6, 7, 8, 9, 10, 11, 12, 13 
+ 	.byte 0, 1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
+ 	.byte 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15	
+	
+	
+	
+
 
 	

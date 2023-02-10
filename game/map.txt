@@ -1,8 +1,8 @@
 Modules list:
 -------------
 crt0.o:
-    CODE              Offs=000000  Size=000E85  Align=00001  Fill=0000
-    BSS               Offs=000000  Size=000040  Align=00001  Fill=0000
+    CODE              Offs=000000  Size=00103D  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=000020  Align=00001  Fill=0000
     ZEROPAGE          Offs=000000  Size=00003D  Align=00001  Fill=0000
     HEADER            Offs=000000  Size=000010  Align=00001  Fill=0000
     BANK12            Offs=000000  Size=001B5F  Align=00001  Fill=0000
@@ -10,146 +10,146 @@ crt0.o:
     VECTORS           Offs=000000  Size=000006  Align=00001  Fill=0000
     CHARS             Offs=000000  Size=00C000  Align=00001  Fill=0000
 main.o:
-    CODE              Offs=000E85  Size=000171  Align=00001  Fill=0000
-    BSS               Offs=000040  Size=0002BE  Align=00001  Fill=0000
+    CODE              Offs=00103D  Size=000171  Align=00001  Fill=0000
+    BSS               Offs=000020  Size=0002BE  Align=00001  Fill=0000
     DATA              Offs=000000  Size=000001  Align=00001  Fill=0000
     XRAM              Offs=000000  Size=0016C5  Align=00001  Fill=0000
 mmc3_code.o:
-    BSS               Offs=0002FE  Size=00000B  Align=00001  Fill=0000
+    BSS               Offs=0002DE  Size=00000B  Align=00001  Fill=0000
     STARTUP           Offs=000923  Size=000055  Align=00001  Fill=0000
 PRG0.o:
-    BSS               Offs=000309  Size=00002E  Align=00001  Fill=0000
+    BSS               Offs=0002E9  Size=00002E  Align=00001  Fill=0000
     BANK0             Offs=000000  Size=001B6D  Align=00001  Fill=0000
 PRG1.o:
-    BSS               Offs=000337  Size=000004  Align=00001  Fill=0000
+    BSS               Offs=000317  Size=000004  Align=00001  Fill=0000
     BANK1             Offs=000000  Size=000A91  Align=00001  Fill=0000
 PRG2.o:
-    BSS               Offs=00033B  Size=00000F  Align=00001  Fill=0000
+    BSS               Offs=00031B  Size=00000F  Align=00001  Fill=0000
     BANK2             Offs=000000  Size=0017A8  Align=00001  Fill=0000
 PRG3.o:
-    BSS               Offs=00034A  Size=000031  Align=00001  Fill=0000
+    BSS               Offs=00032A  Size=000031  Align=00001  Fill=0000
     BANK3             Offs=000000  Size=001A2F  Align=00001  Fill=0000
 PRG4.o:
-    BSS               Offs=00037B  Size=000006  Align=00001  Fill=0000
+    BSS               Offs=00035B  Size=000006  Align=00001  Fill=0000
     DATA              Offs=000001  Size=000004  Align=00001  Fill=0000
     BANK4             Offs=000000  Size=000954  Align=00001  Fill=0000
 PRG5.o:
-    BSS               Offs=000381  Size=00000D  Align=00001  Fill=0000
+    BSS               Offs=000361  Size=00000D  Align=00001  Fill=0000
     BANK5             Offs=000000  Size=001995  Align=00001  Fill=0000
 PRG6.o:
-    BSS               Offs=00038E  Size=000001  Align=00001  Fill=0000
+    BSS               Offs=00036E  Size=000001  Align=00001  Fill=0000
     BANK6             Offs=000000  Size=001878  Align=00001  Fill=0000
 PRG7.o:
-    BSS               Offs=00038F  Size=00000B  Align=00001  Fill=0000
+    BSS               Offs=00036F  Size=00000B  Align=00001  Fill=0000
     BANK7             Offs=000000  Size=0005EE  Align=00001  Fill=0000
 ..\lib/nes.lib(add.o):
-    CODE              Offs=000FF6  Size=00001C  Align=00001  Fill=0000
+    CODE              Offs=0011AE  Size=00001C  Align=00001  Fill=0000
 ..\lib/nes.lib(addysp.o):
-    CODE              Offs=001012  Size=00000E  Align=00001  Fill=0000
+    CODE              Offs=0011CA  Size=00000E  Align=00001  Fill=0000
 ..\lib/nes.lib(aslax2.o):
-    CODE              Offs=001020  Size=00000B  Align=00001  Fill=0000
+    CODE              Offs=0011D8  Size=00000B  Align=00001  Fill=0000
 ..\lib/nes.lib(aslax3.o):
-    CODE              Offs=00102B  Size=00000E  Align=00001  Fill=0000
+    CODE              Offs=0011E3  Size=00000E  Align=00001  Fill=0000
 ..\lib/nes.lib(aslax4.o):
-    CODE              Offs=001039  Size=000011  Align=00001  Fill=0000
+    CODE              Offs=0011F1  Size=000011  Align=00001  Fill=0000
 ..\lib/nes.lib(asrax4.o):
-    CODE              Offs=00104A  Size=000019  Align=00001  Fill=0000
+    CODE              Offs=001202  Size=000019  Align=00001  Fill=0000
 ..\lib/nes.lib(axlong.o):
-    CODE              Offs=001063  Size=00000D  Align=00001  Fill=0000
+    CODE              Offs=00121B  Size=00000D  Align=00001  Fill=0000
 ..\lib/nes.lib(call.o):
-    CODE              Offs=001070  Size=000007  Align=00001  Fill=0000
+    CODE              Offs=001228  Size=000007  Align=00001  Fill=0000
 ..\lib/nes.lib(copydata.o):
-    CODE              Offs=001077  Size=00002D  Align=00001  Fill=0000
+    CODE              Offs=00122F  Size=00002D  Align=00001  Fill=0000
 ..\lib/nes.lib(decsp2.o):
-    CODE              Offs=0010A4  Size=00000D  Align=00001  Fill=0000
+    CODE              Offs=00125C  Size=00000D  Align=00001  Fill=0000
 ..\lib/nes.lib(decsp3.o):
-    CODE              Offs=0010B1  Size=00000D  Align=00001  Fill=0000
+    CODE              Offs=001269  Size=00000D  Align=00001  Fill=0000
 ..\lib/nes.lib(decsp4.o):
-    CODE              Offs=0010BE  Size=00000D  Align=00001  Fill=0000
+    CODE              Offs=001276  Size=00000D  Align=00001  Fill=0000
 ..\lib/nes.lib(decsp5.o):
-    CODE              Offs=0010CB  Size=00000D  Align=00001  Fill=0000
+    CODE              Offs=001283  Size=00000D  Align=00001  Fill=0000
 ..\lib/nes.lib(icmp.o):
-    CODE              Offs=0010D8  Size=00002E  Align=00001  Fill=0000
+    CODE              Offs=001290  Size=00002E  Align=00001  Fill=0000
 ..\lib/nes.lib(incsp1.o):
-    CODE              Offs=001106  Size=000007  Align=00001  Fill=0000
+    CODE              Offs=0012BE  Size=000007  Align=00001  Fill=0000
 ..\lib/nes.lib(incsp2.o):
-    CODE              Offs=00110D  Size=000016  Align=00001  Fill=0000
+    CODE              Offs=0012C5  Size=000016  Align=00001  Fill=0000
 ..\lib/nes.lib(incsp3.o):
-    CODE              Offs=001123  Size=000005  Align=00001  Fill=0000
+    CODE              Offs=0012DB  Size=000005  Align=00001  Fill=0000
 ..\lib/nes.lib(incsp4.o):
-    CODE              Offs=001128  Size=000005  Align=00001  Fill=0000
+    CODE              Offs=0012E0  Size=000005  Align=00001  Fill=0000
 ..\lib/nes.lib(ladd.o):
-    CODE              Offs=00112D  Size=000025  Align=00001  Fill=0000
+    CODE              Offs=0012E5  Size=000025  Align=00001  Fill=0000
 ..\lib/nes.lib(laddeq.o):
-    CODE              Offs=001152  Size=00002D  Align=00001  Fill=0000
+    CODE              Offs=00130A  Size=00002D  Align=00001  Fill=0000
 ..\lib/nes.lib(land.o):
-    CODE              Offs=00117F  Size=000024  Align=00001  Fill=0000
+    CODE              Offs=001337  Size=000024  Align=00001  Fill=0000
 ..\lib/nes.lib(lcmp.o):
-    CODE              Offs=0011A3  Size=00003B  Align=00001  Fill=0000
+    CODE              Offs=00135B  Size=00003B  Align=00001  Fill=0000
 ..\lib/nes.lib(ldai.o):
-    CODE              Offs=0011DE  Size=00000C  Align=00001  Fill=0000
+    CODE              Offs=001396  Size=00000C  Align=00001  Fill=0000
 ..\lib/nes.lib(ldec.o):
-    CODE              Offs=0011EA  Size=000015  Align=00001  Fill=0000
+    CODE              Offs=0013A2  Size=000015  Align=00001  Fill=0000
 ..\lib/nes.lib(lpush.o):
-    CODE              Offs=0011FF  Size=000021  Align=00001  Fill=0000
+    CODE              Offs=0013B7  Size=000021  Align=00001  Fill=0000
 ..\lib/nes.lib(lsub.o):
-    CODE              Offs=001220  Size=000027  Align=00001  Fill=0000
+    CODE              Offs=0013D8  Size=000027  Align=00001  Fill=0000
 ..\lib/nes.lib(lsubeq.o):
-    CODE              Offs=001247  Size=000031  Align=00001  Fill=0000
+    CODE              Offs=0013FF  Size=000031  Align=00001  Fill=0000
 ..\lib/nes.lib(ludiv.o):
-    CODE              Offs=001278  Size=00007A  Align=00001  Fill=0000
+    CODE              Offs=001430  Size=00007A  Align=00001  Fill=0000
 ..\lib/nes.lib(lule.o):
-    CODE              Offs=0012F2  Size=000006  Align=00001  Fill=0000
+    CODE              Offs=0014AA  Size=000006  Align=00001  Fill=0000
 ..\lib/nes.lib(lumod.o):
-    CODE              Offs=0012F8  Size=000019  Align=00001  Fill=0000
+    CODE              Offs=0014B0  Size=000019  Align=00001  Fill=0000
 ..\lib/nes.lib(makebool.o):
-    CODE              Offs=001311  Size=00002C  Align=00001  Fill=0000
+    CODE              Offs=0014C9  Size=00002C  Align=00001  Fill=0000
 ..\lib/nes.lib(mod.o):
-    CODE              Offs=00133D  Size=000011  Align=00001  Fill=0000
+    CODE              Offs=0014F5  Size=000011  Align=00001  Fill=0000
 ..\lib/nes.lib(mul.o):
-    CODE              Offs=00134E  Size=000045  Align=00001  Fill=0000
+    CODE              Offs=001506  Size=000045  Align=00001  Fill=0000
 ..\lib/nes.lib(mul8.o):
-    CODE              Offs=001393  Size=00003A  Align=00001  Fill=0000
+    CODE              Offs=00154B  Size=00003A  Align=00001  Fill=0000
 ..\lib/nes.lib(negabs.o):
-    CODE              Offs=0013CD  Size=000012  Align=00001  Fill=0000
+    CODE              Offs=001585  Size=000012  Align=00001  Fill=0000
 ..\lib/nes.lib(or.o):
-    CODE              Offs=0013DF  Size=000012  Align=00001  Fill=0000
+    CODE              Offs=001597  Size=000012  Align=00001  Fill=0000
 ..\lib/nes.lib(popa.o):
-    CODE              Offs=0013F1  Size=00000C  Align=00001  Fill=0000
+    CODE              Offs=0015A9  Size=00000C  Align=00001  Fill=0000
 ..\lib/nes.lib(popptr1.o):
-    CODE              Offs=0013FD  Size=00000E  Align=00001  Fill=0000
+    CODE              Offs=0015B5  Size=00000E  Align=00001  Fill=0000
 ..\lib/nes.lib(pusha.o):
-    CODE              Offs=00140B  Size=000016  Align=00001  Fill=0000
+    CODE              Offs=0015C3  Size=000016  Align=00001  Fill=0000
 ..\lib/nes.lib(pushax.o):
-    CODE              Offs=001421  Size=00001A  Align=00001  Fill=0000
+    CODE              Offs=0015D9  Size=00001A  Align=00001  Fill=0000
 ..\lib/nes.lib(shelp.o):
-    CODE              Offs=00143B  Size=000020  Align=00001  Fill=0000
+    CODE              Offs=0015F3  Size=000020  Align=00001  Fill=0000
 ..\lib/nes.lib(shl.o):
-    CODE              Offs=00145B  Size=000033  Align=00001  Fill=0000
+    CODE              Offs=001613  Size=000033  Align=00001  Fill=0000
 ..\lib/nes.lib(shrax1.o):
-    CODE              Offs=00148E  Size=000008  Align=00001  Fill=0000
+    CODE              Offs=001646  Size=000008  Align=00001  Fill=0000
 ..\lib/nes.lib(shrax3.o):
-    CODE              Offs=001496  Size=00000E  Align=00001  Fill=0000
+    CODE              Offs=00164E  Size=00000E  Align=00001  Fill=0000
 ..\lib/nes.lib(shrax4.o):
-    CODE              Offs=0014A4  Size=000011  Align=00001  Fill=0000
+    CODE              Offs=00165C  Size=000011  Align=00001  Fill=0000
 ..\lib/nes.lib(shreax2.o):
-    CODE              Offs=0014B5  Size=000013  Align=00001  Fill=0000
+    CODE              Offs=00166D  Size=000013  Align=00001  Fill=0000
 ..\lib/nes.lib(shreax4.o):
-    CODE              Offs=0014C8  Size=000011  Align=00001  Fill=0000
+    CODE              Offs=001680  Size=000011  Align=00001  Fill=0000
 ..\lib/nes.lib(staspidx.o):
-    CODE              Offs=0014D9  Size=000016  Align=00001  Fill=0000
+    CODE              Offs=001691  Size=000016  Align=00001  Fill=0000
 ..\lib/nes.lib(staxsp.o):
-    CODE              Offs=0014EF  Size=00000B  Align=00001  Fill=0000
+    CODE              Offs=0016A7  Size=00000B  Align=00001  Fill=0000
 ..\lib/nes.lib(staxspi.o):
-    CODE              Offs=0014FA  Size=00001B  Align=00001  Fill=0000
+    CODE              Offs=0016B2  Size=00001B  Align=00001  Fill=0000
 ..\lib/nes.lib(sub.o):
-    CODE              Offs=001515  Size=000015  Align=00001  Fill=0000
+    CODE              Offs=0016CD  Size=000015  Align=00001  Fill=0000
 ..\lib/nes.lib(udiv.o):
-    CODE              Offs=00152A  Size=00004F  Align=00001  Fill=0000
+    CODE              Offs=0016E2  Size=00004F  Align=00001  Fill=0000
 ..\lib/nes.lib(umod.o):
-    CODE              Offs=001579  Size=000011  Align=00001  Fill=0000
+    CODE              Offs=001731  Size=000011  Align=00001  Fill=0000
 ..\lib/nes.lib(zerobss.o):
-    CODE              Offs=00158A  Size=000023  Align=00001  Fill=0000
+    CODE              Offs=001742  Size=000023  Align=00001  Fill=0000
 ..\lib/nes.lib(zeropage.o):
     ZEROPAGE          Offs=00003D  Size=00001A  Align=00001  Fill=0000
 
@@ -161,8 +161,8 @@ Name                   Start     End    Size  Align
 CHARS                 000000  00BFFF  00C000  00001
 HEADER                000000  00000F  000010  00001
 ZEROPAGE              000000  000056  000057  00001
-DATA                  000300  000304  000005  00001
-BSS                   000305  00069E  00039A  00001
+DATA                  000320  000324  000005  00001
+BSS                   000325  00069E  00037A  00001
 XRAM                  006000  0076C4  0016C5  00001
 BANK0                 008000  009B6C  001B6D  00001
 BANK1                 008000  008A90  000A91  00001
@@ -173,7 +173,7 @@ BANK4                 008000  008953  000954  00001
 BANK5                 008000  009994  001995  00001
 BANK6                 008000  009877  001878  00001
 BANK7                 008000  0085ED  0005EE  00001
-CODE                  00A000  00B5AC  0015AD  00001
+CODE                  00A000  00B764  001765  00001
 STARTUP               00E000  00E977  000978  00001
 VECTORS               00FFFA  00FFFF  000006  00001
 
@@ -183,19 +183,19 @@ Exports list by name:
 NES_CHR_BANKS             000010 REA    NES_MAPPER                000004 REA    
 NES_MIRRORING             000000 REA    NES_PRG_BANKS             000008 REA    
 _SPR_FLIP_META            000030 REZ    _SPR_OFFSCREEN_META       000031 REZ    
-__BSS_RUN__               000305 RLA    __BSS_SIZE__              00039A REA    
-__DATA_LOAD__             00B5AD RLA    __DATA_RUN__              000300 RLA    
+__BSS_RUN__               000325 RLA    __BSS_SIZE__              00037A REA    
+__DATA_LOAD__             00B765 RLA    __DATA_RUN__              000320 RLA    
 __DATA_SIZE__             000005 REA    __STACKSIZE__             000100 REA    
 __STACK_START__           000700 REA    __STARTUP__               000001 REA    
-_abs                      00B3CD RLA    _airtime                  0005B4 RLA    
+_abs                      00B585 RLA    _airtime                  0005B4 RLA    
 _anim_index               0005B0 RLA    _animation_data           000345 RLA    
 _animation_data_count     000385 RLA    _bank_bg                  00E5FF RLA    
 _bank_spr                 00E5EF RLA    _banked_call              00E923 RLA    
-_bounce_player            00AFAB RLA    _cam                      00050F RLA    
+_bounce_player            00B163 RLA    _cam                      00050F RLA    
 _cam_x                    0003E2 RLA    _cam_y                    0003E4 RLA    
 _checkpoint_room_index    0076C1 RLA    _checkpoint_spawn_id      0076C2 RLA    
 _chr_3_index_queued       0005BE RLA    _chr_index_queued         0005BD RLA    
-_clear_vram_buffer        00A071 RLA    _commit_next_anim         00AE9A RLA    
+_clear_vram_buffer        00A071 RLA    _commit_next_anim         00B052 RLA    
 _copy_bg_to_current_room_b 0094DC RLA    _copy_original_room_to_current_b 009510 RLA    
 _cur_metatiles            0072C1 RLA    _cur_nametable_y          0005A8 RLA    
 _cur_nametable_y_left     0005A9 RLA    _cur_nametable_y_right    0005AA RLA    
@@ -212,10 +212,10 @@ _draw_dequeue_index       0003EB RLA    _draw_player              008577 RLA
 _draw_player_static       008583 RLA    _draw_player_td           00865F RLA    
 _draw_queue               0003EC RLA    _draw_queue_index         0003EA RLA    
 _draw_skeleton            00871F RLA    _dynamic_objs             00053B RLA    
-_fade_from_black          00AF05 RLA    _fade_from_white          00AF4B RLA    
-_fade_to_black            00AEE2 RLA    _fade_to_white            00AF28 RLA    
+_fade_from_black          00B0BD RLA    _fade_from_white          00B103 RLA    
+_fade_to_black            00B09A RLA    _fade_to_white            00B0E0 RLA    
 _game_option_list_values  0076C3 RLA    _get_at_addr              00A19B RLA    
-_get_chr_mode_0           00AF6E RLA    _get_cur_room_bit_flags_b 009769 RLA    
+_get_chr_mode_0           00B126 RLA    _get_cur_room_bit_flags_b 009769 RLA    
 _get_cur_room_dimensions_b 00982B RLA    _get_cur_room_metatile_set 009042 RLA    
 _get_cur_room_metatile_set_b 00973D RLA    _get_cur_room_music_track_b 0097B7 RLA    
 _get_cur_room_palettes    00900A RLA    _get_cur_room_palettes_b  0096F4 RLA    
@@ -239,7 +239,7 @@ _load_screen_gameover     0082AE RLA    _load_screen_title        008292 RLA
 _load_status_bar          0082BC RLA    _loaded_obj_id            000596 RLA    
 _loaded_obj_index         000597 RLA    _loaded_obj_payload       00059A RLA    
 _loaded_obj_x             000598 RLA    _loaded_obj_y             000599 RLA    
-_main                     00AFEA RLA    _main_real                008050 RLA    
+_main                     00B1A2 RLA    _main_real                008050 RLA    
 _memcpy                   00E7E7 RLA    _memfill                  00E81A RLA    
 _mmc3_irq_buffer_offset   00003A REZ    _mmc3_irq_buffer_start_offsets 00804E RLA    
 _multi_vram_buffer_horz   00A00D RLA    _multi_vram_buffer_vert   00A044 RLA    
@@ -253,8 +253,8 @@ _pad_poll                 00E6CA RLA    _pal_bg                   00E3D9 RLA
 _pal_bright               00E427 RLA    _pal_spr                  00E3E3 RLA    
 _player1                  000500 RLA    _ppu_off                  00E42E RLA    
 _ppu_on_all               00E437 RLA    _ppu_wait_nmi             00E551 RLA    
-_queue_next_anim          00AE8A RLA    _save_version_validation  006000 RLA    
-_scroll                   00E593 RLA    _set_chr_bank_for_current_room 00AF85 RLA    
+_queue_next_anim          00B042 RLA    _save_version_validation  006000 RLA    
+_scroll                   00E593 RLA    _set_chr_bank_for_current_room 00B13D RLA    
 _set_chr_mode_0           00E135 RLA    _set_chr_mode_1           00E13E RLA    
 _set_irq_ptr              00E194 RLA    _set_metatile_set         00976D RLA    
 _set_mirroring            00E185 RLA    _set_prg_8000             00E11C RLA    
@@ -270,47 +270,47 @@ _update_player_td         008004 RLA    _update_skeleton          0082D8 RLA
 _vram_adr                 00E7A6 RLA    _vram_buffer_load_column_full 009340 RLA    
 _vram_buffer_load_row_full 0095D4 RLA    _vram_unrle               00E55C RLA    
 _vram_write               00E63A RLA    _x                        00038F RLA    
-_x_collision_offsets      00AE88 RLA    _y                        000390 RLA    
-_y_collision_offsets      00AE85 RLA    addysp                    00B013 RLA    
-addysp1                   00B012 RLA    aslax2                    00B020 RLA    
-aslax4                    00B039 RLA    aslaxy                    00B462 RLA    
-asrax4                    00B04A RLA    axlong                    00B063 RLA    
-boolule                   00B32E RLA    boolult                   00B330 RLA    
-callax                    00B070 RLA    copydata                  00B077 RLA    
-deceaxy                   00B1EA RLA    decsp2                    00B0A4 RLA    
-decsp3                    00B0B1 RLA    decsp4                    00B0BE RLA    
-decsp5                    00B0CB RLA    getlop                    00B289 RLA    
-incsp1                    00B106 RLA    incsp2                    00B115 RLA    
-incsp3                    00B123 RLA    incsp4                    00B128 RLA    
-laddeq                    00B15A RLA    ldaidx                    00B1DE RLA    
-lsubeq                    00B24F RLA    mul8x16                   00B395 RLA    
-mul8x16a                  00B39F RLA    negax                     00B3D1 RLA    
-popa                      00B3F1 RLA    popax                     00B10D RLA    
-popptr1                   00B3FD RLA    popsargsudiv16            00B43B RLA    
+_x_collision_offsets      00B040 RLA    _y                        000390 RLA    
+_y_collision_offsets      00B03D RLA    addysp                    00B1CB RLA    
+addysp1                   00B1CA RLA    aslax2                    00B1D8 RLA    
+aslax4                    00B1F1 RLA    aslaxy                    00B61A RLA    
+asrax4                    00B202 RLA    axlong                    00B21B RLA    
+boolule                   00B4E6 RLA    boolult                   00B4E8 RLA    
+callax                    00B228 RLA    copydata                  00B22F RLA    
+deceaxy                   00B3A2 RLA    decsp2                    00B25C RLA    
+decsp3                    00B269 RLA    decsp4                    00B276 RLA    
+decsp5                    00B283 RLA    getlop                    00B441 RLA    
+incsp1                    00B2BE RLA    incsp2                    00B2CD RLA    
+incsp3                    00B2DB RLA    incsp4                    00B2E0 RLA    
+laddeq                    00B312 RLA    ldaidx                    00B396 RLA    
+lsubeq                    00B407 RLA    mul8x16                   00B54D RLA    
+mul8x16a                  00B557 RLA    negax                     00B589 RLA    
+popa                      00B5A9 RLA    popax                     00B2C5 RLA    
+popptr1                   00B5B5 RLA    popsargsudiv16            00B5F3 RLA    
 ptr1                      000045 RLZ    ptr2                      000047 RLZ    
 ptr3                      000049 RLZ    ptr4                      00004B RLZ    
-push0                     00B421 RLA    pusha                     00B40F RLA    
-pusha0                    00B423 RLA    pushax                    00B425 RLA    
-pusheax                   00B208 RLA    shlax3                    00B02B RLA    
-shlax4                    00B039 RLA    shlaxy                    00B462 RLA    
-shrax1                    00B48E RLA    shrax3                    00B496 RLA    
-shrax4                    00B4A4 RLA    shreax2                   00B4B5 RLA    
-shreax4                   00B4C8 RLA    sp                        00003D RLZ    
-sreg                      00003F RLZ    staspidx                  00B4D9 RLA    
-staxspidx                 00B4FA RLA    staxysp                   00B4F1 RLA    
+push0                     00B5D9 RLA    pusha                     00B5C7 RLA    
+pusha0                    00B5DB RLA    pushax                    00B5DD RLA    
+pusheax                   00B3C0 RLA    shlax3                    00B1E3 RLA    
+shlax4                    00B1F1 RLA    shlaxy                    00B61A RLA    
+shrax1                    00B646 RLA    shrax3                    00B64E RLA    
+shrax4                    00B65C RLA    shreax2                   00B66D RLA    
+shreax4                   00B680 RLA    sp                        00003D RLZ    
+sreg                      00003F RLZ    staspidx                  00B691 RLA    
+staxspidx                 00B6B2 RLA    staxysp                   00B6A9 RLA    
 tmp1                      00004D RLZ    tmp2                      00004E RLZ    
 tmp3                      00004F RLZ    tmp4                      000050 RLZ    
-tosadda0                  00AFF6 RLA    tosaddeax                 00B133 RLA    
-tosandeax                 00B185 RLA    tosicmp                   00B0DA RLA    
-tosicmp0                  00B0D8 RLA    toslcmp                   00B1A3 RLA    
-tosmoda0                  00B33D RLA    tosmula0                  00B393 RLA    
-tosmulax                  00B34E RLA    tosorax                   00B3E1 RLA    
-tossubax                  00B517 RLA    tossubeax                 00B226 RLA    
-tosudiv0ax                00B278 RLA    tosuleeax                 00B2F2 RLA    
-tosumoda0                 00B579 RLA    tosumodax                 00B57B RLA    
-tosumodeax                00B2FE RLA    tosumula0                 00B393 RLA    
-udiv16                    00B53B RLA    udiv32                    00B2AD RLA    
-zerobss                   00B58A RLA    
+tosadda0                  00B1AE RLA    tosaddeax                 00B2EB RLA    
+tosandeax                 00B33D RLA    tosicmp                   00B292 RLA    
+tosicmp0                  00B290 RLA    toslcmp                   00B35B RLA    
+tosmoda0                  00B4F5 RLA    tosmula0                  00B54B RLA    
+tosmulax                  00B506 RLA    tosorax                   00B599 RLA    
+tossubax                  00B6CF RLA    tossubeax                 00B3DE RLA    
+tosudiv0ax                00B430 RLA    tosuleeax                 00B4AA RLA    
+tosumoda0                 00B731 RLA    tosumodax                 00B733 RLA    
+tosumodeax                00B4B6 RLA    tosumula0                 00B54B RLA    
+udiv16                    00B6F3 RLA    udiv32                    00B465 RLA    
+zerobss                   00B742 RLA    
 
 
 Exports list by value:
@@ -325,16 +325,16 @@ ptr2                      000047 RLZ    ptr3                      000049 RLZ
 ptr4                      00004B RLZ    tmp1                      00004D RLZ    
 tmp2                      00004E RLZ    tmp3                      00004F RLZ    
 tmp4                      000050 RLZ    __STACKSIZE__             000100 REA    
-__DATA_RUN__              000300 RLA    __BSS_RUN__               000305 RLA    
-_animation_data           000345 RLA    _animation_data_count     000385 RLA    
-_tick_count               000386 RLA    _tick_count16             000387 RLA    
-_ticks_in_state16         000389 RLA    _pad_all                  00038B RLA    
-_pad_all_new              00038C RLA    _index16                  00038D RLA    
-_x                        00038F RLA    _y                        000390 RLA    
-_index                    000391 RLA    _index2                   000392 RLA    
-_i                        000393 RLA    _temp32                   000394 RLA    
-_tempFlags                000398 RLA    _nametable_col            000399 RLA    
-__BSS_SIZE__              00039A REA    _irq_index                0003E1 RLA    
+__DATA_RUN__              000320 RLA    __BSS_RUN__               000325 RLA    
+_animation_data           000345 RLA    __BSS_SIZE__              00037A REA    
+_animation_data_count     000385 RLA    _tick_count               000386 RLA    
+_tick_count16             000387 RLA    _ticks_in_state16         000389 RLA    
+_pad_all                  00038B RLA    _pad_all_new              00038C RLA    
+_index16                  00038D RLA    _x                        00038F RLA    
+_y                        000390 RLA    _index                    000391 RLA    
+_index2                   000392 RLA    _i                        000393 RLA    
+_temp32                   000394 RLA    _tempFlags                000398 RLA    
+_nametable_col            000399 RLA    _irq_index                0003E1 RLA    
 _cam_x                    0003E2 RLA    _cam_y                    0003E4 RLA    
 _old_cam_x                0003E6 RLA    _old_cam_y                0003E8 RLA    
 _draw_queue_index         0003EA RLA    _draw_dequeue_index       0003EB RLA    
@@ -390,48 +390,48 @@ _set_vram_buffer          00A001 RLA    _multi_vram_buffer_horz   00A00D RLA
 _multi_vram_buffer_vert   00A044 RLA    _one_vram_buffer          00A053 RLA    
 _clear_vram_buffer        00A071 RLA    _get_pad_new              00A07B RLA    
 _set_scroll_x             00A11D RLA    _get_ppu_addr             00A174 RLA    
-_get_at_addr              00A19B RLA    _y_collision_offsets      00AE85 RLA    
-_x_collision_offsets      00AE88 RLA    _queue_next_anim          00AE8A RLA    
-_commit_next_anim         00AE9A RLA    _fade_to_black            00AEE2 RLA    
-_fade_from_black          00AF05 RLA    _fade_to_white            00AF28 RLA    
-_fade_from_white          00AF4B RLA    _get_chr_mode_0           00AF6E RLA    
-_set_chr_bank_for_current_room 00AF85 RLA    _bounce_player            00AFAB RLA    
-_main                     00AFEA RLA    tosadda0                  00AFF6 RLA    
-addysp1                   00B012 RLA    addysp                    00B013 RLA    
-aslax2                    00B020 RLA    shlax3                    00B02B RLA    
-aslax4                    00B039 RLA    shlax4                    00B039 RLA    
-asrax4                    00B04A RLA    axlong                    00B063 RLA    
-callax                    00B070 RLA    copydata                  00B077 RLA    
-decsp2                    00B0A4 RLA    decsp3                    00B0B1 RLA    
-decsp4                    00B0BE RLA    decsp5                    00B0CB RLA    
-tosicmp0                  00B0D8 RLA    tosicmp                   00B0DA RLA    
-incsp1                    00B106 RLA    popax                     00B10D RLA    
-incsp2                    00B115 RLA    incsp3                    00B123 RLA    
-incsp4                    00B128 RLA    tosaddeax                 00B133 RLA    
-laddeq                    00B15A RLA    tosandeax                 00B185 RLA    
-toslcmp                   00B1A3 RLA    ldaidx                    00B1DE RLA    
-deceaxy                   00B1EA RLA    pusheax                   00B208 RLA    
-tossubeax                 00B226 RLA    lsubeq                    00B24F RLA    
-tosudiv0ax                00B278 RLA    getlop                    00B289 RLA    
-udiv32                    00B2AD RLA    tosuleeax                 00B2F2 RLA    
-tosumodeax                00B2FE RLA    boolule                   00B32E RLA    
-boolult                   00B330 RLA    tosmoda0                  00B33D RLA    
-tosmulax                  00B34E RLA    tosmula0                  00B393 RLA    
-tosumula0                 00B393 RLA    mul8x16                   00B395 RLA    
-mul8x16a                  00B39F RLA    _abs                      00B3CD RLA    
-negax                     00B3D1 RLA    tosorax                   00B3E1 RLA    
-popa                      00B3F1 RLA    popptr1                   00B3FD RLA    
-pusha                     00B40F RLA    push0                     00B421 RLA    
-pusha0                    00B423 RLA    pushax                    00B425 RLA    
-popsargsudiv16            00B43B RLA    shlaxy                    00B462 RLA    
-aslaxy                    00B462 RLA    shrax1                    00B48E RLA    
-shrax3                    00B496 RLA    shrax4                    00B4A4 RLA    
-shreax2                   00B4B5 RLA    shreax4                   00B4C8 RLA    
-staspidx                  00B4D9 RLA    staxysp                   00B4F1 RLA    
-staxspidx                 00B4FA RLA    tossubax                  00B517 RLA    
-udiv16                    00B53B RLA    tosumoda0                 00B579 RLA    
-tosumodax                 00B57B RLA    zerobss                   00B58A RLA    
-__DATA_LOAD__             00B5AD RLA    _set_prg_8000             00E11C RLA    
+_get_at_addr              00A19B RLA    _y_collision_offsets      00B03D RLA    
+_x_collision_offsets      00B040 RLA    _queue_next_anim          00B042 RLA    
+_commit_next_anim         00B052 RLA    _fade_to_black            00B09A RLA    
+_fade_from_black          00B0BD RLA    _fade_to_white            00B0E0 RLA    
+_fade_from_white          00B103 RLA    _get_chr_mode_0           00B126 RLA    
+_set_chr_bank_for_current_room 00B13D RLA    _bounce_player            00B163 RLA    
+_main                     00B1A2 RLA    tosadda0                  00B1AE RLA    
+addysp1                   00B1CA RLA    addysp                    00B1CB RLA    
+aslax2                    00B1D8 RLA    shlax3                    00B1E3 RLA    
+aslax4                    00B1F1 RLA    shlax4                    00B1F1 RLA    
+asrax4                    00B202 RLA    axlong                    00B21B RLA    
+callax                    00B228 RLA    copydata                  00B22F RLA    
+decsp2                    00B25C RLA    decsp3                    00B269 RLA    
+decsp4                    00B276 RLA    decsp5                    00B283 RLA    
+tosicmp0                  00B290 RLA    tosicmp                   00B292 RLA    
+incsp1                    00B2BE RLA    popax                     00B2C5 RLA    
+incsp2                    00B2CD RLA    incsp3                    00B2DB RLA    
+incsp4                    00B2E0 RLA    tosaddeax                 00B2EB RLA    
+laddeq                    00B312 RLA    tosandeax                 00B33D RLA    
+toslcmp                   00B35B RLA    ldaidx                    00B396 RLA    
+deceaxy                   00B3A2 RLA    pusheax                   00B3C0 RLA    
+tossubeax                 00B3DE RLA    lsubeq                    00B407 RLA    
+tosudiv0ax                00B430 RLA    getlop                    00B441 RLA    
+udiv32                    00B465 RLA    tosuleeax                 00B4AA RLA    
+tosumodeax                00B4B6 RLA    boolule                   00B4E6 RLA    
+boolult                   00B4E8 RLA    tosmoda0                  00B4F5 RLA    
+tosmulax                  00B506 RLA    tosmula0                  00B54B RLA    
+tosumula0                 00B54B RLA    mul8x16                   00B54D RLA    
+mul8x16a                  00B557 RLA    _abs                      00B585 RLA    
+negax                     00B589 RLA    tosorax                   00B599 RLA    
+popa                      00B5A9 RLA    popptr1                   00B5B5 RLA    
+pusha                     00B5C7 RLA    push0                     00B5D9 RLA    
+pusha0                    00B5DB RLA    pushax                    00B5DD RLA    
+popsargsudiv16            00B5F3 RLA    shlaxy                    00B61A RLA    
+aslaxy                    00B61A RLA    shrax1                    00B646 RLA    
+shrax3                    00B64E RLA    shrax4                    00B65C RLA    
+shreax2                   00B66D RLA    shreax4                   00B680 RLA    
+staspidx                  00B691 RLA    staxysp                   00B6A9 RLA    
+staxspidx                 00B6B2 RLA    tossubax                  00B6CF RLA    
+udiv16                    00B6F3 RLA    tosumoda0                 00B731 RLA    
+tosumodax                 00B733 RLA    zerobss                   00B742 RLA    
+__DATA_LOAD__             00B765 RLA    _set_prg_8000             00E11C RLA    
 _set_chr_mode_0           00E135 RLA    _set_chr_mode_1           00E13E RLA    
 _set_mirroring            00E185 RLA    _set_irq_ptr              00E194 RLA    
 _is_irq_done              00E199 RLA    _pal_bg                   00E3D9 RLA    
