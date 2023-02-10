@@ -188,57 +188,7 @@ PROFILE_POKE(PROF_W)
 
 			case STATE_GAME:
 			{
-				// TODO: Can this be moved to the end of the frame
-				//		 so that animations triggering CHR swap
-				//		 can be visible for in the NEXT frame?
-				IRQ_CMD_BEGIN;
 
-				x = irq_index;
-				y = mmc3_irq_buffer_offset;
-
-				IRQ_CMD_CHR_MODE_0(get_chr_mode_0());
-				if (tick_count % 16 == 0)
-				{
-					cur_bg_bank = (cur_bg_bank + 1) % 4;
-					// The second half of the background CHR is 
-					// used for animations.
-					IRQ_CMD_CHR_MODE_1(bg_bank_sets[cur_room_metatile_index][cur_bg_bank]);
-				}
-
-				// When a VRAM update is queued, we can't do it while the screen is
-				// drawing or it will change the visuals for the *previous* frame, which
-				// are in the middle of being rendered (as these changes take place instantly).
-				if (chr_index_queued != 0xff)
-				{
-					// TODO: Eventually we might want to support setting the other parts of
-					// 		 VRAM as well.
-					IRQ_CMD_CHR_MODE_2(chr_index_queued);
-					// HACK: Currently the sprites assume 2k of VRAM. Eventually
-					//		 we will want to redo the metasprites to operate on
-					//	 	 1k slices to make better use of the space.
-					IRQ_CMD_CHR_MODE_3(chr_index_queued + 1);
-					chr_index_queued = 0xff;
-				}
-
-				if (chr_3_index_queued != 0xff)
-				{
-					IRQ_CMD_CHR_MODE_4(chr_3_index_queued);
-					chr_3_index_queued = 0xff;
-				}
-					
-				// No status bar on the top down areas.
-				if (cur_room_type == ROOM_TYPE_SIDE)
-				{
-					// All the commands after this point will run after this scanline is drawn.
-					IRQ_CMD_SCANLINE(191);
-					// Swap the first 4k section of graphics with the 36th chunk of graphics.
-					IRQ_CMD_CHR_MODE_0(40);
-					//IRQ_CMD_H_SCROLL(0);
-					IRQ_CMD_H_V_SCROLL(0,192,0);
-				}	
-					
-				// Signal the end of the commands.
-				IRQ_CMD_END;
 
 				// store the camera position at the start of the frame, so that
 				// we can detect if it moved by the end of the frame.
@@ -511,11 +461,64 @@ PROFILE_POKE(PROF_W)
 				
 				// Moved this down here because I was getting a hang when transitioning
 				// from TD level to side scrolling level (leaving sprites in bad state).
-				// I suspect it has something to do with chaning game modes mid-update, 
+				// I suspect it has something to do with changing game modes mid-update, 
 				// so I moved this here.
 				// It seemed be crashing inside a call to draw_player->oam_spr. The call
 				// stack looked suspect.
 				skip_remaining:
+
+
+				// Update IRQ commands at the end of the frame so that CHR bank swaps for characters
+				// match what will be seen next frame.
+				// Note: This will still have issues on lag frames until I update the NMI to skip
+				//	     VRAM updates on lag frames.
+				IRQ_CMD_BEGIN;
+
+				IRQ_CMD_CHR_MODE_0(get_chr_mode_0());
+				if (tick_count % 16 == 0)
+				{
+					cur_bg_bank = (cur_bg_bank + 1) % 4;
+					// The second half of the background CHR is 
+					// used for animations.
+					IRQ_CMD_CHR_MODE_1(bg_bank_sets[cur_room_metatile_index][cur_bg_bank]);
+				}
+
+				// When a VRAM update is queued, we can't do it while the screen is
+				// drawing or it will change the visuals for the *previous* frame, which
+				// are in the middle of being rendered (as these changes take place instantly).
+				if (chr_index_queued != 0xff)
+				{
+					// TODO: Eventually we might want to support setting the other parts of
+					// 		 VRAM as well.
+					IRQ_CMD_CHR_MODE_2(chr_index_queued);
+					// HACK: Currently the sprites assume 2k of VRAM. Eventually
+					//		 we will want to redo the metasprites to operate on
+					//	 	 1k slices to make better use of the space.
+					IRQ_CMD_CHR_MODE_3(chr_index_queued + 1);
+					chr_index_queued = 0xff;
+				}
+
+				if (chr_3_index_queued != 0xff)
+				{
+					IRQ_CMD_CHR_MODE_4(chr_3_index_queued);
+					chr_3_index_queued = 0xff;
+				}
+					
+				// No status bar on the top down areas.
+				if (cur_room_type == ROOM_TYPE_SIDE)
+				{
+					// All the commands after this point will run after this scanline is drawn.
+					IRQ_CMD_SCANLINE(191);
+					// Swap the first 4k section of graphics with the 36th chunk of graphics.
+					IRQ_CMD_CHR_MODE_0(40);
+					//IRQ_CMD_H_SCROLL(0);
+					IRQ_CMD_H_V_SCROLL(0,192,0);
+				}	
+					
+				// Signal the end of the commands.
+				IRQ_CMD_END;
+
+
 				break;
 			}
 
