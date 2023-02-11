@@ -46,8 +46,6 @@ const unsigned char bg_bank_sets[NUM_BG_BANK_SETS][NUM_BG_BANKS] =
 	{ 26, 28, 30, 32 },
 };
 
-const unsigned char mmc3_irq_buffer_start_offsets[] = { 0, IRQ_BUFFER_LEN };
-
 //unsigned char oam_base;
 
 #if DEBUG_ENABLED

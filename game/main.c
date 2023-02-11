@@ -118,6 +118,8 @@ unsigned char chr_3_index_queued;
 
 const unsigned char y_collision_offsets[NUM_Y_COLLISION_OFFSETS] = { 1, 10, 19 };
 const unsigned char x_collision_offsets[NUM_X_COLLISION_OFFSETS] = { 0, 12 };
+// Used by multiple banks so it needs to be in fixed bank.
+const unsigned char mmc3_irq_buffer_start_offsets[] = { 0, IRQ_BUFFER_LEN };
 unsigned char irq_array[IRQ_BUFFER_LEN*2];
 unsigned char irq_cur_buffer_index;
 

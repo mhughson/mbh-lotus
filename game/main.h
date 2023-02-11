@@ -119,8 +119,12 @@
 #define IRQ_CMD(cmd) irq_array[irq_index++] = (cmd);
 
 // Writes to the "off" part of the buffer.
-// TODO: Can this be done faster?
-#define IRQ_CMD_BEGIN 	    		irq_index = mmc3_irq_buffer_start_offsets[(irq_cur_buffer_index + 1) % 2];
+// NOTE: Reuses irq_index as a temp to lookup the array offset.
+#define IRQ_CMD_BEGIN 	    		__asm__ ("lda %v", irq_cur_buffer_index); \
+									__asm__ ("eor #1"); \
+									__asm__ ("and #1"); \
+									__asm__ ("sta %v", irq_index); \
+									irq_index = mmc3_irq_buffer_start_offsets[irq_index];
 
 #define IRQ_CMD_SCANLINE(line_num) 	IRQ_CMD(IRQ_SCANLINE(line_num));
 
