@@ -56,9 +56,15 @@ nmi:
 
 @doUpdate:
 
+	; Check if main thread is finished. If not, we have a 
+	; lag frame, and should skip the OAM update to avoid
+	; glitches in the sprites.
+	lda <VRAM_UPDATE
+	beq @skipOam
+
 	lda #>OAM_BUF		;update OAM
 	sta PPU_OAM_DMA
-
+@skipOam:
 	lda <PAL_UPDATE		;update palette if needed
 	bne @updPal
 	jmp @updVRAM
